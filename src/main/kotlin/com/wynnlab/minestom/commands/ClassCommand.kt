@@ -12,9 +12,9 @@ object ClassCommand : Command("class") {
             sender.sendMessage("Choose a class")
         }
 
-        val nameArg = ArgumentType.String("name").setSuggestionCallback { _, _, suggestion ->
+        val nameArg = ArgumentType.Word("name")/*.setSuggestionCallback { _, _, suggestion ->
             suggestion.entries.addAll(nameSuggestions)
-        }
+        }*/.from("archer", "assassin", "mage", "shaman", "warrior")
 
         addSyntax({ sender, ctx ->
             sender.sendMessage("Your class is now ${ctx[nameArg]}")

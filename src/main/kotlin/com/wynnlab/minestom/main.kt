@@ -1,17 +1,19 @@
 package com.wynnlab.minestom
 
-import com.wynnlab.minestom.commands.ClassCommand
-import com.wynnlab.minestom.commands.PermissionCommand
-import com.wynnlab.minestom.commands.StopCommand
+import com.wynnlab.minestom.commands.*
 import com.wynnlab.minestom.generator.GeneratorDemo
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.Style
 import net.kyori.adventure.text.format.TextDecoration
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import net.minestom.server.MinecraftServer
 import net.minestom.server.entity.GameMode
 import net.minestom.server.event.player.PlayerLoginEvent
 import net.minestom.server.event.server.ServerListPingEvent
+import net.minestom.server.extras.lan.OpenToLAN
+import net.minestom.server.extras.lan.OpenToLANConfig
+import net.minestom.server.ping.ServerListPingType
 import net.minestom.server.utils.Position
 
 fun main() {
@@ -28,6 +30,9 @@ fun main() {
     commandManager.register(PermissionCommand)
 
     commandManager.register(ClassCommand)
+    commandManager.register(CastCommand)
+    commandManager.register(ItemCommand)
+    commandManager.register(DummyCommand)
 
     val globalEventHandler = MinecraftServer.getGlobalEventHandler()
 
@@ -42,10 +47,16 @@ fun main() {
     globalEventHandler.addListener(ServerListPingEvent::class.java) { event ->
         val responseData = event.responseData
         responseData.version = "WynnLab (1.17)"
-        responseData.description = motd
+        responseData.description = when (event.pingType) {
+            ServerListPingType.MODERN_FULL_RGB -> motd
+            ServerListPingType.OPEN_TO_LAN -> lanMotd
+            else -> legacyMotd
+        }//if (event.pingType == ServerListPingType.MODERN_FULL_RGB) motd else legacyMotd
     }
 
     server.start("0.0.0.0", 25565)
+
+    OpenToLAN.open(OpenToLANConfig())
 }
 
 private val motd = Component.text()
@@ -59,3 +70,7 @@ private val motd = Component.text()
     .append(Component.text(" brought to ", COLOR_PURPLE.textColor))
     .append(Component.text("1.17", Style.style(COLOR_PINK.textColor, TextDecoration.BOLD)))
     .build()
+
+private val lanMotd = LegacyComponentSerializer.legacy('§').deserialize("                     §8play.§b§lWYNNLAB§8.tk")
+private val legacyMotd = Component.text().append(lanMotd).append(Component.newline()).append(
+    LegacyComponentSerializer.legacy('§').deserialize("              §d§lWynn §5brought to §d§l1.17")).build()
