@@ -50,6 +50,8 @@ fun main() {
 
     val commandManager = MinecraftServer.getCommandManager()
     commandManager.register(StopCommand)
+    commandManager.register(GamemodeCommand)
+    commandManager.register(GiveCommand)
     commandManager.register(PermissionCommand)
 
     commandManager.register(ClassCommand)
