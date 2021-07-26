@@ -52,6 +52,8 @@ fun main() {
     commandManager.register(StopCommand)
     commandManager.register(GamemodeCommand)
     commandManager.register(GiveCommand)
+    commandManager.register(OpCommand)
+    commandManager.register(DeopCommand)
     commandManager.register(PermissionCommand)
 
     commandManager.register(ClassCommand)

@@ -30,7 +30,7 @@ object GamemodeCommand : Command("gamemode", "gm") {
             .setDefaultValue { EntityFinder().setTargetSelector(EntityFinder.TargetSelector.SELF) }
 
         fun setGameMode(players: List<Entity>, gameMode: GameMode) {
-            players.forEach {(it as Player).gameMode = gameMode }
+            players.forEach { (it as Player).gameMode = gameMode }
         }
 
         addSyntax({ sender, ctx ->
@@ -62,6 +62,30 @@ object GiveCommand : Command("give") {
     }
 }
 
+object OpCommand : Command("op") {
+    init {
+        setCondition { sender, _ -> sender.isConsole || sender.isPlayer && sender.asPlayer().permissionLevel >= 4 }
+
+        val targetsArg = ArgumentType.Entity("targets").onlyPlayers(true)
+
+        addSyntax({ sender, ctx ->
+            ctx[targetsArg].find(sender).forEach { (it as Player).permissionLevel = 4 }
+        }, targetsArg)
+    }
+}
+
+object DeopCommand : Command("deop") {
+    init {
+        setCondition { sender, _ -> sender.isConsole || sender.isPlayer && sender.asPlayer().permissionLevel >= 4 }
+
+        val targetsArg = ArgumentType.Entity("targets").onlyPlayers(true)
+
+        addSyntax({ sender, ctx ->
+            ctx[targetsArg].find(sender).forEach { (it as Player).permissionLevel = 0 }
+        }, targetsArg)
+    }
+}
+
 object PermissionCommand : Command("permission", "perm") {
     init {
         condition = isAllowed(PERM_SERVER_PERMISSIONS)
@@ -71,7 +95,7 @@ object PermissionCommand : Command("permission", "perm") {
 
     object Grant : Command("grant") {
         init {
-            val playersArg = ArgumentType.Entity("player").onlyPlayers(true)
+            val playersArg = ArgumentType.Entity("targets").onlyPlayers(true)
             val permArg = ArgumentType.String("permission")
 
             addSyntax({ sender, ctx ->
@@ -85,7 +109,7 @@ object PermissionCommand : Command("permission", "perm") {
 
     object Revoke : Command("revoke") {
         init {
-            val playersArg = ArgumentType.Entity("player").onlyPlayers(true)
+            val playersArg = ArgumentType.Entity("targets").onlyPlayers(true)
             val permArg = ArgumentType.String("permission")
 
             addSyntax({ sender, ctx ->
