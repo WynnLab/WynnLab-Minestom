@@ -1,5 +1,6 @@
 package com.wynnlab.minestom
 
+import com.wynnlab.minestom.commands.ClassCommand
 import com.wynnlab.minestom.commands.PermissionCommand
 import com.wynnlab.minestom.commands.StopCommand
 import com.wynnlab.minestom.generator.GeneratorDemo
@@ -25,6 +26,8 @@ fun main() {
     val commandManager = MinecraftServer.getCommandManager()
     commandManager.register(StopCommand)
     commandManager.register(PermissionCommand)
+
+    commandManager.register(ClassCommand)
 
     val globalEventHandler = MinecraftServer.getGlobalEventHandler()
 

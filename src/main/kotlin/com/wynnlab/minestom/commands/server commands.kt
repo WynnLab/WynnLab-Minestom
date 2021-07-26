@@ -11,10 +11,10 @@ import net.minestom.server.permission.Permission
 object StopCommand : Command("stop") {
     init {
         condition = isAllowed(PERM_SERVER_STOP)
-        addSyntax({ sender, _ ->
+        setDefaultExecutor { sender, _ ->
             sender.sendMessage("Stopping the server")
             MinecraftServer.stopCleanly()
-        })
+        }
     }
 }
 
@@ -30,15 +30,15 @@ object PermissionCommand : Command("permission", "perm") {
             val playerArg = ArgumentType.String("player")
             val permArg = ArgumentType.String("permission")
 
-            addSyntax({ sender, context ->
-                val player = MinecraftServer.getConnectionManager().getPlayer(context[playerArg])
+            addSyntax({ sender, ctx ->
+                val player = MinecraftServer.getConnectionManager().getPlayer(ctx[playerArg])
                 if (player == null) {
-                    sender.sendMessage("§cPlayer not found")
+                    sender.sendMessage("Player not found")
                     return@addSyntax
                 }
-                val perm = context[permArg]
+                val perm = ctx[permArg]
                 player.addPermission(Permission(perm))
-                sender.sendMessage("§aGranted permission")
+                sender.sendMessage("Granted permission")
             }, playerArg, permArg)
         }
     }
@@ -48,15 +48,15 @@ object PermissionCommand : Command("permission", "perm") {
             val playerArg = ArgumentType.String("player")
             val permArg = ArgumentType.String("permission")
 
-            addSyntax({ sender, context ->
-                val player = MinecraftServer.getConnectionManager().getPlayer(context[playerArg])
+            addSyntax({ sender, ctx ->
+                val player = MinecraftServer.getConnectionManager().getPlayer(ctx[playerArg])
                 if (player == null) {
-                    sender.sendMessage("§cPlayer not found")
+                    sender.sendMessage("Player not found")
                     return@addSyntax
                 }
-                val perm = context[permArg]
+                val perm = ctx[permArg]
                 player.removePermission(perm)
-                sender.sendMessage("§aRevoked permission")
+                sender.sendMessage("Revoked permission")
             }, playerArg, permArg)
         }
     }
