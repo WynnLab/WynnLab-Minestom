@@ -5,6 +5,8 @@ package com.wynnlab.minestom
 import com.google.gson.JsonParser
 import com.wynnlab.minestom.commands.*
 import com.wynnlab.minestom.generator.GeneratorDemo
+import com.wynnlab.minestom.io.HttpRequestException
+import com.wynnlab.minestom.io.getApiResultsJson
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.Style
@@ -29,15 +31,12 @@ fun main() {
 
     val connectionManager = MinecraftServer.getConnectionManager()
     connectionManager.setUuidProvider { _, username ->
-        val url = URL("https://api.mojang.com/users/profiles/minecraft/$username")
-        val http = url.openConnection() as HttpURLConnection
-        http.requestMethod = "GET"
-        http.connect()
-        if (http.responseCode != 200) {
-            MinecraftServer.LOGGER.warn("Could not get UUID for player $username")
+        val response = try {
+            getApiResultsJson("https://api.mojang.com/users/profiles/minecraft/$username")
+        } catch (e: HttpRequestException) {
+            MinecraftServer.LOGGER.warn("Could not get UUID for player $username (${e.responseCode})")
             return@setUuidProvider UUID.randomUUID()
         }
-        val response = JsonParser.parseReader(url.openStream().reader()).asJsonObject
         val id = response.get("id").asString
         val uuid = UUID(id.substring(0, 16).toULong(16).toLong(), id.substring(16).toULong(16).toLong())
         MinecraftServer.LOGGER.info("Player $username logged in with UUID $uuid")
