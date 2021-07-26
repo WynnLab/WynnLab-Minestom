@@ -1,5 +1,8 @@
+@file:JvmName("Main")
+
 package com.wynnlab.minestom
 
+import com.google.gson.JsonParser
 import com.wynnlab.minestom.commands.*
 import com.wynnlab.minestom.generator.GeneratorDemo
 import net.kyori.adventure.text.Component
@@ -15,11 +18,31 @@ import net.minestom.server.extras.lan.OpenToLAN
 import net.minestom.server.extras.lan.OpenToLANConfig
 import net.minestom.server.ping.ServerListPingType
 import net.minestom.server.utils.Position
+import java.net.HttpURLConnection
+import java.net.URL
+import java.util.*
 
 fun main() {
     val server = MinecraftServer.init()
 
     MinecraftServer.setBrandName("WynnLab")
+
+    val connectionManager = MinecraftServer.getConnectionManager()
+    connectionManager.setUuidProvider { _, username ->
+        val url = URL("https://api.mojang.com/users/profiles/minecraft/$username")
+        val http = url.openConnection() as HttpURLConnection
+        http.requestMethod = "GET"
+        http.connect()
+        if (http.responseCode != 200) {
+            MinecraftServer.LOGGER.warn("Could not get UUID for player $username")
+            return@setUuidProvider UUID.randomUUID()
+        }
+        val response = JsonParser.parseReader(url.openStream().reader()).asJsonObject
+        val id = response.get("id").asString
+        val uuid = UUID(id.substring(0, 16).toULong(16).toLong(), id.substring(16).toULong(16).toLong())
+        MinecraftServer.LOGGER.info("Player $username logged in with UUID $uuid")
+        uuid
+    }
 
     val instanceManager = MinecraftServer.getInstanceManager()
     val instanceContainer = instanceManager.createInstanceContainer()
