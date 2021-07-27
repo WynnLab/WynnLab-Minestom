@@ -7,7 +7,7 @@ import net.minestom.server.command.builder.suggestion.SuggestionEntry
 
 object ItemCommand : Command("item") {
     init {
-        val nameArg = ArgumentType.StringArray("name").setSuggestionCallback { sender, ctx, suggestion ->
+        val nameArg = ArgumentType.StringArray("name").setSuggestionCallback { _, ctx, suggestion ->
             val itemName = ctx.input.substring(suggestion.start - 1)
             if (itemName.isEmpty()) return@setSuggestionCallback
 
@@ -23,7 +23,7 @@ object ItemCommand : Command("item") {
         }
 
         addSyntax({ sender, ctx ->
-            sender.sendMessage("You get \"${ctx[nameArg].joinToString(" ")}\"")
+            sender.sendMessage("You get \"${ctx.getRaw(nameArg)}\"")
         }, nameArg)
     }
 

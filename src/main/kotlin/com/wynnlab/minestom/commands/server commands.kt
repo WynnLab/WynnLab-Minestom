@@ -2,6 +2,7 @@ package com.wynnlab.minestom.commands
 
 import com.wynnlab.minestom.*
 import net.minestom.server.MinecraftServer
+import net.minestom.server.command.CommandManager
 import net.minestom.server.command.builder.Command
 import net.minestom.server.command.builder.arguments.ArgumentType
 import net.minestom.server.entity.Entity
@@ -9,6 +10,15 @@ import net.minestom.server.entity.GameMode
 import net.minestom.server.entity.Player
 import net.minestom.server.permission.Permission
 import net.minestom.server.utils.entity.EntityFinder
+
+fun registerServerCommands(commandManager: CommandManager) {
+    commandManager.register(StopCommand)
+    commandManager.register(GamemodeCommand)
+    commandManager.register(GiveCommand)
+    commandManager.register(OpCommand)
+    commandManager.register(DeopCommand)
+    commandManager.register(PermissionCommand)
+}
 
 object StopCommand : Command("stop") {
     init {

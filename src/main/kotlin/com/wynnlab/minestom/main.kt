@@ -48,17 +48,13 @@ fun main() {
     instanceContainer.chunkGenerator = GeneratorDemo()
 
     val commandManager = MinecraftServer.getCommandManager()
-    commandManager.register(StopCommand)
-    commandManager.register(GamemodeCommand)
-    commandManager.register(GiveCommand)
-    commandManager.register(OpCommand)
-    commandManager.register(DeopCommand)
-    commandManager.register(PermissionCommand)
+    registerServerCommands(commandManager)
 
     commandManager.register(ClassCommand)
     commandManager.register(CastCommand)
     commandManager.register(ItemCommand)
     commandManager.register(DummyCommand)
+    registerPvpCommands(commandManager)
 
     val globalEventHandler = MinecraftServer.getGlobalEventHandler()
 
