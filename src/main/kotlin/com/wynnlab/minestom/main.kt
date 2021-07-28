@@ -2,11 +2,12 @@
 
 package com.wynnlab.minestom
 
-import com.google.gson.JsonParser
 import com.wynnlab.minestom.commands.*
 import com.wynnlab.minestom.generator.GeneratorDemo
 import com.wynnlab.minestom.io.HttpRequestException
 import com.wynnlab.minestom.io.getApiResultsJson
+import com.wynnlab.minestom.listeners.initServerListeners
+import com.wynnlab.minestom.util.listen
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.Style
@@ -20,8 +21,6 @@ import net.minestom.server.extras.lan.OpenToLAN
 import net.minestom.server.extras.lan.OpenToLANConfig
 import net.minestom.server.ping.ServerListPingType
 import net.minestom.server.utils.Position
-import java.net.HttpURLConnection
-import java.net.URL
 import java.util.*
 
 fun main() {
@@ -55,10 +54,11 @@ fun main() {
     commandManager.register(ItemCommand)
     commandManager.register(DummyCommand)
     registerPvpCommands(commandManager)
+    registerEssentialsCommands(commandManager)
 
     val globalEventHandler = MinecraftServer.getGlobalEventHandler()
 
-    globalEventHandler.addListener(PlayerLoginEvent::class.java) { event ->
+    globalEventHandler.listen<PlayerLoginEvent> { event ->
         val player = event.player
         event.setSpawningInstance(instanceContainer)
         player.respawnPoint = Position(0.0, 42.0, 0.0)
@@ -66,7 +66,7 @@ fun main() {
         player.permissionLevel = 4
     }
 
-    globalEventHandler.addListener(ServerListPingEvent::class.java) { event ->
+    globalEventHandler.listen<ServerListPingEvent> { event ->
         val responseData = event.responseData
         responseData.version = "WynnLab (1.17)"
         responseData.description = when (event.pingType) {
@@ -75,6 +75,8 @@ fun main() {
             else -> legacyMotd
         }//if (event.pingType == ServerListPingType.MODERN_FULL_RGB) motd else legacyMotd
     }
+
+    initServerListeners(globalEventHandler)
 
     server.start("0.0.0.0", 25565)
 

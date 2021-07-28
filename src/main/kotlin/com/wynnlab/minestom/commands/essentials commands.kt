@@ -9,7 +9,7 @@ import net.minestom.server.command.builder.arguments.ArgumentType
 import net.minestom.server.entity.Entity
 import net.minestom.server.entity.Player
 
-fun registerEssentialCommands(commandManager: CommandManager) {
+fun registerEssentialsCommands(commandManager: CommandManager) {
     commandManager.register(MessageCommand)
     commandManager.register(ReplyCommand)
     commandManager.register(PartyCommand)
