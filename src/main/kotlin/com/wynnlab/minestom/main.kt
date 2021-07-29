@@ -7,6 +7,7 @@ import com.wynnlab.minestom.generator.GeneratorDemo
 import com.wynnlab.minestom.io.HttpRequestException
 import com.wynnlab.minestom.io.getApiResultsJson
 import com.wynnlab.minestom.listeners.initServerListeners
+import com.wynnlab.minestom.listeners.initWynnLabListeners
 import com.wynnlab.minestom.util.listen
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -77,6 +78,7 @@ fun main() {
     }
 
     initServerListeners(globalEventHandler)
+    initWynnLabListeners(globalEventHandler)
 
     server.start("0.0.0.0", 25565)
 

@@ -20,7 +20,7 @@ val serverListenersNode = EventNode.all("server-listeners")
 
 val serverPlayerListenersNode = EventNode.type("server-player-listeners", EventFilter.PLAYER)
 
-fun onPlayerSpawn(e: PlayerSpawnEvent) {
+private fun onPlayerSpawn(e: PlayerSpawnEvent) {
     if (!e.isFirstSpawn) return
     val player = e.player
     Audiences.server().sendMessage(Component.text()
@@ -31,7 +31,7 @@ fun onPlayerSpawn(e: PlayerSpawnEvent) {
         .build())
 }
 
-fun onPlayerDisconnect(e: PlayerDisconnectEvent) {
+private fun onPlayerDisconnect(e: PlayerDisconnectEvent) {
     val player = e.player
     Audiences.server().sendMessage(Component.text()
         .append(Component.text("[", COLOR_GRAY.textColor))
@@ -41,7 +41,7 @@ fun onPlayerDisconnect(e: PlayerDisconnectEvent) {
         .build())
 }
 
-fun onPlayerChat(e: PlayerChatEvent) {
+private fun onPlayerChat(e: PlayerChatEvent) {
     e.setChatFormat {
         Component.text()
             .append(it.player.name)
@@ -51,7 +51,7 @@ fun onPlayerChat(e: PlayerChatEvent) {
     }
 }
 
-fun onPlayerDeath(e: PlayerDeathEvent) {
+private fun onPlayerDeath(e: PlayerDeathEvent) {
     val deathMessage = Component.text().append(e.player.name)
         .append(Component.text(" thought this would be as easy as Wynncraft. Wrong.")).build()
     e.chatMessage = deathMessage
