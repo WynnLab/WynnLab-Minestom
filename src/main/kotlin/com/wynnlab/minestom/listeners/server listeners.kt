@@ -8,6 +8,7 @@ import com.wynnlab.minestom.util.listen
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import net.minestom.server.adventure.audience.Audiences
+import net.minestom.server.entity.GameMode
 import net.minestom.server.event.EventFilter
 import net.minestom.server.event.EventNode
 import net.minestom.server.event.GlobalEventHandler
@@ -29,6 +30,10 @@ private fun onPlayerSpawn(e: PlayerSpawnEvent) {
         .append(Component.text("] ", COLOR_GRAY.textColor))
         .append(player.name)
         .build())
+
+    // Debug
+    player.gameMode = GameMode.CREATIVE
+    player.permissionLevel = 4
 }
 
 private fun onPlayerDisconnect(e: PlayerDisconnectEvent) {

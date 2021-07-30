@@ -1,5 +1,6 @@
 package com.wynnlab.minestom.commands
 
+import com.wynnlab.minestom.gui.ClassGui
 import net.minestom.server.command.builder.Command
 import net.minestom.server.command.builder.arguments.ArgumentType
 import net.minestom.server.command.builder.suggestion.SuggestionEntry
@@ -8,13 +9,12 @@ object ClassCommand : Command("class") {
     init {
         setCondition { sender, _ -> sender.isPlayer }
 
-        setDefaultExecutor { sender, _ ->
-            sender.sendMessage("Choose a class")
-        }
+        val nameArg = ArgumentType.Word("name")
+            .from("archer", "assassin", "mage", "shaman", "warrior")
 
-        val nameArg = ArgumentType.Word("name")/*.setSuggestionCallback { _, _, suggestion ->
-            suggestion.entries.addAll(nameSuggestions)
-        }*/.from("archer", "assassin", "mage", "shaman", "warrior")
+        addSyntax({ sender, _ ->
+            ClassGui().show(sender.asPlayer())
+        })
 
         addSyntax({ sender, ctx ->
             sender.sendMessage("Your class is now ${ctx[nameArg]}")
