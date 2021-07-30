@@ -59,6 +59,7 @@ fun main() {
     commandManager.register(CastCommand)
     commandManager.register(ItemCommand)
     commandManager.register(DummyCommand)
+    commandManager.register(MenuCommand)
     registerPvpCommands(commandManager)
     registerEssentialsCommands(commandManager)
 

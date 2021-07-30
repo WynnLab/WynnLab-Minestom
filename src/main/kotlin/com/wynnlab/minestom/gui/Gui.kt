@@ -15,11 +15,13 @@ abstract class Gui(
     private val inv = Inventory(type, title)
     init {
         initItems(inv)
-        updateItems(inv)
         inv.addInventoryCondition(this::onClick)
     }
 
-    fun show(player: Player) = player.openInventory(inv)
+    fun show(player: Player) {
+        update()
+        player.openInventory(inv)
+    }
 
     fun update() = updateItems(inv)
 
