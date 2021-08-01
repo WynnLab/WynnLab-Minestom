@@ -8,13 +8,16 @@ import net.minestom.server.command.builder.arguments.ArgumentType
 import net.minestom.server.entity.Entity
 import net.minestom.server.entity.GameMode
 import net.minestom.server.entity.Player
+import net.minestom.server.event.player.PlayerChatEvent
 import net.minestom.server.permission.Permission
+import net.minestom.server.utils.Position
 import net.minestom.server.utils.entity.EntityFinder
 
 fun registerServerCommands(commandManager: CommandManager) {
     commandManager.register(StopCommand)
     commandManager.register(GamemodeCommand)
     commandManager.register(GiveCommand)
+    commandManager.register(SetblockCommand)
     commandManager.register(OpCommand)
     commandManager.register(DeopCommand)
     commandManager.register(PermissionCommand)
@@ -69,6 +72,23 @@ object GiveCommand : Command("give") {
             if (count > 1) item = item.withAmount(count)
             players.forEach { (it as Player).inventory.addItemStack(item) }
         }, targetsArg, itemArg, countArg)
+    }
+}
+
+object SetblockCommand : Command("setblock") {
+    init {
+        setCondition { sender, _ -> !sender.isConsole && sender.isAllowed(PERM_SERVER_SETBLOCK) }
+
+        val positionArg = ArgumentType.RelativeBlockPosition("position")
+        val blockArg = ArgumentType.BlockState("block")
+
+        addSyntax({ sender, ctx ->
+            val player = sender.asPlayer()
+            val relPos = ctx[positionArg]
+            val position = relPos.from(player)
+            val block = ctx[blockArg]
+            player.instance?.setBlock(position, block)
+        }, positionArg, blockArg)
     }
 }
 
