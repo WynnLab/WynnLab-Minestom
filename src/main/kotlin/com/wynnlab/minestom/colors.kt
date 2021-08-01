@@ -11,7 +11,10 @@ const val COLOR_RED = 0xb52714
 const val COLOR_ORANGE = 0xf45a38
 const val COLOR_PEACH = 0xf7942a
 const val COLOR_GREEN = 0x14b54a
-const val COLOR_LIGHT_BLUE = 0x25d8f7
+const val COLOR_AQUA = 0x25d8f7
+const val COLOR_PALE_AQUA_BLUE = 0x95d7ed
+const val COLOR_PALE_BLUE = 0x74b3e34
+const val COLOR_LIGHT_BLUE = 0x2f8ed6
 const val COLOR_PURPLE = 0xd94ef4
 const val COLOR_PINK = 0xd34cca
 

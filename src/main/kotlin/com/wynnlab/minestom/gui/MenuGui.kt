@@ -81,6 +81,10 @@ private val settingsItem = ItemStack.builder(Material.CRAFTING_TABLE)
     .displayNameNonItalic(Component.text("WynnLab Settings"))
     .build()
 
+private val jukeboxItem = ItemStack.builder(Material.JUKEBOX)
+    .displayNameNonItalic(Component.text("Jukebox", NamedTextColor.AQUA))
+    .build()
+
 
 private fun abilityBookItem(index: Int, name: Component) = ItemStack.builder(Material.BOOK)
     .displayNameNonItalic(Component.text()

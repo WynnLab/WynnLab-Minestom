@@ -134,10 +134,10 @@ private val conversations = mutableMapOf<Player, Player>()
 
 private fun pm(sender: Player, receivers: List<Entity>, specifiedReceiver: String, text: String) {
     val you = Component.text("You", COLOR_WYNN.textColor)
-    val senderComponent = sender.name.colorIfAbsent(COLOR_LIGHT_BLUE.textColor)
+    val senderComponent = sender.name.colorIfAbsent(COLOR_AQUA.textColor)
     val textComponent = LegacyComponentSerializer.legacy('&').deserialize(text)
 
-    sender.sendMessage(pmComponent(you, Component.text(specifiedReceiver, (if (specifiedReceiver.startsWith('@')) COLOR_LIGHT_BLUE else COLOR_PURPLE).textColor), textComponent))
+    sender.sendMessage(pmComponent(you, Component.text(specifiedReceiver, (if (specifiedReceiver.startsWith('@')) COLOR_AQUA else COLOR_PURPLE).textColor), textComponent))
     for (receiver in receivers) {
         receiver as Player
         receiver.sendMessage(pmComponent(senderComponent, you, textComponent))

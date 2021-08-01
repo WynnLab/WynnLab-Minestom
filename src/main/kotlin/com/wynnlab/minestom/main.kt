@@ -8,6 +8,8 @@ import com.wynnlab.minestom.io.HttpRequestException
 import com.wynnlab.minestom.io.getApiResultsJson
 import com.wynnlab.minestom.listeners.initServerListeners
 import com.wynnlab.minestom.listeners.initWynnLabListeners
+import com.wynnlab.minestom.players.WynnLabLogin
+import com.wynnlab.minestom.players.WynnLabUuidProvider
 import com.wynnlab.minestom.util.listen
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -35,18 +37,7 @@ fun main() {
     MinecraftServer.setBrandName("WynnLab")
 
     val connectionManager = MinecraftServer.getConnectionManager()
-    connectionManager.setUuidProvider { _, username ->
-        val response = try {
-            getApiResultsJson("https://api.mojang.com/users/profiles/minecraft/$username")
-        } catch (e: HttpRequestException) {
-            MinecraftServer.LOGGER.warn("Could not get UUID for player $username (${e.responseCode})")
-            return@setUuidProvider UUID.randomUUID()
-        }
-        val id = response.get("id").asString
-        val uuid = UUID(id.substring(0, 16).toULong(16).toLong(), id.substring(16).toULong(16).toLong())
-        MinecraftServer.LOGGER.info("Player $username logged in with UUID $uuid")
-        uuid
-    }
+    connectionManager.setUuidProvider(WynnLabUuidProvider)
 
     val instanceManager = MinecraftServer.getInstanceManager()
     val instanceContainer = instanceManager.createInstanceContainer()
@@ -66,11 +57,10 @@ fun main() {
     val globalEventHandler = MinecraftServer.getGlobalEventHandler()
 
     globalEventHandler.listen<PlayerLoginEvent> { event ->
-        val player = event.player
-        event.setSpawningInstance(instanceContainer)
-        player.respawnPoint = Position(0.0, 42.0, 0.0)
-        player.permissionLevel = 4
+        event.player.respawnPoint = Position(0.0, 42.0, 0.0)
+        event.player.permissionLevel = 4
     }
+    globalEventHandler.addListener(PlayerLoginEvent::class.java, WynnLabLogin(instanceContainer))
 
     globalEventHandler.listen<ServerListPingEvent> { event ->
         val responseData = event.responseData
