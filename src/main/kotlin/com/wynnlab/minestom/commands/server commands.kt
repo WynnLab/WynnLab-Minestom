@@ -8,9 +8,7 @@ import net.minestom.server.command.builder.arguments.ArgumentType
 import net.minestom.server.entity.Entity
 import net.minestom.server.entity.GameMode
 import net.minestom.server.entity.Player
-import net.minestom.server.event.player.PlayerChatEvent
 import net.minestom.server.permission.Permission
-import net.minestom.server.utils.Position
 import net.minestom.server.utils.entity.EntityFinder
 import kotlin.system.exitProcess
 

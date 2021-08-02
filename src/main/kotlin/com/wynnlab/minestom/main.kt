@@ -9,6 +9,7 @@ import com.wynnlab.minestom.listeners.initWynnLabListeners
 import com.wynnlab.minestom.players.WynnLabLogin
 import com.wynnlab.minestom.players.WynnLabUuidProvider
 import com.wynnlab.minestom.util.listen
+import com.wynnlab.minestom.util.loadImageBase64
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.Style
@@ -61,16 +62,19 @@ fun main() {
             ServerListPingType.OPEN_TO_LAN -> lanMotd
             else -> legacyMotd
         }
+        if (faviconBase64 != null)
+            responseData.favicon = faviconBase64
     }
 
 
     initServerListeners(globalEventHandler)
     initWynnLabListeners(globalEventHandler)
 
-    val port = getProperty("port", "25565").toIntOrNull() ?: 25565
+    val ip = getProperty("server-ip", "0.0.0.0").toIntOrNull() ?: 25565
+    val port = getProperty("server-port", "25565").toIntOrNull() ?: 25565
     server.start("0.0.0.0", port)
 
-    if (getProperty("lan") == "true")
+    if (getProperty("open-to-lan") == "true")
         OpenToLAN.open(OpenToLANConfig())
 
     /*commandManager.register(object : net.minestom.server.command.builder.Command("anim") {
@@ -127,5 +131,7 @@ private val lanMotd = LegacyComponentSerializer.legacy('§').deserialize("      
 private val legacyMotd = Component.text().append(lanMotd).append(Component.newline()).append(
     LegacyComponentSerializer.legacy('§').deserialize("              §d§lWynn §5brought to §d§l1.17")).build()
 
-val webhookUrl = getProperty("webhook_url")
+val webhookUrl = getProperty("webhook-url")
 //const val WEBHOOK_URL = "https://discord.com/api/webhooks/871724748818763836/a_T9R18nU51xMmWjUIYAZgY1kOvuWaaJHEzUu45mDEOwoEKnZmAr_k6hUSIP4rORCK6T"
+
+val faviconBase64 = loadImageBase64("./server-icon.png")?.let { "data:image/png;base64,$it" }

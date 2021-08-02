@@ -18,3 +18,5 @@ fun getProperty(name: String, default: String): String = properties.getProperty(
 fun getOrSetProperty(name: String, default: String) = properties.getProperty(name) ?: default.also { properties.setProperty(name, default) }
 
 fun setProperty(name: String, value: String): String? = properties.setProperty(name, value) as? String?
+
+fun saveProperties() = properties.store(propertiesFile.outputStream(), null)
