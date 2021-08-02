@@ -12,6 +12,7 @@ import net.minestom.server.event.player.PlayerChatEvent
 import net.minestom.server.permission.Permission
 import net.minestom.server.utils.Position
 import net.minestom.server.utils.entity.EntityFinder
+import kotlin.system.exitProcess
 
 fun registerServerCommands(commandManager: CommandManager) {
     commandManager.register(StopCommand)
@@ -19,16 +20,16 @@ fun registerServerCommands(commandManager: CommandManager) {
     commandManager.register(GiveCommand)
     commandManager.register(SetblockCommand)
     commandManager.register(OpCommand)
-    commandManager.register(DeopCommand)
     commandManager.register(PermissionCommand)
 }
 
 object StopCommand : Command("stop") {
     init {
-        condition = isAllowed(PERM_SERVER_STOP)
+        condition = isAllowed(PERM_SERVER_STOP, 4)
         addSyntax({ sender, _ ->
             sender.sendMessage("Stopping the server")
             MinecraftServer.stopCleanly()
+            exitProcess(0)
         })
     }
 }
@@ -94,25 +95,28 @@ object SetblockCommand : Command("setblock") {
 
 object OpCommand : Command("op") {
     init {
-        setCondition { sender, _ -> sender.isConsole || sender.isPlayer && sender.asPlayer().permissionLevel >= 4 }
+        setCondition { sender, _ -> sender.isConsole || sender.isPlayer && sender.asPlayer().permissionLevel > 0 }
 
-        val targetsArg = ArgumentType.Entity("targets").onlyPlayers(true)
-
-        addSyntax({ sender, ctx ->
-            ctx[targetsArg].find(sender).forEach { (it as Player).permissionLevel = 4 }
-        }, targetsArg)
-    }
-}
-
-object DeopCommand : Command("deop") {
-    init {
-        setCondition { sender, _ -> sender.isConsole || sender.isPlayer && sender.asPlayer().permissionLevel >= 4 }
-
-        val targetsArg = ArgumentType.Entity("targets").onlyPlayers(true)
+        val playerArg = ArgumentType.Entity("player").onlyPlayers(true).singleEntity(true)
+        val levelArg = ArgumentType.Integer("level").between(0, 4)
 
         addSyntax({ sender, ctx ->
-            ctx[targetsArg].find(sender).forEach { (it as Player).permissionLevel = 0 }
-        }, targetsArg)
+            val player = ctx[playerArg].findFirstPlayer(sender)!!
+            val levelTo = ctx[levelArg]
+            val levelFrom = player.permissionLevel
+            val senderLevel = if (sender.isConsole) 5 else (sender as Player).permissionLevel
+            val allowed = when {
+                levelTo > levelFrom -> levelTo <= senderLevel
+                levelTo < levelFrom -> sender == player || levelFrom < senderLevel
+                else -> true
+            }
+            if (!allowed)
+                sender.sendMessage("You are not allowed to change the permission level of ${player.username} to $levelTo")
+            else {
+                sender.sendMessage("${player.username} has now permission level $levelTo")
+                player.permissionLevel = levelTo
+            }
+        }, playerArg, levelArg)
     }
 }
 

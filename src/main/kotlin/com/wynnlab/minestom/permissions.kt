@@ -10,6 +10,6 @@ const val PERM_SERVER_SETBLOCK = "server.setblock"
 const val PERM_SERVER_EXECUTE = "server.execute"
 const val PERM_SERVER_PERMISSIONS = "server.permissions"
 
-fun CommandSender.isAllowed(permission: String) = isConsole || isPlayer && asPlayer().permissionLevel >= 4 || hasPermission(permission)
+fun CommandSender.isAllowed(permission: String, level: Int = 3) = isConsole || isPlayer && asPlayer().permissionLevel >= level || hasPermission(permission)
 
-fun isAllowed(permission: String) = CommandCondition { sender, _ -> sender.isAllowed(permission) }
+fun isAllowed(permission: String, level: Int = 3) = CommandCondition { sender, _ -> sender.isAllowed(permission, level) }

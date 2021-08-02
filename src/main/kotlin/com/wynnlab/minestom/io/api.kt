@@ -1,6 +1,6 @@
 package com.wynnlab.minestom.io
 
-import com.google.gson.JsonObject
+/*import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import java.net.HttpURLConnection
 import java.net.URL
@@ -13,6 +13,4 @@ fun getApiResultsJson(address: String): JsonObject {
     if (conn.responseCode != 200) throw HttpRequestException(address, conn.responseCode)
     val stream = url.openStream()
     return JsonParser.parseReader(stream.reader()).asJsonObject
-}
-
-data class HttpRequestException(val address: String, val responseCode: Int) : Exception()
+}*/

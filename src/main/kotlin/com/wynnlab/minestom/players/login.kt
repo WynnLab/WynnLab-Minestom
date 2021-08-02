@@ -1,7 +1,7 @@
 package com.wynnlab.minestom.players
 
-import com.wynnlab.minestom.io.HttpRequestException
-import com.wynnlab.minestom.io.getApiResultsJson
+import com.wynnlab.minestom.util.HttpRequestException
+import com.wynnlab.minestom.util.get
 import net.minestom.server.MinecraftServer
 import net.minestom.server.entity.GameMode
 import net.minestom.server.entity.Player
@@ -15,7 +15,7 @@ import java.util.function.Consumer
 object WynnLabUuidProvider : UuidProvider {
     override fun provide(connection: PlayerConnection?, username: String?): UUID {
         val response = try {
-            getApiResultsJson("https://api.mojang.com/users/profiles/minecraft/$username")
+            get("https://api.mojang.com/users/profiles/minecraft/$username")
         } catch (e: HttpRequestException) {
             MinecraftServer.LOGGER.warn("Could not get UUID for player $username (${e.responseCode})")
             return UUID.randomUUID()

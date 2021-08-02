@@ -1,10 +1,10 @@
 package com.wynnlab.minestom.listeners
 
-import com.wynnlab.minestom.COLOR_GRAY
-import com.wynnlab.minestom.COLOR_GREEN
-import com.wynnlab.minestom.COLOR_RED
-import com.wynnlab.minestom.textColor
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
+import com.wynnlab.minestom.*
 import com.wynnlab.minestom.util.listen
+import com.wynnlab.minestom.util.post
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import net.minestom.server.adventure.audience.Audiences
@@ -23,6 +23,7 @@ val serverPlayerListenersNode = EventNode.type("server-player-listeners", EventF
 
 private fun onPlayerSpawn(e: PlayerSpawnEvent) {
     if (!e.isFirstSpawn) return
+
     val player = e.player
     Audiences.server().sendMessage(Component.text()
         .append(Component.text("[", COLOR_GRAY.textColor))
@@ -31,9 +32,22 @@ private fun onPlayerSpawn(e: PlayerSpawnEvent) {
         .append(player.name)
         .build())
 
+    if (webhookUrl != null)
+        post(webhookUrl, JsonObject().apply {
+            add("embeds", JsonArray().apply {
+                add(JsonObject().apply {
+                    addProperty("color", 0x00ff00)
+                    add("author", JsonObject().apply {
+                        addProperty("name", "${player.username} has joined the server")
+                        addProperty("icon_url", "https://www.mc-heads.net/avatar/${player.uuid}")
+                    })
+                })
+            })
+        })
+
     // Debug
     player.gameMode = GameMode.CREATIVE
-    player.permissionLevel = 4
+    player.permissionLevel = 3
 }
 
 private fun onPlayerDisconnect(e: PlayerDisconnectEvent) {
@@ -44,6 +58,19 @@ private fun onPlayerDisconnect(e: PlayerDisconnectEvent) {
         .append(Component.text("] ", COLOR_GRAY.textColor))
         .append(player.name)
         .build())
+
+    if (webhookUrl != null)
+        post(webhookUrl, JsonObject().apply {
+            add("embeds", JsonArray().apply {
+                add(JsonObject().apply {
+                    addProperty("color", 0xff0000)
+                    add("author", JsonObject().apply {
+                        addProperty("name", "${player.username} has left the server")
+                        addProperty("icon_url", "https://www.mc-heads.net/avatar/${player.uuid}")
+                    })
+                })
+            })
+        })
 }
 
 private fun onPlayerChat(e: PlayerChatEvent) {
@@ -54,6 +81,11 @@ private fun onPlayerChat(e: PlayerChatEvent) {
             .append(LegacyComponentSerializer.legacy('§').deserialize(it.message))
             .build()
     }
+
+    if (webhookUrl != null)
+        post(webhookUrl, JsonObject().apply {
+            addProperty("content", "**<${e.player.username}>** ${e.message}")
+        })
 }
 
 private fun onPlayerDeath(e: PlayerDeathEvent) {

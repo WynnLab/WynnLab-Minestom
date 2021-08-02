@@ -4,8 +4,6 @@ package com.wynnlab.minestom
 
 import com.wynnlab.minestom.commands.*
 import com.wynnlab.minestom.generator.GeneratorDemo
-import com.wynnlab.minestom.io.HttpRequestException
-import com.wynnlab.minestom.io.getApiResultsJson
 import com.wynnlab.minestom.listeners.initServerListeners
 import com.wynnlab.minestom.listeners.initWynnLabListeners
 import com.wynnlab.minestom.players.WynnLabLogin
@@ -17,19 +15,12 @@ import net.kyori.adventure.text.format.Style
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import net.minestom.server.MinecraftServer
-import net.minestom.server.entity.Entity
-import net.minestom.server.entity.EntityType
-import net.minestom.server.entity.GameMode
-import net.minestom.server.entity.Player
-import net.minestom.server.entity.metadata.other.ArmorStandMeta
 import net.minestom.server.event.player.PlayerLoginEvent
 import net.minestom.server.event.server.ServerListPingEvent
 import net.minestom.server.extras.lan.OpenToLAN
 import net.minestom.server.extras.lan.OpenToLANConfig
-import net.minestom.server.network.packet.server.play.EntityAnimationPacket
 import net.minestom.server.ping.ServerListPingType
 import net.minestom.server.utils.Position
-import java.util.*
 
 fun main() {
     val server = MinecraftServer.init()
@@ -69,16 +60,18 @@ fun main() {
             ServerListPingType.MODERN_FULL_RGB -> motd
             ServerListPingType.OPEN_TO_LAN -> lanMotd
             else -> legacyMotd
-        }//if (event.pingType == ServerListPingType.MODERN_FULL_RGB) motd else legacyMotd
+        }
     }
 
 
     initServerListeners(globalEventHandler)
     initWynnLabListeners(globalEventHandler)
 
-    server.start("0.0.0.0", 25565)
+    val port = getProperty("port", "25565").toIntOrNull() ?: 25565
+    server.start("0.0.0.0", port)
 
-    OpenToLAN.open(OpenToLANConfig())
+    if (getProperty("lan") == "true")
+        OpenToLAN.open(OpenToLANConfig())
 
     /*commandManager.register(object : net.minestom.server.command.builder.Command("anim") {
         init {
@@ -133,3 +126,6 @@ private val motd = Component.text()
 private val lanMotd = LegacyComponentSerializer.legacy('§').deserialize("                     §8play.§b§lWYNNLAB§8.tk")
 private val legacyMotd = Component.text().append(lanMotd).append(Component.newline()).append(
     LegacyComponentSerializer.legacy('§').deserialize("              §d§lWynn §5brought to §d§l1.17")).build()
+
+val webhookUrl = getProperty("webhook_url")
+//const val WEBHOOK_URL = "https://discord.com/api/webhooks/871724748818763836/a_T9R18nU51xMmWjUIYAZgY1kOvuWaaJHEzUu45mDEOwoEKnZmAr_k6hUSIP4rORCK6T"

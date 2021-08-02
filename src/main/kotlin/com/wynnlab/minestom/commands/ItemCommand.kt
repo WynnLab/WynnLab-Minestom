@@ -1,6 +1,6 @@
 package com.wynnlab.minestom.commands
 
-import com.wynnlab.minestom.io.getApiResultsJson
+import com.wynnlab.minestom.util.get
 import net.minestom.server.command.builder.Command
 import net.minestom.server.command.builder.arguments.ArgumentType
 import net.minestom.server.command.builder.suggestion.SuggestionEntry
@@ -28,7 +28,7 @@ object ItemCommand : Command("item") {
     }
 
     private fun getApiItems(name: String): List<String> {
-        val json = getApiResultsJson("https://api.wynncraft.com/public_api.php?action=itemDB&search=${name.replace(" ", "%20")}")
+        val json = get("https://api.wynncraft.com/public_api.php?action=itemDB&search=${name.replace(" ", "%20")}")
         val items = json.getAsJsonArray("items")
         return items.mapNotNull { it.asJsonObject.get("name").asString }
     }
