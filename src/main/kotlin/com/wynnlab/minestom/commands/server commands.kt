@@ -1,7 +1,7 @@
 package com.wynnlab.minestom.commands
 
 import com.wynnlab.minestom.*
-import net.minestom.server.MinecraftServer
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import net.minestom.server.command.CommandManager
 import net.minestom.server.command.builder.Command
 import net.minestom.server.command.builder.arguments.ArgumentType
@@ -13,9 +13,14 @@ import net.minestom.server.utils.entity.EntityFinder
 
 fun registerServerCommands(commandManager: CommandManager) {
     commandManager.register(StopCommand)
+    commandManager.register(SaveAllCommand)
+    commandManager.register(KickCommand)
+    commandManager.register(KillCommand)
+    //commandManager.register(VanishCommand)
     commandManager.register(GamemodeCommand)
     commandManager.register(GiveCommand)
     commandManager.register(SetblockCommand)
+    //commandManager.register(EffectCommand)
     commandManager.register(OpCommand)
     commandManager.register(PermissionCommand)
 }
@@ -29,6 +34,56 @@ object StopCommand : Command("stop") {
         })
     }
 }
+
+object SaveAllCommand : Command("save-all") {
+    init {
+        condition = isAllowed(PERM_SERVER_SAVE_ALL, 4)
+        addSyntax({ _, _ ->
+            saveAll()
+        })
+    }
+}
+
+object KickCommand : Command("kick") {
+    init {
+        condition = isAllowed(PERM_SERVER_KICK, 4)
+
+        val playerArg = ArgumentType.Entity("player").onlyPlayers(true).singleEntity(true)
+        val messageArg = ArgumentType.StringArray("message")
+
+        addSyntax({ sender, ctx ->
+            ctx[playerArg].findFirstPlayer(sender)!!.kick(
+                LegacyComponentSerializer.legacy('&').deserialize(ctx.getRaw(messageArg))
+            )
+        }, playerArg, messageArg)
+    }
+}
+
+object KillCommand : Command("kill") {
+    init {
+        addConditionalSyntax({ sender, _ -> sender.isPlayer }, { sender, _ ->
+            sender.asPlayer().kill()
+        })
+
+        val targetsArg = ArgumentType.Entity("targets")
+
+        addConditionalSyntax(isAllowed(PERM_SERVER_KILL_OTHERS, 4), { sender, ctx ->
+            val targets = ctx[targetsArg].find(sender)
+            targets.forEach { if (it is Player) it.kill() else it.remove() }
+        }, targetsArg)
+    }
+}
+
+/*object VanishCommand : Command("vanish") {
+    init {
+        setCondition { sender, _ -> sender.isPlayer && (sender.asPlayer().permissionLevel >= 4 || sender.hasPermission(PERM_SERVER_VANISH)) }
+
+        addSyntax({ sender, _ ->
+            sender as Player
+            sender.viewers.forEach(sender::removeViewer)
+        })
+    }
+}*/
 
 object GamemodeCommand : Command("gamemode", "gm") {
     init {
@@ -88,6 +143,49 @@ object SetblockCommand : Command("setblock") {
         }, positionArg, blockArg)
     }
 }
+
+/*object EffectCommand : Command("effect") {
+    init {
+        condition = isAllowed(PERM_SERVER_EFFECT)
+
+        addSubcommand(Give)
+        addSubcommand(Clear)
+    }
+
+    object Give : Command("give") {
+        init {
+            val targetsArg = ArgumentType.Entity("targets").setDefaultValue(EntityFinder().setTargetSelector(EntityFinder.TargetSelector.SELF))
+            val typeArg = ArgumentType.Potion("type")
+            val amplifierArg = ArgumentType.Integer("amplifier").between(0, 255)
+            val durationArg = ArgumentType.Integer("duration").min(0)
+            val particlesArg = ArgumentType.Boolean("particles").setDefaultValue(true)
+            val iconArg = ArgumentType.Boolean("icon").setDefaultValue(true)
+            val ambientArg = ArgumentType.Boolean("ambient").setDefaultValue(false)
+
+            addSyntax({ sender, ctx ->
+                ctx[targetsArg].find(sender).forEach {
+                    it.addEffect(Potion(ctx[typeArg], ctx[amplifierArg].toByte(), ctx[durationArg], ctx[particlesArg], ctx[iconArg], ctx[ambientArg]))
+                }
+            }, targetsArg, typeArg, amplifierArg, durationArg, particlesArg, iconArg, ambientArg)
+        }
+    }
+
+    object Clear : Command("clear") {
+        init {
+            val targetsArg = ArgumentType.Entity("targets")
+
+            addSyntax({ sender, ctx ->
+                ctx[targetsArg].find(sender).forEach(Entity::clearEffects)
+            }, targetsArg)
+
+            val typeArg = ArgumentType.Potion("type")
+
+            addSyntax({ sender, ctx ->
+                ctx[targetsArg].find(sender).forEach { it.removeEffect(ctx[typeArg]) }
+            }, targetsArg, typeArg)
+        }
+    }
+}*/
 
 object OpCommand : Command("op") {
     init {

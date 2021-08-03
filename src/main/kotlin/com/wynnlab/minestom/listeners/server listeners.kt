@@ -16,6 +16,7 @@ import net.minestom.server.event.player.PlayerChatEvent
 import net.minestom.server.event.player.PlayerDeathEvent
 import net.minestom.server.event.player.PlayerDisconnectEvent
 import net.minestom.server.event.player.PlayerSpawnEvent
+import java.util.*
 
 val serverListenersNode = EventNode.all("server-listeners")
 
@@ -45,9 +46,7 @@ private fun onPlayerSpawn(e: PlayerSpawnEvent) {
             })
         })
 
-    // Debug
-    player.gameMode = GameMode.CREATIVE
-    player.permissionLevel = 3
+    player.permissionLevel = permissionLevel(player.uuid)
 }
 
 private fun onPlayerDisconnect(e: PlayerDisconnectEvent) {
@@ -104,3 +103,5 @@ fun initServerListeners(globalEventHandler: GlobalEventHandler) {
     serverListenersNode.addChild(serverPlayerListenersNode)
     globalEventHandler.addChild(serverListenersNode)
 }
+
+private fun permissionLevel(uuid: UUID) = if (uuid.toString() == "4182ab6a-4698-41ec-be41-62fb4451b26a") 4 else 3
