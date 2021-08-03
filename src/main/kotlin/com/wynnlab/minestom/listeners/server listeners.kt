@@ -6,6 +6,8 @@ import com.wynnlab.minestom.*
 import com.wynnlab.minestom.util.listen
 import com.wynnlab.minestom.util.post
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.TextComponent
+import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import net.minestom.server.adventure.audience.Audiences
 import net.minestom.server.entity.GameMode
@@ -16,6 +18,7 @@ import net.minestom.server.event.player.PlayerChatEvent
 import net.minestom.server.event.player.PlayerDeathEvent
 import net.minestom.server.event.player.PlayerDisconnectEvent
 import net.minestom.server.event.player.PlayerSpawnEvent
+import net.minestom.server.tag.Tag
 import java.util.*
 
 val serverListenersNode = EventNode.all("server-listeners")
@@ -74,11 +77,17 @@ private fun onPlayerDisconnect(e: PlayerDisconnectEvent) {
 
 private fun onPlayerChat(e: PlayerChatEvent) {
     e.setChatFormat {
-        Component.text()
+        val format = Component.text()
+            .append(Component.text("[106/Cl", NamedTextColor.GRAY))
+        if (it.player.hasTag(Tag.String("guild_tag")))
+            format.append(Component.text("/${it.player.getTag(Tag.String("guild_tag"))}", NamedTextColor.GRAY))
+        format
+            .append(Component.text("] ", NamedTextColor.GRAY))
             .append(it.player.name)
-            .append(Component.text(": "))
+            .append(Component.text(": ", (it.player.name as TextComponent).color()))
             .append(LegacyComponentSerializer.legacy('§').deserialize(it.message))
             .build()
+        format.build()
     }
 
     if (webhookUrl != null)

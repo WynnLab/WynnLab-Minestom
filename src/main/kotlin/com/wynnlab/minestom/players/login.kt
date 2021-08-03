@@ -1,7 +1,11 @@
 package com.wynnlab.minestom.players
 
+import com.google.gson.JsonNull
+import com.google.gson.JsonObject
 import com.wynnlab.minestom.util.HttpRequestException
 import com.wynnlab.minestom.util.get
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import net.minestom.server.MinecraftServer
 import net.minestom.server.entity.GameMode
 import net.minestom.server.entity.Player
@@ -9,6 +13,7 @@ import net.minestom.server.event.player.PlayerLoginEvent
 import net.minestom.server.instance.Instance
 import net.minestom.server.network.UuidProvider
 import net.minestom.server.network.player.PlayerConnection
+import net.minestom.server.tag.Tag
 import java.util.*
 import java.util.function.Consumer
 
@@ -40,5 +45,78 @@ class WynnLabLogin(private val spawningInstance: Instance) : Consumer<PlayerLogi
         player.level = 106
 
         prepareInventory(player)
+
+        setWynnLabName(player)
     }
+}
+
+private fun setWynnLabName(player: Player) {
+    val data = getAPIData(player)
+
+    val name = Component.text()
+        //.append(Component.text("[106/Cl", NamedTextColor.GRAY))
+
+    val rank = if (data == null) null else when (data["rank"].asString) {
+        "Player" -> when (data.getAsJsonObject("meta").getAsJsonObject("tag")["value"].asString) {
+            "VIP" -> Rank.Vip
+            "VIP+" -> Rank.VipPlus
+            "HERO" -> Rank.Hero
+            "CHAMPION" -> Rank.Champion
+            else -> Rank.Player
+        }
+        "Administrator" -> Rank.Admin
+        "Moderator" -> Rank.Mod
+        "Media" -> Rank.Media
+        else -> Rank.CT
+    }
+
+    /*val guildTag = if (data == null) null else loadGuildData(player, data)
+    if (guildTag != null) {
+        name.append(Component.text("/$guildTag", NamedTextColor.GRAY))
+    }
+    name.append(Component.text("] ", NamedTextColor.GRAY))*/
+
+    if (rank?.tag != null) {
+        name.append(rank.tag)
+        name.append(Component.text(" "))
+    }
+
+    name.append(Component.text(player.username, rank?.nameColor ?: NamedTextColor.GRAY))
+
+    player.displayName = name.build()
+    player.customName = player.displayName
+    player.isCustomNameVisible = true
+}
+
+private fun getAPIData(player: Player): JsonObject? {
+    return try {
+        val root = get("https://api.wynncraft.com/v2/player/${player.username}/stats")
+        val data = try {
+            root.getAsJsonArray("data").get(0).asJsonObject
+        } catch (_: IndexOutOfBoundsException) {
+            return null
+        }
+        data
+    } catch (_: HttpRequestException) {
+        null
+    }
+}
+
+private fun loadGuildData(player: Player, data: JsonObject): String? {
+    val guildData = data.getAsJsonObject("guild") ?: return null
+    val guildName = guildData["name"].takeUnless { it is JsonNull }?.asString
+    val guildRank = guildData["rank"].takeUnless { it is JsonNull }?.asString
+
+    var guildTag: String? = null
+    if (guildName != null) {
+        val guild =
+            get("https://api.wynncraft.com/public_api.php?action=guildStats&command=${guildName.replace(" ", "%20")}")
+        guildTag = guild["prefix"].asString
+
+        player.setTag(Tag.String("guild_name"), guildName)
+        player.setTag(Tag.String("guild_tag"), guildTag)
+    }
+    if (guildRank != null) player.setTag(Tag.String("guild_rank"), guildRank)
+
+    return guildTag
 }
