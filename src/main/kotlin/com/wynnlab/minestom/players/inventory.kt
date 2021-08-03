@@ -1,9 +1,6 @@
 package com.wynnlab.minestom.players
 
-import com.wynnlab.minestom.COLOR_LIGHT_BLUE
-import com.wynnlab.minestom.COLOR_PALE_AQUA_BLUE
-import com.wynnlab.minestom.COLOR_PALE_BLUE
-import com.wynnlab.minestom.textColor
+import com.wynnlab.minestom.*
 import com.wynnlab.minestom.util.displayNameNonItalic
 import com.wynnlab.minestom.util.loreNonItalic
 import com.wynnlab.minestom.util.setIfEmpty
@@ -28,7 +25,7 @@ fun prepareInventory(player: Player) {
     inv.setIfEmpty(11, snowBracelet)
     inv.setIfEmpty(12, snowNecklace)
 
-    inv.setIfEmpty(13, emptyPouch())
+    inv.setIfEmpty(13, emptyPouch)
 }
 
 private val compassItem = ItemStack.builder(Material.COMPASS)
@@ -39,11 +36,11 @@ private val compassItem = ItemStack.builder(Material.COMPASS)
 private val questBookItem = ItemStack.builder(Material.WRITTEN_BOOK)
     .displayNameNonItalic(Component.text("Quest Book", NamedTextColor.LIGHT_PURPLE))
     .loreNonItalic(Component.text()
-        .append(Component.text("Quests: "))
-        .append(Component.text("0/0"))
-        .append(Component.text( " ["))
-        .append(Component.text("100%"))
-        .append(Component.text("]"))
+        .append(Component.text("Quests: ", COLOR_PURPLE.textColor))
+        .append(Component.text("0/0", COLOR_PINK.textColor))
+        .append(Component.text( " [", COLOR_PURPLE.textColor))
+        .append(Component.text("100%", COLOR_PINK.textColor))
+        .append(Component.text("]", COLOR_PURPLE.textColor))
         .build())
     .meta(WrittenBookMeta::class.java) { it
         .author("WynnLab")
@@ -64,7 +61,12 @@ private val soulPointsItem = ItemStack.builder(Material.NETHER_STAR)
     .build()
 
 
-fun emptyPouch() = ItemStack.builder(Material.BUNDLE)
+val emptyPouch = ItemStack.builder(Material.BUNDLE)
+    .displayNameNonItalic(Component.text("Magic Pouch", COLOR_GOLD.textColor))
+    .loreNonItalic(
+        Component.text().append(Component.text("Left-Click", NamedTextColor.WHITE)).append(Component.text(" to view contents", NamedTextColor.GRAY)).build(),
+        Component.text().append(Component.text("Right-Click", NamedTextColor.WHITE)).append(Component.text(" to clear", NamedTextColor.GRAY)).build(),
+    )
     .build()
 
 

@@ -27,7 +27,7 @@ import net.minestom.server.instance.InstanceContainer
 import net.minestom.server.ping.ServerListPingType
 import net.minestom.server.storage.systems.FileStorageSystem
 import net.minestom.server.utils.Position
-import java.time.temporal.ChronoUnit
+import net.minestom.server.utils.time.TimeUnit
 import kotlin.system.exitProcess
 
 fun main() {
@@ -44,7 +44,7 @@ fun main() {
 
     val schedulerManager = MinecraftServer.getSchedulerManager()
     schedulerManager.buildShutdownTask(::saveAll).makeTransient().schedule()
-    schedulerManager.buildTask(::saveAll).delay(1, ChronoUnit.MINUTES).repeat(5, ChronoUnit.MINUTES).schedule()
+    schedulerManager.buildTask(::saveAll).delay(1, TimeUnit.MINUTE).repeat(5, TimeUnit.MINUTE).schedule()
 
     val instanceManager = MinecraftServer.getInstanceManager()
     val instanceContainer = instanceManager.createInstanceContainer(storageLocation)
