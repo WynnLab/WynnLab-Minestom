@@ -25,7 +25,7 @@ private fun onPlayerSpawn(e: PlayerSpawnEvent) {
     if (!e.isFirstSpawn) return
 
     val player = e.player
-    Audiences.server().sendMessage(Component.text()
+    broadcast(Component.text()
         .append(Component.text("[", COLOR_GRAY.textColor))
         .append(Component.text("+", COLOR_GREEN.textColor))
         .append(Component.text("] ", COLOR_GRAY.textColor))
@@ -52,7 +52,7 @@ private fun onPlayerSpawn(e: PlayerSpawnEvent) {
 
 private fun onPlayerDisconnect(e: PlayerDisconnectEvent) {
     val player = e.player
-    Audiences.server().sendMessage(Component.text()
+    broadcast(Component.text()
         .append(Component.text("[", COLOR_GRAY.textColor))
         .append(Component.text("-", COLOR_RED.textColor))
         .append(Component.text("] ", COLOR_GRAY.textColor))
@@ -84,7 +84,7 @@ private fun onPlayerChat(e: PlayerChatEvent) {
 
     if (webhookUrl != null)
         post(webhookUrl, JsonObject().apply {
-            addProperty("content", "**<${e.player.username}>** ${e.message}")
+            addProperty("content", "**${e.player.username}:** ${e.message}")
         })
 }
 

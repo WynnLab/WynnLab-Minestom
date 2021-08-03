@@ -18,12 +18,16 @@ import net.kyori.adventure.text.format.Style
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import net.minestom.server.MinecraftServer
+import net.minestom.server.adventure.audience.Audiences
 import net.minestom.server.event.player.PlayerLoginEvent
 import net.minestom.server.event.server.ServerListPingEvent
 import net.minestom.server.extras.lan.OpenToLAN
 import net.minestom.server.extras.lan.OpenToLANConfig
+import net.minestom.server.instance.InstanceContainer
 import net.minestom.server.ping.ServerListPingType
+import net.minestom.server.storage.systems.FileStorageSystem
 import net.minestom.server.utils.Position
+import java.time.temporal.ChronoUnit
 import kotlin.system.exitProcess
 
 fun main() {
@@ -34,8 +38,16 @@ fun main() {
     val connectionManager = MinecraftServer.getConnectionManager()
     connectionManager.setUuidProvider(WynnLabUuidProvider)
 
+    val storageManager = MinecraftServer.getStorageManager()
+    storageManager.defineDefaultStorageSystem(::FileStorageSystem)
+    val storageLocation = storageManager.getLocation("world")
+
+    val schedulerManager = MinecraftServer.getSchedulerManager()
+    schedulerManager.buildShutdownTask(::saveAll).makeTransient().schedule()
+    schedulerManager.buildTask(::saveAll).delay(1, ChronoUnit.MINUTES).repeat(5, ChronoUnit.MINUTES).schedule()
+
     val instanceManager = MinecraftServer.getInstanceManager()
-    val instanceContainer = instanceManager.createInstanceContainer()
+    val instanceContainer = instanceManager.createInstanceContainer(storageLocation)
     instanceContainer.chunkGenerator = GeneratorDemo()
 
     val commandManager = MinecraftServer.getCommandManager()
@@ -48,6 +60,7 @@ fun main() {
     commandManager.register(MenuCommand)
     registerPvpCommands(commandManager)
     registerEssentialsCommands(commandManager)
+    registerDebugCommands(commandManager)
 
     val globalEventHandler = MinecraftServer.getGlobalEventHandler()
 
@@ -73,9 +86,9 @@ fun main() {
     initServerListeners(globalEventHandler)
     initWynnLabListeners(globalEventHandler)
 
-    val ip = getProperty("server-ip", "0.0.0.0").toIntOrNull() ?: 25565
+    val ip = getProperty("server-ip", "0.0.0.0")
     val port = getProperty("server-port", "25565").toIntOrNull() ?: 25565
-    server.start("0.0.0.0", port)
+    server.start(ip, port)
 
     if (getProperty("open-to-lan") == "true")
         OpenToLAN.open(OpenToLANConfig())
@@ -86,6 +99,11 @@ fun main() {
         })
 }
 
+fun saveAll() {
+    broadcast(Component.text("[Server] saving...", NamedTextColor.GRAY))
+    MinecraftServer.getInstanceManager().instances.forEach { if (it is InstanceContainer) it.saveInstance() }
+}
+
 fun stop() {
     if (webhookUrl != null)
         post(webhookUrl, JsonObject().apply {
@@ -93,6 +111,10 @@ fun stop() {
         })
     MinecraftServer.stopCleanly()
     exitProcess(0)
+}
+
+fun broadcast(message: Component) {
+    Audiences.server().sendMessage(message)
 }
 
 private val motd = Component.text()
