@@ -2,6 +2,7 @@
 
 package com.wynnlab.minestom
 
+import com.google.gson.JsonObject
 import com.wynnlab.minestom.commands.*
 import com.wynnlab.minestom.generator.GeneratorDemo
 import com.wynnlab.minestom.listeners.initServerListeners
@@ -10,6 +11,7 @@ import com.wynnlab.minestom.players.WynnLabLogin
 import com.wynnlab.minestom.players.WynnLabUuidProvider
 import com.wynnlab.minestom.util.listen
 import com.wynnlab.minestom.util.loadImageBase64
+import com.wynnlab.minestom.util.post
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.Style
@@ -22,6 +24,7 @@ import net.minestom.server.extras.lan.OpenToLAN
 import net.minestom.server.extras.lan.OpenToLANConfig
 import net.minestom.server.ping.ServerListPingType
 import net.minestom.server.utils.Position
+import kotlin.system.exitProcess
 
 fun main() {
     val server = MinecraftServer.init()
@@ -77,42 +80,19 @@ fun main() {
     if (getProperty("open-to-lan") == "true")
         OpenToLAN.open(OpenToLANConfig())
 
-    /*commandManager.register(object : net.minestom.server.command.builder.Command("anim") {
-        init {
-            setCondition { sender, _ -> sender.isPlayer }
-            val ordinalArg = net.minestom.server.command.builder.arguments.ArgumentType.Integer("ordianl").between(0, 5)
-            addSyntax({ sender, ctx ->
-                sender as Player
-                val anim = EntityAnimationPacket.Animation.values()[ctx[ordinalArg]]
-                sender.playerConnection.sendPacket(EntityAnimationPacket().also { it.entityId = sender.entityId; it.animation = anim })
-                sender.sendMessage("Playing animation $anim")
-            }, ordinalArg)
-        }
-    })*/
-    /*commandManager.register(object : net.minestom.server.command.builder.Command("sp") {
-        init {
-            setCondition { sender, _ -> sender.isPlayer }
-            val spArg = net.minestom.server.command.builder.arguments.ArgumentType.Boolean("spectate")
-            addSyntax({ sender, ctx ->
-                sender as Player
-                if (ctx[spArg]) {
-                    val a = Entity(EntityType.ARMOR_STAND)
-                    val m = a.entityMeta as ArmorStandMeta
-                    m.setNotifyAboutChanges(false)
-                    m.isMarker = true
-                    m.isInvisible = true
-                    m.isHasNoGravity = true
-                    m.setNotifyAboutChanges(true)
-                    a.setInstance(sender.instance!!, sender.position.add(sender.position.direction.multiply(-2).toPosition()))
-                    sender.spectate(a)
-                    sender.isInvisible = true
-                } else {
-                    sender.stopSpectating()
-                    sender.isInvisible = false
-                }
-            }, spArg)
-        }
-    })*/
+    if (webhookUrl != null)
+        post(webhookUrl, JsonObject().apply {
+            addProperty("content", ":green_circle: **Server started!**")
+        })
+}
+
+fun stop() {
+    if (webhookUrl != null)
+        post(webhookUrl, JsonObject().apply {
+            addProperty("content", ":red_circle: **Server stopped!**")
+        })
+    MinecraftServer.stopCleanly()
+    exitProcess(0)
 }
 
 private val motd = Component.text()

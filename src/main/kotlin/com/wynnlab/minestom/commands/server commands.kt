@@ -10,7 +10,6 @@ import net.minestom.server.entity.GameMode
 import net.minestom.server.entity.Player
 import net.minestom.server.permission.Permission
 import net.minestom.server.utils.entity.EntityFinder
-import kotlin.system.exitProcess
 
 fun registerServerCommands(commandManager: CommandManager) {
     commandManager.register(StopCommand)
@@ -26,8 +25,7 @@ object StopCommand : Command("stop") {
         condition = isAllowed(PERM_SERVER_STOP, 4)
         addSyntax({ sender, _ ->
             sender.sendMessage("Stopping the server")
-            MinecraftServer.stopCleanly()
-            exitProcess(0)
+            stop()
         })
     }
 }
