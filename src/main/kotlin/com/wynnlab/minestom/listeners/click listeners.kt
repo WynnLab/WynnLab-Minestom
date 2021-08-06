@@ -1,15 +1,21 @@
 package com.wynnlab.minestom.listeners
 
+import com.wynnlab.minestom.core.damage.NeutralDamageModifiers
+import com.wynnlab.minestom.core.damage.attack
 import com.wynnlab.minestom.gui.MenuGui
 import com.wynnlab.minestom.tasks.RefreshDelayTask
 import com.wynnlab.minestom.util.listen
+import com.wynnlab.minestom.util.rayCastEntity
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
+import net.minestom.server.entity.LivingEntity
 import net.minestom.server.entity.Player
 import net.minestom.server.event.EventFilter
 import net.minestom.server.event.EventNode
-import net.minestom.server.event.player.*
+import net.minestom.server.event.player.PlayerBlockInteractEvent
+import net.minestom.server.event.player.PlayerHandAnimationEvent
+import net.minestom.server.event.player.PlayerUseItemEvent
 import net.minestom.server.tag.Tag
 import net.minestom.server.utils.time.TimeUnit
 
@@ -108,6 +114,8 @@ private fun noAb(player: Player) {
 private val noAbTag = Tag.Byte("no-ab")
 
 private fun castSpellAndResetClickSequence(player: Player, spell: Int) {
+    if (spell == 0) player.rayCastEntity(maxDistance = 4.0) { it is LivingEntity }?.let { player.attack(it as LivingEntity, NeutralDamageModifiers) }
+    player.setGravity(player.gravityDragPerTick / 2f, player.gravityAcceleration / 2f)
     player.sendMessage("spell $spell")
     resetClickSequence(player)
 }

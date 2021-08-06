@@ -134,6 +134,5 @@ private val legacyMotd = Component.text().append(lanMotd).append(Component.newli
     LegacyComponentSerializer.legacy('§').deserialize("              §d§lWynn §5brought to §d§l1.17")).build()
 
 val webhookUrl = getProperty("webhook-url")
-//const val WEBHOOK_URL = "https://discord.com/api/webhooks/871724748818763836/a_T9R18nU51xMmWjUIYAZgY1kOvuWaaJHEzUu45mDEOwoEKnZmAr_k6hUSIP4rORCK6T"
 
 val faviconBase64 = loadImageBase64("./server-icon.png")?.let { "data:image/png;base64,$it" }
