@@ -11,12 +11,20 @@ class Hologram(text: Component?) : Entity(EntityType.ARMOR_STAND) {
 
         meta.setNotifyAboutChanges(false)
         meta.isMarker = true
-        meta.isSmall = true
         meta.isHasNoBasePlate = true
         meta.isHasNoGravity = true
         meta.isInvisible = true
-        meta.customName = text
-        meta.isCustomNameVisible = true
+        if (text != null) {
+            meta.customName = text
+            meta.isCustomNameVisible = true
+        }
         meta.setNotifyAboutChanges(true)
+    }
+
+    val hologramNameVisible = true
+
+    override fun setCustomName(customName: Component?) {
+        super.setCustomName(customName)
+        isCustomNameVisible = hologramNameVisible
     }
 }

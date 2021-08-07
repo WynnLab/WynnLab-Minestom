@@ -1,15 +1,13 @@
 package com.wynnlab.minestom.core.damage
 
+import com.wynnlab.minestom.entities.CustomLivingEntityWithBelowNameHologram
 import com.wynnlab.minestom.entities.Hologram
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.minestom.server.MinecraftServer
-import net.minestom.server.acquirable.Acquirable
-import net.minestom.server.entity.Entity
 import net.minestom.server.entity.LivingEntity
 import net.minestom.server.entity.Player
-import net.minestom.server.tag.Tag
 import net.minestom.server.utils.Position
 import net.minestom.server.utils.time.TimeUnit
 import java.util.*
@@ -46,14 +44,10 @@ private fun damageIndicatorHologram(entity: LivingEntity, finalDamage: Damage) {
 
 private fun healthIndicatorBelowName(entity: LivingEntity) {
     if (entity.isDead) {
-        healthIndicatorsBelowName.remove(entity.uuid)?.remove()
-        entity.getTag(healthIndicatorBelowNameTag)?.cancel()
+        //healthIndicatorsBelowName.remove(entity.uuid)?.remove()
+        //entity.getTag(healthIndicatorBelowNameTag)?.cancel()
         return
     }
-
-    var newIndicator = false
-    val indicator = healthIndicatorsBelowName[entity.uuid]
-        ?: Hologram(null).also { newIndicator = true; healthIndicatorsBelowName[entity.uuid] = it }
 
     val currentPercent = entity.health / 20f
 
@@ -69,17 +63,20 @@ private fun healthIndicatorBelowName(entity: LivingEntity) {
         .append(Component.text("]", NamedTextColor.DARK_RED))
         .build()
 
-    indicator.customName = customName
+    if (entity is CustomLivingEntityWithBelowNameHologram) {
+        entity.belowNameHologram.customName = customName
+    }
 
-    if (newIndicator) {
+    /*if (newIndicator) {
         val pos = Position()
         pos.set(entity.position)
         pos.add(.0, entity.eyeHeight, .0)
         indicator.setInstance(entity.instance!!, pos)
-        entity.setTag(healthIndicatorBelowNameTag, MinecraftServer.getSchedulerManager().buildTask {
+        /*entity.setTag(healthIndicatorBelowNameTag, MinecraftServer.getSchedulerManager().buildTask {
             putHealthIndicatorBelowName(entity.getAcquirable())
-        }.repeat(1, TimeUnit.SERVER_TICK).schedule())
-    }
+        }.repeat(1, TimeUnit.SERVER_TICK).schedule())*/
+
+    }*/
 }
 
 private fun healthIndicatorBossBar(source: Player, entity: LivingEntity) {
@@ -101,12 +98,12 @@ private fun healthIndicatorBossBar(source: Player, entity: LivingEntity) {
     source.showBossBar(indicator)
 }
 
-private fun putHealthIndicatorBelowName(entity: Acquirable<Entity>) = entity.async {
+/*private fun putHealthIndicatorBelowName(entity: Acquirable<Entity>) = entity.async {
     val pos = Position()
     pos.set(it.position)
     pos.add(.0, it.eyeHeight, .0)
     healthIndicatorsBelowName[it.uuid]?.refreshPosition(pos)
-}
+}*/
 
 private fun healthIndicatorBelowNameBarColor(percentReq: Float, currentPercent: Float) =
     if (currentPercent < percentReq) NamedTextColor.DARK_GRAY else NamedTextColor.RED
@@ -121,9 +118,9 @@ private fun bossBarText(entity: LivingEntity) = Component.text()
 
 private fun bossBarProgress(entity: LivingEntity) = entity.health / 20f
 
-private val healthIndicatorsBelowName = HashMap<UUID, Hologram>()
+//private val healthIndicatorsBelowName = HashMap<UUID, Hologram>()
 private val healthIndicatorsBossBar = HashMap<UUID, BossBar>()
 
-private val healthIndicatorBelowNameTag = Tag.Integer("task").map({ MinecraftServer.getSchedulerManager().getTask(it) }, { it.id })
+//private val healthIndicatorBelowNameTag = Tag.Integer("task").map({ MinecraftServer.getSchedulerManager().getTask(it) }, { it.id })
 
 private val random = Random(System.currentTimeMillis())

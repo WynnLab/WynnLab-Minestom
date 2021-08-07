@@ -115,7 +115,7 @@ private val noAbTag = Tag.Byte("no-ab")
 
 private fun castSpellAndResetClickSequence(player: Player, spell: Int) {
     if (spell == 0) player.rayCastEntity(maxDistance = 4.0) { it is LivingEntity }?.let { player.attack(it as LivingEntity, NeutralDamageModifiers) }
-    player.setGravity(player.gravityDragPerTick / 2f, player.gravityAcceleration / 2f)
+    //player.setGravity(player.gravityDragPerTick / 2f, player.gravityAcceleration / 2f)
     player.sendMessage("spell $spell")
     resetClickSequence(player)
 }
