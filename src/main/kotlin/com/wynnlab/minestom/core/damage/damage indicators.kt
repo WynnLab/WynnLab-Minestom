@@ -1,6 +1,6 @@
 package com.wynnlab.minestom.core.damage
 
-import com.wynnlab.minestom.entities.CustomLivingEntityWithBelowNameHologram
+import com.wynnlab.minestom.entities.LivingEntityWithBelowNameTag
 import com.wynnlab.minestom.entities.Hologram
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
@@ -43,7 +43,7 @@ private fun damageIndicatorHologram(entity: LivingEntity, finalDamage: Damage) {
 }
 
 private fun healthIndicatorBelowName(entity: LivingEntity) {
-    if (entity.isDead) {
+    if (entity.isDead || entity !is LivingEntityWithBelowNameTag) {
         //healthIndicatorsBelowName.remove(entity.uuid)?.remove()
         //entity.getTag(healthIndicatorBelowNameTag)?.cancel()
         return
@@ -63,9 +63,7 @@ private fun healthIndicatorBelowName(entity: LivingEntity) {
         .append(Component.text("]", NamedTextColor.DARK_RED))
         .build()
 
-    if (entity is CustomLivingEntityWithBelowNameHologram) {
-        entity.belowNameHologram.customName = customName
-    }
+    entity.belowNameHologram.customName = customName
 
     /*if (newIndicator) {
         val pos = Position()

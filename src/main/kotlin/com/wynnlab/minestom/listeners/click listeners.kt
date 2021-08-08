@@ -2,11 +2,13 @@ package com.wynnlab.minestom.listeners
 
 import com.wynnlab.minestom.core.damage.NeutralDamageModifiers
 import com.wynnlab.minestom.core.damage.attack
+import com.wynnlab.minestom.core.player.refreshActionBar
 import com.wynnlab.minestom.gui.MenuGui
 import com.wynnlab.minestom.tasks.RefreshDelayTask
 import com.wynnlab.minestom.util.listen
 import com.wynnlab.minestom.util.rayCastEntity
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.minestom.server.entity.LivingEntity
@@ -40,12 +42,10 @@ private fun onPlayerRightClick(player: Player) {
         6 -> MenuGui().show(player)
         7, 8 -> {}
         else -> {
-            noAb(player)
-            val seq = addToClickSequence(player, true)
-            showClickSequence(player, seq)
-            val spell = when (seq) {
-                16.toByte() /* rlr */ -> 1
-                13.toByte() /* rrr */ -> 2
+            scheduleResetClickSeqAndAB(player)
+            val spell = when (addToClickSequence(player, true)) {
+                clickSequenceSpellMap[1] /* rlr */ -> 1
+                clickSequenceSpellMap[2] /* rrr */ -> 2
                 else -> -1
             }
             if (spell > 0) castSpellAndResetClickSequence(player, spell)
@@ -59,11 +59,10 @@ private fun onPlayerLeftClick(player: Player) {
     if (seq == 2.toByte()) // 1x left-click
         castSpellAndResetClickSequence(player, 0)
     else {
-        noAb(player)
-        showClickSequence(player, seq)
+        scheduleResetClickSeqAndAB(player)
         val spell = when (seq) {
-            25.toByte() /* rll */ -> 3
-            22.toByte() /* rrl */ -> 4
+            clickSequenceSpellMap[3] /* rll */ -> 3
+            clickSequenceSpellMap[4] /* rrl */ -> 4
             else -> -1
         }
         if (spell > 0) castSpellAndResetClickSequence(player, spell)
@@ -78,19 +77,27 @@ private fun addToClickSequence(player: Player, rightClick: Boolean): Byte {
     return new
 }
 
-private fun showClickSequence(player: Player, sequence: Byte) {
-    val c1 = sequence % 3
-    val c2 = (sequence / 3) % 3
-    val c3 = sequence / 9
-    val hyphen = Component.text("-", NamedTextColor.GRAY)
-    player.sendActionBar(Component.text()
-        .append(clickSequenceAbChar(c1))
-        .append(hyphen)
-        .append(clickSequenceAbChar(c2))
-        .append(hyphen)
-        .append(clickSequenceAbChar(c3))
-        .build())
+fun clickSeqAbComponent(player: Player): TextComponent {
+    return when (val sequence = player.getTag(clickSequenceTag)!!) {
+        in clickSequenceSpellMap -> spellCastAbComponent(clickSequenceSpellMap.indexOf(sequence))
+        else -> {
+            val c1 = sequence % 3
+            val c2 = (sequence / 3) % 3
+            val c3 = sequence / 9
+            Component.text()
+                .append(clickSequenceAbChar(c1))
+                .append(hyphenComponent)
+                .append(clickSequenceAbChar(c2))
+                .append(hyphenComponent)
+                .append(clickSequenceAbChar(c3))
+                .build()
+        }
+    }
 }
+
+private fun spellCastAbComponent(index: Int) = Component.text("Spell $index", NamedTextColor.AQUA)
+
+private val hyphenComponent = Component.text("-", NamedTextColor.GRAY)
 
 private fun clickSequenceAbChar(c: Int) = when (c) {
     1 -> Component.text("R", NamedTextColor.GREEN, TextDecoration.UNDERLINED)
@@ -103,15 +110,19 @@ private fun clickSequenceAbChar(c: Int) = when (c) {
 // r-r-? = 4; r-l-? = 7
 private val clickSequenceTag = Tag.Byte("click-sequence").defaultValue(0)
 
-private fun noAb(player: Player) {
-    player.setTag(noAbTag, 1)
-    RefreshDelayTask(player, "no-ab") {
-        player.removeTag(noAbTag)
+private val clickSequenceSpellMap = byteArrayOf(-1, 16, 13, 25, 22)
+
+private fun scheduleResetClickSeqAndAB(player: Player) {
+    player.setTag(clickSeqAbTag, 1)
+    refreshActionBar(player)
+    RefreshDelayTask(player, "click-seq-ab") {
+        player.removeTag(clickSeqAbTag)
         resetClickSequence(player)
+        refreshActionBar(player)
     }.schedule(1, TimeUnit.SECOND)
 }
 
-private val noAbTag = Tag.Byte("no-ab")
+val clickSeqAbTag = Tag.Byte("click-seq-ab")
 
 private fun castSpellAndResetClickSequence(player: Player, spell: Int) {
     if (spell == 0) player.rayCastEntity(maxDistance = 4.0) { it is LivingEntity }?.let { player.attack(it as LivingEntity, NeutralDamageModifiers) }

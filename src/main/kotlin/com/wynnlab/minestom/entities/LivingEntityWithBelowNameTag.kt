@@ -5,7 +5,7 @@ import net.minestom.server.entity.LivingEntity
 import net.minestom.server.instance.Instance
 import net.minestom.server.utils.Position
 
-open class CustomLivingEntityWithBelowNameHologram(entityType: EntityType) : LivingEntity(entityType) {
+open class LivingEntityWithBelowNameTag(entityType: EntityType) : LivingEntity(entityType) {
     val belowNameHologram = Hologram(null)
 
     override fun setInstance(instance: Instance, spawnPosition: Position) {

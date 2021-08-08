@@ -1,5 +1,6 @@
 package com.wynnlab.minestom.core.damage
 
+import com.wynnlab.minestom.core.player.refreshActionBar
 import net.minestom.server.entity.Entity
 import net.minestom.server.entity.LivingEntity
 import net.minestom.server.entity.Player
@@ -31,6 +32,7 @@ fun damageModified(source: Entity, entity: LivingEntity, damage: Damage, modifie
 fun damageRaw(source: Entity, entity: LivingEntity, amount: Int) {
     entity.damage(DamageType.fromEntity(source), (amount * 20f) / entity.getTag(maxHealthTag)!!.toFloat())
     if (entity.isDead && entity !is Player) entity.remove()
+    if (entity is Player) refreshActionBar(entity)
 }
 
-val maxHealthTag = Tag.Integer("max-health").defaultValue(20)
+val maxHealthTag: Tag<Int> = Tag.Integer("max-health").defaultValue(20)

@@ -1,7 +1,7 @@
 package com.wynnlab.minestom.commands
 
 import com.wynnlab.minestom.core.damage.maxHealthTag
-import com.wynnlab.minestom.entities.CustomLivingEntityWithBelowNameHologram
+import com.wynnlab.minestom.entities.LivingEntityWithBelowNameTag
 import net.kyori.adventure.text.Component
 import net.minestom.server.attribute.Attribute
 import net.minestom.server.command.builder.Command
@@ -18,7 +18,7 @@ object DummyCommand : Command("dummy") {
             val player = sender.asPlayer()
             val instance = player.instance ?: return@addSyntax
 
-            val dummy = CustomLivingEntityWithBelowNameHologram(EntityType.VINDICATOR)
+            val dummy = LivingEntityWithBelowNameTag(EntityType.VINDICATOR)
             dummy.getAttribute(Attribute.MAX_HEALTH).baseValue = 20f
             dummy.health = 20f
             dummy.customName = Component.text("Dummy")

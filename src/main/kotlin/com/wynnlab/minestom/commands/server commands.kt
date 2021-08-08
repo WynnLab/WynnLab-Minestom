@@ -10,6 +10,7 @@ import net.minestom.server.entity.GameMode
 import net.minestom.server.entity.Player
 import net.minestom.server.permission.Permission
 import net.minestom.server.utils.entity.EntityFinder
+import org.jglrxavpok.hephaistos.nbt.NBTCompound
 
 fun registerServerCommands(commandManager: CommandManager) {
     commandManager.register(StopCommand)
@@ -21,6 +22,7 @@ fun registerServerCommands(commandManager: CommandManager) {
     commandManager.register(GiveCommand)
     commandManager.register(SetblockCommand)
     //commandManager.register(EffectCommand)
+    commandManager.register(GetDataCommand)
     commandManager.register(OpCommand)
     commandManager.register(PermissionCommand)
 }
@@ -186,6 +188,18 @@ object SetblockCommand : Command("setblock") {
         }
     }
 }*/
+
+object GetDataCommand : Command("get-data") {
+    init {
+        setCondition { sender, _ -> sender.isPlayer }
+        addSyntax({ sender, _ ->
+            val f = Entity::class.java.getDeclaredField("nbtCompound")
+            f.isAccessible = true
+            val nbtCompound = f[sender] as NBTCompound
+            sender.sendMessage(nbtCompound.toSNBT())
+        })
+    }
+}
 
 object OpCommand : Command("op") {
     init {
