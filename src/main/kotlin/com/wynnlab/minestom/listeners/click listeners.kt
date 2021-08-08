@@ -4,6 +4,12 @@ import com.wynnlab.minestom.core.damage.NeutralDamageModifiers
 import com.wynnlab.minestom.core.damage.attack
 import com.wynnlab.minestom.core.player.refreshActionBar
 import com.wynnlab.minestom.gui.MenuGui
+import com.wynnlab.minestom.particle.adventure.Particle
+import com.wynnlab.minestom.particle.minestom.HAPPY_VILLAGER
+import com.wynnlab.minestom.particle.minestom.ITEM
+import com.wynnlab.minestom.particle.minestom.ParticleType
+import com.wynnlab.minestom.particle.minestom.extra.Item
+import com.wynnlab.minestom.particle.minestom.showParticle
 import com.wynnlab.minestom.tasks.RefreshDelayTask
 import com.wynnlab.minestom.util.listen
 import com.wynnlab.minestom.util.rayCastEntity
@@ -127,6 +133,9 @@ val clickSeqAbTag = Tag.Byte("click-seq-ab")
 private fun castSpellAndResetClickSequence(player: Player, spell: Int) {
     if (spell == 0) player.rayCastEntity(maxDistance = 4.0) { it is LivingEntity }?.let { player.attack(it as LivingEntity, NeutralDamageModifiers) }
     //player.setGravity(player.gravityDragPerTick / 2f, player.gravityAcceleration / 2f)
+    //val p = Particle.particle(HAPPY_VILLAGER, 10, ParticleType.OffsetAndSpeed(0f, 0f, 0f, 0f))
+    val p = Particle.particle(ITEM, 10, ParticleType.OffsetAndSpeed(0f, 0f, 0f, 0f), Item(player.itemInMainHand))
+    player.showParticle(p, player.position)
     player.sendMessage("spell $spell")
     resetClickSequence(player)
 }
