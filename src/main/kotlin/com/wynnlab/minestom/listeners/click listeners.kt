@@ -3,6 +3,8 @@ package com.wynnlab.minestom.listeners
 import com.wynnlab.minestom.core.damage.NeutralDamageModifiers
 import com.wynnlab.minestom.core.damage.attack
 import com.wynnlab.minestom.core.player.refreshActionBar
+import com.wynnlab.minestom.core.player.refreshClickSequenceBar
+import com.wynnlab.minestom.core.player.resetClickSequenceBar
 import com.wynnlab.minestom.gui.MenuGui
 import com.wynnlab.minestom.particle.adventure.Particle
 import com.wynnlab.minestom.particle.minestom.HAPPY_VILLAGER
@@ -13,6 +15,7 @@ import com.wynnlab.minestom.particle.minestom.showParticle
 import com.wynnlab.minestom.tasks.RefreshDelayTask
 import com.wynnlab.minestom.util.listen
 import com.wynnlab.minestom.util.rayCastEntity
+import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
@@ -24,6 +27,7 @@ import net.minestom.server.event.EventNode
 import net.minestom.server.event.player.PlayerBlockInteractEvent
 import net.minestom.server.event.player.PlayerHandAnimationEvent
 import net.minestom.server.event.player.PlayerUseItemEvent
+import net.minestom.server.sound.SoundEvent
 import net.minestom.server.tag.Tag
 import net.minestom.server.utils.time.TimeUnit
 
@@ -48,12 +52,12 @@ private fun onPlayerRightClick(player: Player) {
         6 -> MenuGui().show(player)
         7, 8 -> {}
         else -> {
-            scheduleResetClickSeqAndAB(player)
             val spell = when (addToClickSequence(player, true)) {
                 clickSequenceSpellMap[1] /* rlr */ -> 1
                 clickSequenceSpellMap[2] /* rrr */ -> 2
                 else -> -1
             }
+            scheduleResetClickSeqAndAB(player)
             if (spell > 0) castSpellAndResetClickSequence(player, spell)
         }
     }
@@ -65,12 +69,12 @@ private fun onPlayerLeftClick(player: Player) {
     if (seq == 2.toByte()) // 1x left-click
         castSpellAndResetClickSequence(player, 0)
     else {
-        scheduleResetClickSeqAndAB(player)
         val spell = when (seq) {
             clickSequenceSpellMap[3] /* rll */ -> 3
             clickSequenceSpellMap[4] /* rrl */ -> 4
             else -> -1
         }
+        scheduleResetClickSeqAndAB(player)
         if (spell > 0) castSpellAndResetClickSequence(player, spell)
     }
 }
@@ -119,24 +123,25 @@ private val clickSequenceTag = Tag.Byte("click-sequence").defaultValue(0)
 private val clickSequenceSpellMap = byteArrayOf(-1, 16, 13, 25, 22)
 
 private fun scheduleResetClickSeqAndAB(player: Player) {
-    player.setTag(clickSeqAbTag, 1)
-    refreshActionBar(player)
+    //player.setTag(clickSeqAbTag, 1)
+    refreshClickSequenceBar(player)
     RefreshDelayTask(player, "click-seq-ab") {
-        player.removeTag(clickSeqAbTag)
+        //player.removeTag(clickSeqAbTag)
         resetClickSequence(player)
-        refreshActionBar(player)
+        resetClickSequenceBar(player)
     }.schedule(1, TimeUnit.SECOND)
 }
 
-val clickSeqAbTag = Tag.Byte("click-seq-ab")
+//val clickSeqAbTag = Tag.Byte("click-seq-ab")
 
 private fun castSpellAndResetClickSequence(player: Player, spell: Int) {
     if (spell == 0) player.rayCastEntity(maxDistance = 4.0) { it is LivingEntity }?.let { player.attack(it as LivingEntity, NeutralDamageModifiers) }
     //player.setGravity(player.gravityDragPerTick / 2f, player.gravityAcceleration / 2f)
     //val p = Particle.particle(HAPPY_VILLAGER, 10, ParticleType.OffsetAndSpeed(0f, 0f, 0f, 0f))
-    val p = Particle.particle(ITEM, 10, ParticleType.OffsetAndSpeed(0f, 0f, 0f, 0f), Item(player.itemInMainHand))
-    player.showParticle(p, player.position)
-    player.sendMessage("spell $spell")
+    //val p = Particle.particle(ITEM, 10, ParticleType.OffsetAndSpeed(0f, 0f, 0f, 0f), Item(player.itemInMainHand))
+    //player.showParticle(p, player.position)
+    //player.sendMessage("spell $spell")
+    if (spell > 0 ) player.playSound(Sound.sound(SoundEvent.EXPERIENCE_ORB_PICKUP, Sound.Source.MASTER, 1f, .5f))
     resetClickSequence(player)
 }
 

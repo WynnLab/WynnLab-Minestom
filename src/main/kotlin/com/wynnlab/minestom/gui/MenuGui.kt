@@ -25,13 +25,13 @@ class MenuGui : Gui("§c200 §4Skill Points Remaining", InventoryType.CHEST_3_RO
 
     private val guildBannerItem = guildBannerItem()
 
-    override fun initItems(inv: Inventory) {
+    override fun initItems() {
         inv.setItemStack(4, resetSkillPointsItem)
         inv.setItemStack(0, tomesItem)
         inv.setItemStack(18, settingsItem)
     }
 
-    override fun updateItems(inv: Inventory) {
+    override fun updateItems() {
         inv.setItemStack(11, strBookItem.build())
         inv.setItemStack(12, dexBookItem.build())
         inv.setItemStack(13, intBookItem.build())
@@ -53,6 +53,11 @@ private var i = 1
         when (slot) {
             in 11..15 -> result.clickedItem = strBookItem.amount(run { i += amount; i }).build()
         }
+
+        inv.title = Component.text()
+            .append(Component.text(200 - i, NamedTextColor.RED))
+            .append(Component.text(" Skill Points Remaining", NamedTextColor.DARK_RED))
+            .build()
     }
 }
 

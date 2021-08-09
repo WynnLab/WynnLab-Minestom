@@ -12,9 +12,9 @@ abstract class Gui(
     title: String,
     type: InventoryType
 ) {
-    private val inv = Inventory(type, title)
+    protected val inv = Inventory(type, title)
     init {
-        initItems(inv)
+        initItems()
         inv.addInventoryCondition(this::onClick)
     }
 
@@ -23,11 +23,11 @@ abstract class Gui(
         player.openInventory(inv)
     }
 
-    fun update() = updateItems(inv)
+    fun update() = updateItems()
 
-    protected abstract fun initItems(inv: Inventory)
+    protected abstract fun initItems()
 
-    protected open fun updateItems(inv: Inventory) = Unit
+    protected open fun updateItems() = Unit
 
     protected abstract fun onClick(player: Player, slot: Int, clickType: ClickType, result: InventoryConditionResult)
 }

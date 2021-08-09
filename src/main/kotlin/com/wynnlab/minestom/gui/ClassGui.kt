@@ -11,7 +11,7 @@ import net.minestom.server.item.Material
 import net.minestom.server.sound.SoundEvent
 
 class ClassGui : Gui("Choose a Class!", InventoryType.CHEST_1_ROW) {
-    override fun initItems(inv: Inventory) {
+    override fun initItems() {
         inv.setItemStack(1, ItemStack.of(Material.STICK))
         inv.setItemStack(2, ItemStack.of(Material.STONE))
     }
