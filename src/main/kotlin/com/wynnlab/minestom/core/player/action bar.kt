@@ -1,6 +1,6 @@
 package com.wynnlab.minestom.core.player
 
-import com.wynnlab.minestom.core.damage.maxHealthTag
+import com.wynnlab.minestom.core.damage.playerMaxHealthTag
 import com.wynnlab.minestom.listeners.clickSeqAbComponent
 import com.wynnlab.minestom.textColor
 import com.wynnlab.minestom.util.displayNameNonItalic
@@ -112,7 +112,7 @@ fun resetClickSequenceBar(player: Player) {
 //private val itemDisplayNameTag = Tag.String("display-name-temp")
 
 private fun healthAbComponent(player: Player): TextComponent {
-    val maxHealth = player.getTag(maxHealthTag)!!
+    val maxHealth = player.getTag(playerMaxHealthTag)!!
     return Component.text()
         .append(Component.text("[", 0xb0232f.textColor))
         .append(Component.text("❤ ", 0xd92b3a.textColor))

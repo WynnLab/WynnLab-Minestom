@@ -5,6 +5,7 @@ import com.wynnlab.minestom.core.damage.attack
 import com.wynnlab.minestom.core.player.refreshActionBar
 import com.wynnlab.minestom.core.player.refreshClickSequenceBar
 import com.wynnlab.minestom.core.player.resetClickSequenceBar
+import com.wynnlab.minestom.entities.CustomEntity
 import com.wynnlab.minestom.gui.MenuGui
 import com.wynnlab.minestom.particle.adventure.Particle
 import com.wynnlab.minestom.particle.minestom.HAPPY_VILLAGER
@@ -135,7 +136,7 @@ private fun scheduleResetClickSeqAndAB(player: Player) {
 //val clickSeqAbTag = Tag.Byte("click-seq-ab")
 
 private fun castSpellAndResetClickSequence(player: Player, spell: Int) {
-    if (spell == 0) player.rayCastEntity(maxDistance = 4.0) { it is LivingEntity }?.let { player.attack(it as LivingEntity, NeutralDamageModifiers) }
+    if (spell == 0) player.rayCastEntity(maxDistance = 4.0) { it is CustomEntity }?.let { player.attack(it as CustomEntity, NeutralDamageModifiers) }
     //player.setGravity(player.gravityDragPerTick / 2f, player.gravityAcceleration / 2f)
     //val p = Particle.particle(HAPPY_VILLAGER, 10, ParticleType.OffsetAndSpeed(0f, 0f, 0f, 0f))
     //val p = Particle.particle(ITEM, 10, ParticleType.OffsetAndSpeed(0f, 0f, 0f, 0f), Item(player.itemInMainHand))

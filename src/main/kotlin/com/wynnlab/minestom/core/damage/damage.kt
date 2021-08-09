@@ -1,20 +1,18 @@
 package com.wynnlab.minestom.core.damage
 
 import com.wynnlab.minestom.core.player.refreshActionBar
-import net.minestom.server.entity.Entity
-import net.minestom.server.entity.LivingEntity
+import com.wynnlab.minestom.entities.CustomEntity
 import net.minestom.server.entity.Player
-import net.minestom.server.entity.damage.DamageType
 import net.minestom.server.tag.Tag
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
-fun Entity.attack(other: LivingEntity, modifiers: DamageModifiers) {
+fun Player.attack(other: CustomEntity, modifiers: DamageModifiers) {
     val damage = Damage(1, 0, 0, 0, 0, 0)
-    val finalDamage = damageModified(this, other, damage, modifiers)
+    val finalDamage = damageModified(DamageSource.Player(this), CustomEntity.DamageTarget(other), damage, modifiers)
     if (!finalDamage.zero) {
-        if (this is Player) damageIndicators(this, other, finalDamage)
+        damageIndicators(this, CustomEntity.DamageTarget(other), finalDamage)
 
         // TODO: poison, exploding, ls, ms, thorns, reflection
     }
@@ -22,17 +20,17 @@ fun Entity.attack(other: LivingEntity, modifiers: DamageModifiers) {
 }
 
 // returns final damage
-fun damageModified(source: Entity, entity: LivingEntity, damage: Damage, modifiers: DamageModifiers): Damage {
+fun damageModified(source: DamageSource, target: DamageTarget, damage: Damage, modifiers: DamageModifiers): Damage {
     // TODO: defense
     val finalDamage = damage.applyConversion(modifiers.conversion)
-    damageRaw(source, entity, finalDamage.sum)
+    damageRaw(target, finalDamage.sum)
     return finalDamage
 }
 
-fun damageRaw(source: Entity, entity: LivingEntity, amount: Int) {
-    entity.damage(DamageType.fromEntity(source), (amount * 20f) / entity.getTag(maxHealthTag)!!.toFloat())
-    if (entity.isDead && entity !is Player) entity.remove()
-    if (entity is Player) refreshActionBar(entity)
+fun damageRaw(target: DamageTarget, amount: Int) {
+    target.damage(amount.toFloat())
+    //if (target.isDead && target !is Player) target.remove()
+    if (target is Player) refreshActionBar(target)
 }
 
-val maxHealthTag: Tag<Int> = Tag.Integer("max-health").defaultValue(20)
+val playerMaxHealthTag: Tag<Int> = Tag.Integer("max-health").defaultValue(20)

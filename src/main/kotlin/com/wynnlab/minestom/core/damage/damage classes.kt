@@ -1,7 +1,46 @@
 package com.wynnlab.minestom.core.damage
 
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
+import net.minestom.server.entity.Player
+import net.minestom.server.instance.Instance
+import net.minestom.server.utils.Position
+import java.util.*
+
+interface DamageSource {
+    @JvmInline
+    value class Player(val player: net.minestom.server.entity.Player) : DamageSource
+}
+
+interface DamageTarget {
+    fun damage(value: Float)
+    val health: Float
+    val maxHealth: Float
+    val instance: Instance?
+    val position: Position
+    val eyeHeight: Double
+    val uuid: UUID
+    val isDead: Boolean
+    val customName: Component?
+
+    @JvmInline
+    value class Player(val player: net.minestom.server.entity.Player) : DamageTarget {
+        override fun damage(value: Float) {
+            player.damage(net.minestom.server.entity.damage.DamageType("minecraft:custom"),
+                value * 20f / maxHealth)
+        }
+
+        override val instance get() = player.instance
+        override val position get() = player.position
+        override val eyeHeight get() = player.eyeHeight
+        override val uuid get() = player.uuid
+        override val isDead get() = player.isDead
+        override val customName get() = player.name
+        override val health get() = player.health * maxHealth / 20f
+        override val maxHealth get() = player.getTag(playerMaxHealthTag)!!.toFloat()
+    }
+}
 
 data class Damage(
     val neutral: Int,
