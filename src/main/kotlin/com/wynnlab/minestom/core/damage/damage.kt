@@ -9,12 +9,23 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 fun Player.attack(other: CustomEntity, modifiers: DamageModifiers) {
+    val target = CustomEntity.DamageTarget(other)
     val damage = Damage(1, 0, 0, 0, 0, 0)
-    val finalDamage = damageModified(DamageSource.Player(this), CustomEntity.DamageTarget(other), damage, modifiers)
+    val finalDamage = damageModified(DamageSource.Player(this), target, damage, modifiers)
     if (!finalDamage.zero) {
-        damageIndicators(this, CustomEntity.DamageTarget(other), finalDamage)
+        damageIndicators(this, target, finalDamage)
 
         // TODO: poison, exploding, ls, ms, thorns, reflection
+    }
+    other.takeKnockback(.4f, sin(position.yaw * (PI / 180f)), -cos(position.yaw * (PI / 180f)))
+}
+
+fun Player.attack(other: Player, modifiers: DamageModifiers) { //TODO: merge
+    val target = DamageTarget.Player(other)
+    val damage = Damage(1, 0, 0, 0, 0, 0)
+    val finalDamage = damageModified(DamageSource.Player(this), target, damage, modifiers)
+    if (!finalDamage.zero) {
+        damageIndicators(this, target, finalDamage)
     }
     other.takeKnockback(.4f, sin(position.yaw * (PI / 180f)), -cos(position.yaw * (PI / 180f)))
 }

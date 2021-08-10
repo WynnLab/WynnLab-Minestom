@@ -1,5 +1,6 @@
 package com.wynnlab.minestom.commands
 
+import com.wynnlab.minestom.playerAtLeast1
 import com.wynnlab.minestom.util.get
 import net.minestom.server.command.builder.Command
 import net.minestom.server.command.builder.arguments.ArgumentType
@@ -7,6 +8,8 @@ import net.minestom.server.command.builder.suggestion.SuggestionEntry
 
 object ItemCommand : Command("item") {
     init {
+        condition = playerAtLeast1
+
         val nameArg = ArgumentType.StringArray("name").setSuggestionCallback { _, ctx, suggestion ->
             val itemName = ctx.input.substring(suggestion.start - 1)
             if (itemName.isEmpty()) return@setSuggestionCallback

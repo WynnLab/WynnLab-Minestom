@@ -6,6 +6,8 @@ import com.google.gson.JsonObject
 import com.wynnlab.minestom.commands.*
 import com.wynnlab.minestom.core.player.initActionBar
 import com.wynnlab.minestom.generator.GeneratorDemo
+import com.wynnlab.minestom.labs.registerLabsCommands
+import com.wynnlab.minestom.labs.registerLabsListeners
 import com.wynnlab.minestom.listeners.initServerListeners
 import com.wynnlab.minestom.listeners.initWynnLabListeners
 import com.wynnlab.minestom.players.WynnLabLogin
@@ -50,8 +52,8 @@ fun main() {
     initActionBar()
 
     val instanceManager = MinecraftServer.getInstanceManager()
-    val instanceContainer = instanceManager.createInstanceContainer(storageLocation)
-    instanceContainer.chunkGenerator = GeneratorDemo()
+    mainInstance = instanceManager.createInstanceContainer(storageLocation)
+    mainInstance.chunkGenerator = GeneratorDemo()
 
     val commandManager = MinecraftServer.getCommandManager()
     registerServerCommands(commandManager)
@@ -65,17 +67,19 @@ fun main() {
     registerEssentialsCommands(commandManager)
     registerDebugCommands(commandManager)
 
+    registerLabsCommands(commandManager)
+
     val globalEventHandler = MinecraftServer.getGlobalEventHandler()
 
     globalEventHandler.listen<PlayerLoginEvent> { event ->
         event.player.respawnPoint = Position(0.0, 42.0, 0.0)
         event.player.permissionLevel = 4
     }
-    globalEventHandler.addListener(PlayerLoginEvent::class.java, WynnLabLogin(instanceContainer))
+    globalEventHandler.addListener(PlayerLoginEvent::class.java, WynnLabLogin(mainInstance))
 
     globalEventHandler.listen<ServerListPingEvent> { event ->
         val responseData = event.responseData
-        responseData.version = "WynnLab (1.17)"
+        responseData.version = "WynnLab 1.17"
         responseData.description = when (event.pingType) {
             ServerListPingType.MODERN_FULL_RGB -> motd
             ServerListPingType.OPEN_TO_LAN -> lanMotd
@@ -87,6 +91,7 @@ fun main() {
 
     initServerListeners(globalEventHandler)
     initWynnLabListeners(globalEventHandler)
+    registerLabsListeners(globalEventHandler)
 
     val ip = getProperty("server-ip", "0.0.0.0")
     val port = getProperty("server-port", "25565").toIntOrNull() ?: 25565
@@ -100,6 +105,8 @@ fun main() {
             addProperty("content", ":green_circle: **Server started!**")
         })
 }
+
+lateinit var mainInstance: InstanceContainer
 
 fun saveAll() {
     Audiences.players().sendMessage(Component.text("[Server] saving...", NamedTextColor.GRAY))

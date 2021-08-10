@@ -12,7 +12,7 @@ class GeneratorDemo : ChunkGenerator {
         for (x in 0 until Chunk.CHUNK_SIZE_X)
             for (z in 0 until Chunk.CHUNK_SIZE_Z)
                 for (y in 0 until 40)
-                    batch.setBlock(x, y, z, Block.STONE)
+                    batch.setBlock(x, y, z, if (y < 35) Block.STONE else if (y < 39) Block.DIRT else Block.GRASS_BLOCK)
     }
 
     override fun fillBiomes(biomes: Array<Biome>, chunkX: Int, chunkZ: Int) {

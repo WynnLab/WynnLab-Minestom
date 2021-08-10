@@ -1,11 +1,11 @@
 package com.wynnlab.minestom.commands
 
 import com.wynnlab.minestom.*
-import net.kyori.adventure.audience.ForwardingAudience
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
+import net.minestom.server.MinecraftServer
 import net.minestom.server.adventure.audience.Audiences
 import net.minestom.server.command.CommandManager
 import net.minestom.server.command.CommandSender
@@ -27,6 +27,7 @@ fun registerServerCommands(commandManager: CommandManager) {
     commandManager.register(GamemodeCommand)
     commandManager.register(GiveCommand)
     commandManager.register(SetblockCommand)
+    commandManager.register(TeleportCommand)
     //commandManager.register(EffectCommand)
     commandManager.register(GetDataCommand)
     commandManager.register(OpCommand)
@@ -38,7 +39,7 @@ fun CommandSender.message(text: String) {
     sendMessage(c)
     if (!isConsole) Audiences.console().sendMessage(c)
 }
-val CommandSender.name get() = if (this is Player) username else "/"
+val CommandSender.signature get() = if (this is Player) username else "/"
 
 object StopCommand : Command("stop") {
     init {
@@ -72,7 +73,7 @@ object KickCommand : Command("kick") {
             player.kick(
                 LegacyComponentSerializer.legacy('&').deserialize(message)
             )
-            sender.message("[${sender.name}] Kicked [$player]. Reason: [$message]")
+            sender.message("[${sender.signature}] Kicked [$player]. Reason: [$message]")
         }, playerArg, messageArg)
     }
 }
@@ -88,7 +89,7 @@ object KillCommand : Command("kill") {
         addConditionalSyntax(isAllowed(PERM_SERVER_KILL_OTHERS, 4), { sender, ctx ->
             val targets = ctx[targetsArg].find(sender)
             targets.forEach { if (it is Player) it.kill() else it.remove() }
-            sender.message("[${sender.name}] Killed [${targets.size}] entitie(s)")
+            sender.message("[${sender.signature}] Killed [${targets.size}] entity/ies")
         }, targetsArg)
     }
 }
@@ -121,14 +122,14 @@ object GamemodeCommand : Command("gamemode", "gm") {
             val targets = ctx[targetsArg].find(sender)
             val gameMode = GameMode.valueOf(ctx[gamemodeNameArg].uppercase())
             setGameMode(targets, gameMode)
-            sender.message("[${sender.name}] Set gamemode of [${targets.size}] player(s) to [$gameMode]")
+            sender.message("[${sender.signature}] Set gamemode of [${targets.size}] player(s) to [$gameMode]")
         }, gamemodeNameArg, targetsArg)
 
         addSyntax({ sender, ctx ->
             val targets = ctx[targetsArg].find(sender)
             val gameMode = GameMode.fromId(ctx[gamemodeIndexArg].toByte())!!
             setGameMode(targets, gameMode)
-            sender.message("[${sender.name}] Set gamemode of [${targets.size}] player(s) to [$gameMode]")
+            sender.message("[${sender.signature}] Set gamemode of [${targets.size}] player(s) to [$gameMode]")
         }, gamemodeIndexArg, targetsArg)
     }
 }
@@ -148,7 +149,7 @@ object GiveCommand : Command("give") {
             val count = ctx[countArg]
             if (count > 1) item = item.withAmount(count)
             players.forEach { (it as Player).inventory.addItemStack(item) }
-            sender.message("[${sender.name}] Gave [$count x ${item.material.getName()}] to [${players.size}] player(s)")
+            sender.message("[${sender.signature}] Gave [$count x ${item.material.getName()}] to [${players.size}] player(s)")
         }, targetsArg, itemArg, countArg)
     }
 }
@@ -166,8 +167,44 @@ object SetblockCommand : Command("setblock") {
             val position = relPos.from(player)
             val block = ctx[blockArg]
             player.instance?.setBlock(position, block)
-            sender.message("[${sender.name}] Changed block at [$position] to [${block.getName()}]")
+            sender.message("[${sender.signature}] Changed block at [$position] to [${block.getName()}]")
         }, positionArg, blockArg)
+    }
+}
+
+object TeleportCommand : Command("teleport", "tp") {
+    init {
+        setCondition { sender, _ -> sender.isPlayer && sender.isAllowed(PERM_SERVER_TP) }
+
+        val positionArg = ArgumentType.RelativeBlockPosition("position")
+        val entitiesArg = ArgumentType.Entity("entities")
+        val entityArg = ArgumentType.Entity("entity").singleEntity(true)
+
+        addSyntax({ sender, ctx ->
+            val position = ctx[positionArg].from(sender as Player).toPosition() // Please help me (Position not Block...)
+            sender.teleport(position)
+            sender.message("[${sender.signature}] Teleported to [$position]")
+        }, positionArg)
+
+        addSyntax({ sender, ctx ->
+            val entities = ctx[entitiesArg].find(sender as Player)
+            val position = ctx[positionArg].from(sender).toPosition()
+            entities.forEach { it.teleport(position) }
+            sender.message("[${sender.signature}] Teleported [${entities.size}] entity/ies to [$position]")
+        }, entitiesArg, positionArg)
+
+        addSyntax({ sender, ctx ->
+            val entity = ctx[entityArg].findFirstEntity(sender as Player)!!
+            sender.teleport(entity.position)
+            sender.message("[${sender.signature}] Teleported to [${entity.entityType}]")
+        }, entityArg)
+
+        addSyntax({ sender, ctx ->
+            val entities = ctx[entitiesArg].find(sender as Player)
+            val entity = ctx[entityArg].findFirstEntity(sender)!!
+            entities.forEach { it.teleport(entity.position) }
+            sender.message("[${sender.name}] Teleported [${entities.size}] entity/ies to [${entity.entityType}]")
+        }, entitiesArg, entityArg)
     }
 }
 
@@ -248,8 +285,11 @@ object OpCommand : Command("op") {
             else {
                 sender.sendMessage("${player.username} has now permission level $levelTo")
                 player.permissionLevel = levelTo
+
+                player.playerConnection.sendPacket(MinecraftServer.getCommandManager().createDeclareCommandsPacket(player))
+
+                sender.message("[${sender.signature}] Changed OP level of [${player.username}] from [$levelFrom] to [$levelTo]")
             }
-            sender.message("[${sender.name}] Changed OP level of [${player.username}] from [$levelFrom] to [$levelTo]")
         }, playerArg, levelArg)
     }
 }

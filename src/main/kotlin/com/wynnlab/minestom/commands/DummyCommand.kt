@@ -1,6 +1,8 @@
 package com.wynnlab.minestom.commands
 
 import com.wynnlab.minestom.entities.CustomEntity
+import com.wynnlab.minestom.hasLevel
+import com.wynnlab.minestom.playerAtLeast1
 import net.kyori.adventure.text.Component
 import net.minestom.server.command.builder.Command
 import net.minestom.server.command.builder.arguments.ArgumentType
@@ -8,7 +10,7 @@ import net.minestom.server.entity.EntityType
 
 object DummyCommand : Command("dummy") {
     init {
-        setCondition { sender, _ -> sender.isPlayer }
+        condition = playerAtLeast1
 
         val healthArg = ArgumentType.Integer("health").min(1).setDefaultValue(100_000)
         val typeArg = ArgumentType.EntityType("type").setDefaultValue(EntityType.ARMOR_STAND)
