@@ -85,7 +85,6 @@ fun main() {
             responseData.favicon = faviconBase64
     }
 
-
     initServerListeners(globalEventHandler)
     initWynnLabListeners(globalEventHandler)
 
@@ -103,7 +102,7 @@ fun main() {
 }
 
 fun saveAll() {
-    broadcast(Component.text("[Server] saving...", NamedTextColor.GRAY))
+    Audiences.players().sendMessage(Component.text("[Server] saving...", NamedTextColor.GRAY))
     MinecraftServer.getInstanceManager().instances.forEach { if (it is InstanceContainer) it.saveInstance() }
 }
 

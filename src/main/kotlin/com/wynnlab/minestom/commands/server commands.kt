@@ -1,8 +1,14 @@
 package com.wynnlab.minestom.commands
 
 import com.wynnlab.minestom.*
+import net.kyori.adventure.audience.ForwardingAudience
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
+import net.minestom.server.adventure.audience.Audiences
 import net.minestom.server.command.CommandManager
+import net.minestom.server.command.CommandSender
 import net.minestom.server.command.builder.Command
 import net.minestom.server.command.builder.arguments.ArgumentType
 import net.minestom.server.entity.Entity
@@ -27,11 +33,18 @@ fun registerServerCommands(commandManager: CommandManager) {
     commandManager.register(PermissionCommand)
 }
 
+fun CommandSender.message(text: String) {
+    val c = Component.text(text, NamedTextColor.GRAY, TextDecoration.ITALIC)
+    sendMessage(c)
+    if (!isConsole) Audiences.console().sendMessage(c)
+}
+val CommandSender.name get() = if (this is Player) username else "/"
+
 object StopCommand : Command("stop") {
     init {
         condition = isAllowed(PERM_SERVER_STOP, 4)
         addSyntax({ sender, _ ->
-            sender.sendMessage("Stopping the server")
+            sender.message("Stopping the server")
             stop()
         })
     }
@@ -54,9 +67,12 @@ object KickCommand : Command("kick") {
         val messageArg = ArgumentType.StringArray("message")
 
         addSyntax({ sender, ctx ->
-            ctx[playerArg].findFirstPlayer(sender)!!.kick(
-                LegacyComponentSerializer.legacy('&').deserialize(ctx.getRaw(messageArg))
+            val player = ctx[playerArg].findFirstPlayer(sender)!!
+            val message = ctx.getRaw(messageArg)
+            player.kick(
+                LegacyComponentSerializer.legacy('&').deserialize(message)
             )
+            sender.message("[${sender.name}] Kicked [$player]. Reason: [$message]")
         }, playerArg, messageArg)
     }
 }
@@ -72,6 +88,7 @@ object KillCommand : Command("kill") {
         addConditionalSyntax(isAllowed(PERM_SERVER_KILL_OTHERS, 4), { sender, ctx ->
             val targets = ctx[targetsArg].find(sender)
             targets.forEach { if (it is Player) it.kill() else it.remove() }
+            sender.message("[${sender.name}] Killed [${targets.size}] entitie(s)")
         }, targetsArg)
     }
 }
@@ -101,11 +118,17 @@ object GamemodeCommand : Command("gamemode", "gm") {
         }
 
         addSyntax({ sender, ctx ->
-            setGameMode(ctx[targetsArg].find(sender), GameMode.valueOf(ctx[gamemodeNameArg].uppercase()))
+            val targets = ctx[targetsArg].find(sender)
+            val gameMode = GameMode.valueOf(ctx[gamemodeNameArg].uppercase())
+            setGameMode(targets, gameMode)
+            sender.message("[${sender.name}] Set gamemode of [${targets.size}] player(s) to [$gameMode]")
         }, gamemodeNameArg, targetsArg)
 
         addSyntax({ sender, ctx ->
-            setGameMode(ctx[targetsArg].find(sender), GameMode.fromId(ctx[gamemodeIndexArg].toByte())!!)
+            val targets = ctx[targetsArg].find(sender)
+            val gameMode = GameMode.fromId(ctx[gamemodeIndexArg].toByte())!!
+            setGameMode(targets, gameMode)
+            sender.message("[${sender.name}] Set gamemode of [${targets.size}] player(s) to [$gameMode]")
         }, gamemodeIndexArg, targetsArg)
     }
 }
@@ -125,6 +148,7 @@ object GiveCommand : Command("give") {
             val count = ctx[countArg]
             if (count > 1) item = item.withAmount(count)
             players.forEach { (it as Player).inventory.addItemStack(item) }
+            sender.message("[${sender.name}] Gave [$count x ${item.material.getName()}] to [${players.size}] player(s)")
         }, targetsArg, itemArg, countArg)
     }
 }
@@ -142,6 +166,7 @@ object SetblockCommand : Command("setblock") {
             val position = relPos.from(player)
             val block = ctx[blockArg]
             player.instance?.setBlock(position, block)
+            sender.message("[${sender.name}] Changed block at [$position] to [${block.getName()}]")
         }, positionArg, blockArg)
     }
 }
@@ -224,6 +249,7 @@ object OpCommand : Command("op") {
                 sender.sendMessage("${player.username} has now permission level $levelTo")
                 player.permissionLevel = levelTo
             }
+            sender.message("[${sender.name}] Changed OP level of [${player.username}] from [$levelFrom] to [$levelTo]")
         }, playerArg, levelArg)
     }
 }

@@ -14,10 +14,7 @@ import net.minestom.server.entity.GameMode
 import net.minestom.server.event.EventFilter
 import net.minestom.server.event.EventNode
 import net.minestom.server.event.GlobalEventHandler
-import net.minestom.server.event.player.PlayerChatEvent
-import net.minestom.server.event.player.PlayerDeathEvent
-import net.minestom.server.event.player.PlayerDisconnectEvent
-import net.minestom.server.event.player.PlayerSpawnEvent
+import net.minestom.server.event.player.*
 import net.minestom.server.tag.Tag
 import java.util.*
 
@@ -103,11 +100,16 @@ private fun onPlayerDeath(e: PlayerDeathEvent) {
     e.player.isEnableRespawnScreen = false
 }
 
+private fun onPlayerCommand(e: PlayerCommandEvent) {
+    Audiences.console().sendMessage(Component.text("${e.player.username} issued command: ${e.command}"))
+}
+
 fun initServerListeners(globalEventHandler: GlobalEventHandler) {
     serverPlayerListenersNode.listen(::onPlayerSpawn)
     serverListenersNode.listen(::onPlayerDisconnect)
     serverListenersNode.listen(::onPlayerChat)
     serverListenersNode.listen(::onPlayerDeath)
+    serverListenersNode.listen(::onPlayerCommand)
 
     serverListenersNode.addChild(serverPlayerListenersNode)
     globalEventHandler.addChild(serverListenersNode)
