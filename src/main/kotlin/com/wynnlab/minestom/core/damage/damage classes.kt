@@ -1,5 +1,6 @@
 package com.wynnlab.minestom.core.damage
 
+import com.wynnlab.minestom.core.Element
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
@@ -71,7 +72,7 @@ data class Damage(
 
         override fun next(): DamagePart {
             ++i
-            return DamagePart(DamageType.values()[i - 1], when (i - 1) {
+            return DamagePart(Element.values()[i - 1], when (i - 1) {
                 0 -> neutral
                 1 -> earth
                 2 -> thunder
@@ -84,18 +85,9 @@ data class Damage(
 }
 
 data class DamagePart(
-    val type: DamageType,
+    val element: Element,
     val value: Int
 )
-
-enum class DamageType(val color: TextColor, val icon: Char) {
-    Neutral(NamedTextColor.DARK_RED, '❤'),
-    Earth(NamedTextColor.DARK_GREEN, 'e'),
-    Thunder(NamedTextColor.YELLOW, 't'),
-    Water(NamedTextColor.AQUA, 'w'),
-    Fire(NamedTextColor.RED, 'f'),
-    Air(NamedTextColor.WHITE, 'a')
-}
 
 data class DamageModifiers(
     val spell: Boolean,

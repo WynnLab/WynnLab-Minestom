@@ -6,6 +6,7 @@ import com.google.gson.JsonObject
 import com.wynnlab.minestom.commands.*
 import com.wynnlab.minestom.core.player.initActionBar
 import com.wynnlab.minestom.generator.GeneratorDemo
+import com.wynnlab.minestom.items.ItemCommand
 import com.wynnlab.minestom.labs.registerLabsCommands
 import com.wynnlab.minestom.labs.registerLabsListeners
 import com.wynnlab.minestom.listeners.initServerListeners
@@ -110,7 +111,7 @@ lateinit var mainInstance: InstanceContainer
 
 fun saveAll() {
     Audiences.players().sendMessage(Component.text("[Server] saving...", NamedTextColor.GRAY))
-    MinecraftServer.getInstanceManager().instances.forEach { if (it is InstanceContainer) it.saveInstance() }
+    MinecraftServer.getInstanceManager().instances.forEach { if (it is InstanceContainer && it.storageLocation != null) it.saveInstance() }
 }
 
 fun stop() {

@@ -115,4 +115,4 @@ fun initServerListeners(globalEventHandler: GlobalEventHandler) {
     globalEventHandler.addChild(serverListenersNode)
 }
 
-private fun permissionLevel(uuid: UUID) = if (uuid.toString() == "4182ab6a-4698-41ec-be41-62fb4451b26a") 4 else 3
+private fun permissionLevel(uuid: UUID) = if (uuid.toString() == "4182ab6a-4698-41ec-be41-62fb4451b26a") 4 else 0

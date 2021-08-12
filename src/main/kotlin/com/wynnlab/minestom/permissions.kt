@@ -31,3 +31,6 @@ fun hasLevel(level: Int) = CommandCondition { sender, _ -> sender.hasLevel(level
 val atLeast1 = hasLevel(1)
 
 val playerAtLeast1 = CommandCondition { sender, _ -> sender.isPlayer && sender.hasLevel(1) }
+val playerAtLeast2 = CommandCondition { sender, _ -> sender.isPlayer && sender.hasLevel(2) }
+val playerAtLeast3 = CommandCondition { sender, _ -> sender.isPlayer && sender.hasLevel(3) }
+val playerAtLeast4 = CommandCondition { sender, _ -> sender.isPlayer && sender.hasLevel(4) }

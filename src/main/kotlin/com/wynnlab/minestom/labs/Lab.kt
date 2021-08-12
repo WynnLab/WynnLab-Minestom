@@ -1,6 +1,7 @@
 package com.wynnlab.minestom.labs
 
 import com.wynnlab.minestom.generator.GeneratorDemo
+import com.wynnlab.minestom.items.ItemBuilder
 import com.wynnlab.minestom.mainInstance
 import com.wynnlab.minestom.players.prepareInventory
 import net.kyori.adventure.text.Component
@@ -13,6 +14,7 @@ import net.minestom.server.item.ItemStack
 import net.minestom.server.utils.Position
 import net.minestom.server.world.DimensionType
 import java.util.*
+import kotlin.collections.HashMap
 
 class Lab(owner: Player) : InstanceContainer(owner.uuid, DimensionType.OVERWORLD, null) {
     init {
@@ -23,6 +25,8 @@ class Lab(owner: Player) : InstanceContainer(owner.uuid, DimensionType.OVERWORLD
 
         worldBorder.diameter = 127.0
     }
+
+    val itemBuilders = HashMap<String, ItemBuilder>()
 
     fun owns(player: Player) = uniqueId == player.uuid
 
