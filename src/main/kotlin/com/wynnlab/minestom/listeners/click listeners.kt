@@ -2,17 +2,10 @@ package com.wynnlab.minestom.listeners
 
 import com.wynnlab.minestom.core.damage.NeutralDamageModifiers
 import com.wynnlab.minestom.core.damage.attack
-import com.wynnlab.minestom.core.player.refreshActionBar
 import com.wynnlab.minestom.core.player.refreshClickSequenceBar
 import com.wynnlab.minestom.core.player.resetClickSequenceBar
 import com.wynnlab.minestom.entities.CustomEntity
 import com.wynnlab.minestom.gui.MenuGui
-import com.wynnlab.minestom.particle.adventure.Particle
-import com.wynnlab.minestom.particle.minestom.HAPPY_VILLAGER
-import com.wynnlab.minestom.particle.minestom.ITEM
-import com.wynnlab.minestom.particle.minestom.ParticleType
-import com.wynnlab.minestom.particle.minestom.extra.Item
-import com.wynnlab.minestom.particle.minestom.showParticle
 import com.wynnlab.minestom.tasks.RefreshDelayTask
 import com.wynnlab.minestom.util.listen
 import com.wynnlab.minestom.util.rayCastEntity
@@ -21,7 +14,6 @@ import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
-import net.minestom.server.entity.LivingEntity
 import net.minestom.server.entity.Player
 import net.minestom.server.event.EventFilter
 import net.minestom.server.event.EventNode

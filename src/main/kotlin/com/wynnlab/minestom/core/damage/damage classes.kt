@@ -2,9 +2,6 @@ package com.wynnlab.minestom.core.damage
 
 import com.wynnlab.minestom.core.Element
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.format.TextColor
-import net.minestom.server.entity.Player
 import net.minestom.server.instance.Instance
 import net.minestom.server.utils.Position
 import java.util.*

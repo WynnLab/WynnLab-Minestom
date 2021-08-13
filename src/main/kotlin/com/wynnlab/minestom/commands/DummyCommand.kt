@@ -1,7 +1,6 @@
 package com.wynnlab.minestom.commands
 
 import com.wynnlab.minestom.entities.CustomEntity
-import com.wynnlab.minestom.hasLevel
 import com.wynnlab.minestom.playerAtLeast1
 import net.kyori.adventure.text.Component
 import net.minestom.server.command.builder.Command

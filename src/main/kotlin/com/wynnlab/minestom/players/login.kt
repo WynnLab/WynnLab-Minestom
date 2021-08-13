@@ -59,7 +59,7 @@ private fun setWynnLabName(player: Player) {
     val rank = if (data == null) null else when (data["rank"].asString) {
         "Player" -> when (data.getAsJsonObject("meta").getAsJsonObject("tag")["value"].asString) {
             "VIP" -> Rank.Vip
-            "VIP+" -> Rank.VipPlus
+            "VIP+" -> Rank.`Vip+`
             "HERO" -> Rank.Hero
             "CHAMPION" -> Rank.Champion
             else -> Rank.Player

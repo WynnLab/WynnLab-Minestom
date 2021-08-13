@@ -5,12 +5,13 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.Style
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.format.TextDecoration
-import net.minestom.server.entity.Player
 
+@Suppress("EnumEntryName")
 enum class Rank(val tag: Component?, val nameColor: TextColor) {
     Player(null, NamedTextColor.WHITE),
     Vip("VIP", NamedTextColor.DARK_GREEN, NamedTextColor.GREEN),
-    VipPlus("VIP+", NamedTextColor.AQUA, NamedTextColor.DARK_AQUA),
+
+    `Vip+`("VIP+", NamedTextColor.AQUA, NamedTextColor.DARK_AQUA),
     Hero("HERO", NamedTextColor.DARK_PURPLE, NamedTextColor.LIGHT_PURPLE),
     Champion(
         Component.text()

@@ -1,7 +1,6 @@
 package com.wynnlab.minestom.particle.minestom
 
 import com.wynnlab.minestom.particle.adventure.Particle
-import com.wynnlab.minestom.particle.adventure.impl.ParticleImpl
 import com.wynnlab.minestom.particle.minestom.extra.*
 import net.kyori.adventure.key.Keyed
 import net.kyori.examination.ExaminableProperty
@@ -43,6 +42,7 @@ constructor(private val minestomParticle: MinestomParticle) :
     // Internal stuff
     internal class Block(minestomParticle: MinestomParticle) : ParticleType<OffsetAndSpeed, BlockState>(minestomParticle)
     internal object DUST : ParticleType<OffsetAndSpeed, Dust>(MinestomParticle.DUST)
+    @Suppress("ClassName")
     internal object DUST_COLOR_TRANSITION : ParticleType<OffsetAndSpeed, DustTransition>(MinestomParticle.DUST_COLOR_TRANSITION)
     internal object ITEM : ParticleType<OffsetAndSpeed, Item>(MinestomParticle.ITEM)
     internal object VIBRATION : ParticleType<OffsetAndSpeed, Vibration>(MinestomParticle.VIBRATION)

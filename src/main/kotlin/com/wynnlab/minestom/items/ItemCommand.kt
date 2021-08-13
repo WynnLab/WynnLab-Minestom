@@ -8,13 +8,19 @@ import net.minestom.server.command.builder.Command
 import net.minestom.server.command.builder.arguments.ArgumentType
 import net.minestom.server.command.builder.suggestion.SuggestionEntry
 import net.minestom.server.entity.Player
+import net.minestom.server.item.ItemStack
 
 object ItemCommand : Command("item") {
     init {
         setCondition { sender, _ -> sender.isPlayer && sender.asPlayer().instance is Lab }
 
         addSubcommand(Create)
-        addSubcommand(ItemBuilderMetaCommand)
+        addSubcommand(ItemMetaCommand)
+        addSubcommand(Identification)
+        addSubcommand(Name)
+        addSubcommand(Lore)
+        addSubcommand(Design)
+        addSubcommand(Build)
         addSubcommand(Get)
     }
 
@@ -32,6 +38,68 @@ object ItemCommand : Command("item") {
                 lab.itemBuilders[id] = builder
                 sender.inventory.addItemStack(builder.item())
             }, nameArg, typeArg)
+        }
+    }
+
+    object Identification : Command("identification", "id") {
+        init {
+            val idArg = ArgumentType.Enum("identification", com.wynnlab.minestom.items.Identification::class.java)
+            val valueArg = ArgumentType.Integer("value")
+
+            addSyntax({ sender, ctx ->
+                val builder = ItemCommand.getItemBuilder(sender as Player) ?: return@addSyntax
+                builder.setId(ctx[idArg], ctx[valueArg])
+                sender.itemInMainHand = builder.item()
+            }, idArg, valueArg)
+        }
+    }
+
+    object Name : Command("name") {
+        init {
+            val nameArg = ArgumentType.String("name")
+
+            addSyntax({ sender, ctx ->
+                val builder = ItemCommand.getItemBuilder(sender as Player) ?: return@addSyntax
+                builder.name = ctx[nameArg]
+                sender.itemInMainHand = builder.item()
+            }, nameArg)
+        }
+    }
+
+    object Lore : Command("lore") {
+        init {
+            val loreArg = ArgumentType.StringArray("lore")
+
+            addSyntax({ sender, ctx ->
+                val builder = getItemBuilder(sender as Player) ?: return@addSyntax
+                builder.setCustomLore(ctx[loreArg])
+                sender.itemInMainHand = builder.item()
+            }, loreArg)
+        }
+    }
+
+    object Design : Command("design") {
+        init {
+            val designArg = ArgumentType.Word("design").setSuggestionCallback { sender, _, suggestion ->
+                getItemBuilder(sender as Player)?.type?.designs?.keys?.forEach { k ->
+                    if (k.startsWith(suggestion.input, true)) suggestion.addEntry(SuggestionEntry(k))
+                }
+            }
+
+            addSyntax({ sender, ctx ->
+                val builder = getItemBuilder(sender as Player) ?: return@addSyntax
+                builder.setDesign(ctx[designArg])
+                sender.itemInMainHand = builder.item()
+            }, designArg)
+        }
+    }
+
+    object Build : Command("build") {
+        init {
+            addSyntax({ sender, _ ->
+                val builder = getItemBuilder(sender as Player) ?: return@addSyntax
+                sender.inventory.addItemStack(builder.item(true))
+            })
         }
     }
 
@@ -65,4 +133,9 @@ object ItemCommand : Command("item") {
             return items.mapNotNull { it.asJsonObject.get("name").asString }
         }
     }
+
+    fun getItemBuilder(sender: Player) =
+        sender.itemInMainHand.getTag(ItemBuilder.nameTag)?.let {
+            (sender.instance as Lab).itemBuilders[it]
+        }
 }

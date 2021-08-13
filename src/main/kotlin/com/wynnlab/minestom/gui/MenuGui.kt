@@ -8,13 +8,11 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.Style
 import net.kyori.adventure.text.format.TextDecoration
 import net.minestom.server.entity.Player
-import net.minestom.server.inventory.Inventory
 import net.minestom.server.inventory.InventoryType
 import net.minestom.server.inventory.click.ClickType
 import net.minestom.server.inventory.condition.InventoryConditionResult
 import net.minestom.server.item.ItemStack
 import net.minestom.server.item.Material
-import net.minestom.server.item.StackingRule
 
 class MenuGui : Gui("§c200 §4Skill Points Remaining", InventoryType.CHEST_3_ROW) {
     private val strBookItem = abilityBookItem(0, Component.text("Strength", NamedTextColor.DARK_GREEN))

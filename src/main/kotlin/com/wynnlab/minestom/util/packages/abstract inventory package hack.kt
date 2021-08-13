@@ -1,3 +1,7 @@
+@file:Suppress("PackageDirectoryMismatch")
+
 package net.minestom.server.inventory
 
-val AbstractInventory.itemStacksRaw get() = this.itemStacks
+import net.minestom.server.item.ItemStack
+
+val AbstractInventory.itemStacksRaw: Array<ItemStack> get() = this.itemStacks

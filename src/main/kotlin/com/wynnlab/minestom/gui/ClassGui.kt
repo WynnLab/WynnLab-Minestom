@@ -2,7 +2,6 @@ package com.wynnlab.minestom.gui
 
 import net.kyori.adventure.sound.Sound
 import net.minestom.server.entity.Player
-import net.minestom.server.inventory.Inventory
 import net.minestom.server.inventory.InventoryType
 import net.minestom.server.inventory.click.ClickType
 import net.minestom.server.inventory.condition.InventoryConditionResult

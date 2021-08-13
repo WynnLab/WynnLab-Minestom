@@ -4,7 +4,6 @@ import net.minestom.server.MinecraftServer
 import net.minestom.server.tag.Tag
 import net.minestom.server.tag.TagReadable
 import net.minestom.server.tag.TagWritable
-import net.minestom.server.utils.time.TimeUnit
 import java.time.temporal.TemporalUnit
 
 abstract class RefreshDelayTask<DataContainer>(

@@ -4,10 +4,13 @@ import com.wynnlab.minestom.core.Element
 import com.wynnlab.minestom.util.displayNameNonItalic
 import com.wynnlab.minestom.util.hideAllFlags
 import com.wynnlab.minestom.util.loreNonItalic
+import it.unimi.dsi.fastutil.objects.Object2IntMap
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.minestom.server.entity.Player
 import net.minestom.server.item.Enchantment
+import net.minestom.server.item.ItemMetaBuilder
 import net.minestom.server.item.ItemStack
 import net.minestom.server.tag.Tag
 
@@ -16,22 +19,89 @@ sealed class ItemBuilder(
     var name: String,
     val type: ItemType,
 ) {
+    fun setDesign(design: String) {
+        type.designs[design]?.let { (m, d) ->
+            item = ItemStack.builder(m).meta { itemMeta(it, d); it }
+        }
+    }
+
     var rarity: Rarity = Rarity.Normal
 
     val skillRequirements = SkillRequirements(0, 0, 0, 0, 0)
+
+    private val ids: Object2IntMap<Identification> = Object2IntOpenHashMap()
+    private val idsCats = BooleanArray(Identification.values().last().cat + 1)
+
+    fun setId(id: Identification, value: Int) {
+        if (value == 0) {
+            ids.removeInt(id)
+            if (!ids.any { (k, _) -> k.cat == id.cat }) idsCats[id.cat] = false
+        } else {
+            idsCats[id.cat] = true
+            ids[id] = value
+        }
+    }
+    fun getId(id: Identification) = ids.getInt(id)
+
+    private var customLore: List<String> = emptyList()
+
+    fun setCustomLore(customLore: Array<String>) {
+        val cl = mutableListOf<String>()
+        var c = -1
+        var nl = true
+        var sb = StringBuilder()
+        customLore.forEach {
+            c += it.length + 1
+            if (c > 30) {
+                c = it.length
+                cl.add(sb.toString())
+                sb = StringBuilder()
+                nl = true
+            }
+            if (!nl)
+                sb.append(' ')
+            else
+                nl = false
+            sb.append(it)
+        }
+        cl.add(sb.toString())
+        this.customLore = cl
+    }
 
     protected abstract val lore: List<() -> Component?>
 
 
     protected val greenCheck = Component.text("✔", NamedTextColor.GREEN)
 
-    protected val commonLore: List<() -> Component?> = listOf(
+    protected val commonLore: List<() -> Component?> = mutableListOf(
         { skillRequirementComponent(skillRequirements.strength, "Strength") },
         { skillRequirementComponent(skillRequirements.dexterity, "Dexterity") },
         { skillRequirementComponent(skillRequirements.intelligence, "Intelligence") },
         { skillRequirementComponent(skillRequirements.defense, "Defense") },
-        { skillRequirementComponent(skillRequirements.agility, "Agility") }
-    )
+        { skillRequirementComponent(skillRequirements.agility, "Agility") },
+        { Component.empty() }
+    ).apply {
+        var cat = -1
+        for (id in Identification.values()) {
+            if (id.cat > cat) {
+                val c = cat
+                if (c >= 0) add { if (idsCats[c]) Component.empty() else null }
+                cat = id.cat
+            }
+            add {
+                val v = ids.getInt(id)
+                if (v == 0) return@add null
+                val vColor = if (id.invertedColors xor (v > 0)) NamedTextColor.GREEN else NamedTextColor.RED
+                Component.text()
+                    .append(Component.text(if (v >= 0) "+$v" else v.toString(), vColor))
+                    .append(Component.text("${id.suffix} ", vColor))
+                    .append(id.display.colorIfAbsent(NamedTextColor.GRAY))
+                    .build()
+            }
+        }
+        val maxCat = idsCats.size - 1
+        add { if (idsCats[maxCat]) Component.empty() else null }
+    }
 
     protected val SkillRequirements.zero get() = strength == 0 && dexterity == 0 && intelligence == 0 && defense == 0 && agility == 0
 
@@ -40,25 +110,38 @@ sealed class ItemBuilder(
 
     private fun refreshDisplayName() = item.displayNameNonItalic(Component.text(name, rarity.nameColor))
 
-    private val item = ItemStack.builder(type.baseMaterial)
-        .meta { it
-            .damage(type.baseItemDamage)
+    private var item = ItemStack.builder(type.designs["Basic"]!!.material)
+        .meta {
+            itemMeta(it, type.designs["Basic"]!!.damage)
+            it
+        }
+
+    private fun itemMeta(it: ItemMetaBuilder, damage: Int) {
+        it
+            .damage(damage)
             .unbreakable(true)
             .hideAllFlags()
             .enchantment(Enchantment.UNBREAKING, 1)
             .setTag(nameTag, id)
-            it.setTag(typeTag, type.name)
-            it
-        }
+        it.setTag(typeTag, type.name)
+    }
 
-    fun item() = item.apply {
+    fun item(build: Boolean = false) = item.apply {
         refreshDisplayName()
         val itemLore = mutableListOf<Component>()
         lore.mapNotNullTo(itemLore) { it() }
-        itemLore.add(Component.empty())
-        itemLore.add(Component.text("(Concept)", NamedTextColor.DARK_GRAY))
+
+        customLore.mapTo(itemLore) { Component.text(it, NamedTextColor.DARK_GRAY) }
+        if (customLore.isNotEmpty()) itemLore.add(Component.empty())
+
+        itemLore.add(Component.text("$rarity $type", rarity.nameColor))
+        itemLore.add(if (build) Component.text("Custom Item", NamedTextColor.RED) else Component.text("Concept Item", NamedTextColor.DARK_GRAY))
         loreNonItalic(itemLore)
-    }.build()
+    }.build().let { if (build) it.withMeta { m -> m
+        .clearEnchantment()
+        m.removeTag(nameTag)
+        m
+    } else it }
 
     class Weapon(id: String, name: String, type: ItemType) : ItemBuilder(id, name, type) {
         var attackSpeed: AttackSpeed = AttackSpeed.Normal
@@ -73,7 +156,7 @@ sealed class ItemBuilder(
         override val lore = mutableListOf(
             { Component.text("${attackSpeed.display} Attack Speed", NamedTextColor.DARK_GRAY) },
             { Component.empty() },
-            { damage.neutral.takeIf { it.some }?.let { Component.text("${Element.Neutral} Neutral Damage: ${it.dashed}", NamedTextColor.GOLD) } },
+            { damage.neutral.takeIf { it.some }?.let { Component.text("${Element.Neutral.icon} Neutral Damage: ${it.dashed}", NamedTextColor.GOLD) } },
             { damage.earth.damageComponent("Earth", Element.Earth) },
             { damage.thunder.damageComponent("Thunder", Element.Thunder) },
             { damage.water.damageComponent("Water", Element.Water) },
@@ -94,9 +177,9 @@ sealed class ItemBuilder(
     sealed class Defense(id: String, name: String, type: ItemType) : ItemBuilder(id, name, type) {
         var health: Int = 0
 
-        val defense: com.wynnlab.minestom.items.Defense = com.wynnlab.minestom.items.Defense(0, 0, 0, 0, 0)
+        val defense: com.wynnlab.minestom.items.Defense = Defense(0, 0, 0, 0, 0)
 
-        protected val defenseLore: List<() -> Component?> = listOf<() -> Component?>(
+        protected val defenseLore: List<() -> Component?> = listOf(
             { health.takeIf { it != 0 }?.let { Component.text("❤ Health: $it", NamedTextColor.DARK_RED) } },
             { defense.earth.defenseComponent("Earth", Element.Earth) },
             { defense.thunder.defenseComponent("Thunder", Element.Thunder) },

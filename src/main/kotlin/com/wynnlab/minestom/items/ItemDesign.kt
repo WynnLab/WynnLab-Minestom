@@ -1,3 +1,5 @@
+@file:Suppress("SpellCheckingInspection")
+
 package com.wynnlab.minestom.items
 
 enum class ItemDesign {
@@ -16,7 +18,13 @@ enum class ItemDesign {
     Diamond,
     Netherite,
     Turtle,
-    Head
+    Head,
 
-    // TODO: Accesoires
+    Wedding,
+    Pearl,
+    Thick,
+
+    Cross, //Thick, Pearl
+
+    ;
 }
