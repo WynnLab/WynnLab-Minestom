@@ -7,6 +7,7 @@ import com.wynnlab.minestom.players.prepareInventory
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.minestom.server.MinecraftServer
+import net.minestom.server.entity.GameMode
 import net.minestom.server.entity.Player
 import net.minestom.server.instance.InstanceContainer
 import net.minestom.server.inventory.itemStacksRaw
@@ -54,6 +55,11 @@ class Lab(owner: Player) : InstanceContainer(owner.uuid, DimensionType.OVERWORLD
             player.inventory.update()
         }
         player.setInstance(mainInstance, Position(.0, 42.0, .0))
+        player.gameMode = GameMode.ADVENTURE
+        player.permissionLevel = 0
+        player.scheduleNextTick {
+            (it as Player).playerConnection.sendPacket(MinecraftServer.getCommandManager().createDeclareCommandsPacket(it))
+        }
 
         if (players.isEmpty()) {
             delete()

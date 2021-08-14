@@ -123,7 +123,18 @@ object ItemCommand : Command("item") {
             }
 
             addSyntax({ sender, ctx ->
-                sender.sendMessage("You get \"${ctx.getRaw(nameArg)}\"")
+                try {
+                    val name = ctx.getRaw(nameArg)
+                    val json = get("https://api.wynncraft.com/public_api.php?action=itemDB&search=${name.replace(" ", "%20")}")
+                    val item = json.getAsJsonArray("items").let { a -> a.find { it.asJsonObject["name"].asString.equals(name, true) }
+                        ?: try { a.first() } catch (_: NoSuchElementException) { sender.sendMessage("§cNo such item!"); return@addSyntax } }
+                    val builder = itemBuilderFrom(item)
+                    (sender as Player).inventory.addItemStack(builder.item())
+                    sender.sendMessage("You get \"$name\"")
+                } catch (e: Exception) {
+                    sender.sendMessage("§cSomething didn't work")
+                    e.printStackTrace()
+                }
             }, nameArg)
         }
 
