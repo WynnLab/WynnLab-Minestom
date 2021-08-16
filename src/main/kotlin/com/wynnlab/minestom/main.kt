@@ -5,6 +5,7 @@ package com.wynnlab.minestom
 import com.google.gson.JsonObject
 import com.wynnlab.minestom.commands.*
 import com.wynnlab.minestom.core.player.initActionBar
+import com.wynnlab.minestom.core.runIdTasks
 import com.wynnlab.minestom.generator.GeneratorDemo
 import com.wynnlab.minestom.items.ItemCommand
 import com.wynnlab.minestom.labs.registerLabsCommands
@@ -49,6 +50,7 @@ fun main() {
     val schedulerManager = MinecraftServer.getSchedulerManager()
     schedulerManager.buildShutdownTask(::saveAll).makeTransient().schedule()
     schedulerManager.buildTask(::saveAll).delay(5, TimeUnit.MINUTE).repeat(5, TimeUnit.MINUTE).schedule()
+    runIdTasks()
 
     initActionBar()
 

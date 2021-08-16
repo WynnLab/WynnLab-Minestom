@@ -88,6 +88,8 @@ fun itemBuilderFrom(json: JsonElement): ItemBuilder {
     rawIds[Identification.BonusFireDefense] = root["bonusFireDefense"].asShort
     rawIds[Identification.BonusAirDefense] = root["bonusAirDefense"].asShort
 
+    rawIds[Identification.JumpHeight] = root["jumpHeight"].asShort
+
     builder.mapIds(if (identified) rawIds else rawIds.mapValues { (_, v) ->
         if (v > 0) (v * 1.3).coerceAtLeast(1.0).toInt().toShort()
         else if (v < 0) (v * .7).coerceAtMost(-1.0).toInt().toShort()

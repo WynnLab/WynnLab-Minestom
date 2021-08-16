@@ -12,7 +12,7 @@ fun getId(player: Player, id: Identification): Int {
 
 fun getHealth(player: Player): Int {
     var i = 0
-    getEquipment(player).forEach { if (it != null) i += it.getTag(itemHealthTag)!! }
+    getDefenseEquipment(player).forEach { if (it != null) i += it.getTag(itemHealthTag)!! }
     return i
 }
 
@@ -28,29 +28,31 @@ fun getDamageArray(player: Player) = player.itemInMainHand.takeIf { it.getTag(it
 
 fun getDefense(player: Player): Defense {
     val d = Defense(0, 0, 0, 0, 0)
-    player.itemHelmet?.addTo(d)
-    player.itemHelmet?.addTo(d)
-    player.itemChestplate?.addTo(d)
-    player.itemLeggings?.addTo(d)
-    player.itemBoots?.addTo(d)
-    player.itemRing1?.addTo(d)
-    player.itemRing2?.addTo(d)
-    player.itemBracelet?.addTo(d)
-    player.itemNecklace?.addTo(d)
+    for (item in getDefenseEquipment(player)) {
+        if (item == null) continue
+        val a = item.getTag(itemDefenseTag)!!
+        d.earth += a[0]
+        d.thunder += a[1]
+        d.water += a[2]
+        d.fire += a[3]
+        d.air += a[4]
+    }
     return d
-}
-
-fun TagReadable.addTo(defense: Defense) {
-    val d = getTag(itemDefenseTag)!!
-    defense.earth += d[0]
-    defense.thunder += d[1]
-    defense.water += d[2]
-    defense.fire += d[3]
-    defense.air += d[4]
 }
 
 private fun getEquipment(player: Player) = listOf(
     player.itemWeapon,
+    player.itemHelmet,
+    player.itemChestplate,
+    player.itemLeggings,
+    player.itemBoots,
+    player.itemRing1,
+    player.itemRing2,
+    player.itemBracelet,
+    player.itemNecklace,
+)
+
+private fun getDefenseEquipment(player: Player) = listOf(
     player.itemHelmet,
     player.itemChestplate,
     player.itemLeggings,
