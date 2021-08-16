@@ -48,7 +48,7 @@ object ItemCommand : Command("item") {
 
             addSyntax({ sender, ctx ->
                 val builder = ItemCommand.getItemBuilder(sender as Player) ?: return@addSyntax
-                builder.setId(ctx[idArg], ctx[valueArg])
+                builder.setId(ctx[idArg], ctx[valueArg].toShort())
                 sender.itemInMainHand = builder.item()
             }, idArg, valueArg)
         }

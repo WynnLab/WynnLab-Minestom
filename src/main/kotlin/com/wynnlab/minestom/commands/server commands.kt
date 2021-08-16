@@ -1,6 +1,8 @@
 package com.wynnlab.minestom.commands
 
 import com.wynnlab.minestom.*
+import com.wynnlab.minestom.core.player.getId
+import com.wynnlab.minestom.items.Identification
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
@@ -14,6 +16,8 @@ import net.minestom.server.command.builder.arguments.ArgumentType
 import net.minestom.server.entity.Entity
 import net.minestom.server.entity.GameMode
 import net.minestom.server.entity.Player
+import net.minestom.server.item.ItemMeta
+import net.minestom.server.item.ItemStack
 import net.minestom.server.permission.Permission
 import net.minestom.server.utils.entity.EntityFinder
 import org.jglrxavpok.hephaistos.nbt.NBTCompound
@@ -254,12 +258,25 @@ object TeleportCommand : Command("teleport", "tp") {
 object GetDataCommand : Command("get-data") {
     init {
         setCondition { sender, _ -> sender.isPlayer }
-        addSyntax({ sender, _ ->
+
+        addSyntax({ sender, ctx ->
             val f = Entity::class.java.getDeclaredField("nbtCompound")
             f.isAccessible = true
-            val nbtCompound = f[sender] as NBTCompound
+            val nbtCompound = f[ctx.get<EntityFinder>("target").findFirstEntity(sender)!!] as NBTCompound
             sender.sendMessage(nbtCompound.toSNBT())
-        })
+        }, ArgumentType.Literal("entity"), ArgumentType.Entity("target").singleEntity(true))
+
+        addSyntax({ sender, _ ->
+            val f = ItemMeta::class.java.getDeclaredField("nbt")
+            f.isAccessible = true
+            val nbtCompound = f[(sender as Player).itemInMainHand.meta] as NBTCompound
+            sender.sendMessage(nbtCompound.toSNBT())
+        }, ArgumentType.Literal("item"))
+
+        addSyntax({ sender, ctx ->
+            val id = ctx.get<Identification>("identification")
+            sender.sendMessage(id.display.append(Component.text(": ${getId(sender as Player, id)}")))
+        }, ArgumentType.Literal("id"), ArgumentType.Enum("identification", Identification::class.java))
     }
 }
 

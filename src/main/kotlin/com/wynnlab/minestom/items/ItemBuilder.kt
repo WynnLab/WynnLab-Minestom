@@ -4,8 +4,8 @@ import com.wynnlab.minestom.core.Element
 import com.wynnlab.minestom.util.displayNameNonItalic
 import com.wynnlab.minestom.util.hideAllFlags
 import com.wynnlab.minestom.util.loreNonItalic
-import it.unimi.dsi.fastutil.objects.Object2IntMap
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap
+import it.unimi.dsi.fastutil.objects.Object2ShortMap
+import it.unimi.dsi.fastutil.objects.Object2ShortOpenHashMap
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.minestom.server.entity.Player
@@ -38,29 +38,29 @@ sealed class ItemBuilder(
 
     val skillRequirements = SkillRequirements(0, 0, 0, 0, 0)
 
-    private val ids: Object2IntMap<Identification> = Object2IntOpenHashMap()
+    val ids: Object2ShortMap<Identification> = Object2ShortOpenHashMap()
     private val idsCats = BooleanArray(Identification.values().last().cat + 1)
 
-    fun setId(id: Identification, value: Int) {
-        if (value == 0) {
-            ids.removeInt(id)
+    fun setId(id: Identification, value: Short) {
+        if (value == 0.toShort()) {
+            ids.removeShort(id)
             if (!ids.any { (k, _) -> k.cat == id.cat }) idsCats[id.cat] = false
         } else {
             idsCats[id.cat] = true
             ids[id] = value
         }
     }
-    fun mapIds(source: Map<Identification, Int>) {
+    fun mapIds(source: Map<Identification, Short>) {
         ids.clear()
         idsCats.fill(false)
         for ((k, v) in source) {
-            if (v != 0) {
+            if (v != 0.toShort()) {
                 idsCats[k.cat] = true
                 ids[k] = v
             }
         }
     }
-    fun getId(id: Identification) = ids.getInt(id)
+    fun getId(id: Identification) = ids.getShort(id)
 
     private var customLore: List<String> = emptyList()
 
@@ -108,8 +108,8 @@ sealed class ItemBuilder(
                 cat = id.cat
             }
             add {
-                val v = ids.getInt(id)
-                if (v == 0) return@add null
+                val v = ids.getShort(id)
+                if (v == 0.toShort()) return@add null
                 val vColor = if (id.invertedColors xor (v > 0)) NamedTextColor.GREEN else NamedTextColor.RED
                 Component.text()
                     .append(Component.text(if (v >= 0) "+$v" else v.toString(), vColor))
@@ -162,6 +162,8 @@ sealed class ItemBuilder(
         if (sockets > 0) itemLore.add(Component.text("[0/$sockets] Powder Slots", NamedTextColor.DARK_GRAY))
 
         loreNonItalic(itemLore)
+
+        meta { writeItemMeta(it, this@ItemBuilder); it }
     }.build().let { if (build || !custom) it.withMeta { m -> m
         .clearEnchantment()
         m.removeTag(nameTag)

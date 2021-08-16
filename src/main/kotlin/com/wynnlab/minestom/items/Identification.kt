@@ -3,6 +3,8 @@ package com.wynnlab.minestom.items
 import com.wynnlab.minestom.core.Element
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
+import net.minestom.server.item.ItemStack
+import net.minestom.server.tag.Tag
 
 enum class Identification(val cat: Int, val display: Component, val suffix: String = "%", val invertedColors: Boolean = false) {
     Strength(0, Component.text("Strength"), ""),
@@ -56,5 +58,10 @@ enum class Identification(val cat: Int, val display: Component, val suffix: Stri
 
     RainbowSpellDamageRaw(10, Component.text("Rainbow Spell Damage"), ""),
 
-    JumpHeight(11, Component.text("Jump Height"), "")
+    JumpHeight(11, Component.text("Jump Height"), ""),
+    ;
+
+    val tag: Tag<Short> = Tag.Short("I_$name").defaultValue(0)
+
+    fun get(item: ItemStack) = item.getTag(tag)!!
 }

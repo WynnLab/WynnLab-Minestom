@@ -2,7 +2,7 @@ package com.wynnlab.minestom.items
 
 import com.google.gson.JsonElement
 import com.google.gson.JsonNull
-import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap
+import it.unimi.dsi.fastutil.objects.Object2ShortOpenHashMap
 import net.minestom.server.item.Material
 
 fun itemBuilderFrom(json: JsonElement): ItemBuilder {
@@ -54,44 +54,44 @@ fun itemBuilderFrom(json: JsonElement): ItemBuilder {
     builder.skillRequirements.agility = root["agility"].asInt
 
     val identified = root["identified"]?.asBoolean ?: false
-    val rawIds = Object2IntOpenHashMap<Identification>()
+    val rawIds = Object2ShortOpenHashMap<Identification>()
 
-    rawIds[Identification.HealthRegen] = root["healthRegen"].asInt
-    rawIds[Identification.ManaRegen] = root["manaRegen"].asInt
-    rawIds[Identification.SpellDamage] = root["spellDamage"].asInt
-    rawIds[Identification.DamageBonus] = root["damageBonus"].asInt
-    rawIds[Identification.LifeSteal] = root["lifeSteal"].asInt
-    rawIds[Identification.ManaSteal] = root["manaSteal"].asInt
-    rawIds[Identification.Reflection] = root["reflection"].asInt
-    rawIds[Identification.Strength] = root["strengthPoints"].asInt
-    rawIds[Identification.Dexterity] = root["dexterityPoints"].asInt
-    rawIds[Identification.Intelligence] = root["intelligencePoints"].asInt
-    rawIds[Identification.Defense] = root["defensePoints"].asInt
-    rawIds[Identification.Agility] = root["agilityPoints"].asInt
-    rawIds[Identification.Thorns] = root["thorns"].asInt
-    rawIds[Identification.Exploding] = root["exploding"].asInt
-    rawIds[Identification.WalkSpeed] = root["speed"].asInt
-    rawIds[Identification.AttackSpeed] = root["attackSpeedBonus"].asInt
-    rawIds[Identification.Poison] = root["poison"].asInt
-    rawIds[Identification.HealthBonus] = root["healthBonus"].asInt
-    rawIds[Identification.HealthRegenRaw] = root["healthRegenRaw"].asInt
-    rawIds[Identification.SpellDamageRaw] = root["spellDamageRaw"].asInt
-    rawIds[Identification.DamageBonusRaw] = root["damageBonusRaw"].asInt
-    rawIds[Identification.BonusEarthDamage] = root["bonusEarthDamage"].asInt
-    rawIds[Identification.BonusThunderDamage] = root["bonusThunderDamage"].asInt
-    rawIds[Identification.BonusWaterDamage] = root["bonusWaterDamage"].asInt
-    rawIds[Identification.BonusFireDamage] = root["bonusFireDamage"].asInt
-    rawIds[Identification.BonusAirDamage] = root["bonusAirDamage"].asInt
-    rawIds[Identification.BonusEarthDefense] = root["bonusEarthDefense"].asInt
-    rawIds[Identification.BonusThunderDefense] = root["bonusThunderDefense"].asInt
-    rawIds[Identification.BonusWaterDefense] = root["bonusWaterDefense"].asInt
-    rawIds[Identification.BonusFireDefense] = root["bonusFireDefense"].asInt
-    rawIds[Identification.BonusAirDefense] = root["bonusAirDefense"].asInt
+    rawIds[Identification.HealthRegen] = root["healthRegen"].asShort
+    rawIds[Identification.ManaRegen] = root["manaRegen"].asShort
+    rawIds[Identification.SpellDamage] = root["spellDamage"].asShort
+    rawIds[Identification.DamageBonus] = root["damageBonus"].asShort
+    rawIds[Identification.LifeSteal] = root["lifeSteal"].asShort
+    rawIds[Identification.ManaSteal] = root["manaSteal"].asShort
+    rawIds[Identification.Reflection] = root["reflection"].asShort
+    rawIds[Identification.Strength] = root["strengthPoints"].asShort
+    rawIds[Identification.Dexterity] = root["dexterityPoints"].asShort
+    rawIds[Identification.Intelligence] = root["intelligencePoints"].asShort
+    rawIds[Identification.Defense] = root["defensePoints"].asShort
+    rawIds[Identification.Agility] = root["agilityPoints"].asShort
+    rawIds[Identification.Thorns] = root["thorns"].asShort
+    rawIds[Identification.Exploding] = root["exploding"].asShort
+    rawIds[Identification.WalkSpeed] = root["speed"].asShort
+    rawIds[Identification.AttackSpeed] = root["attackSpeedBonus"].asShort
+    rawIds[Identification.Poison] = root["poison"].asShort
+    rawIds[Identification.HealthBonus] = root["healthBonus"].asShort
+    rawIds[Identification.HealthRegenRaw] = root["healthRegenRaw"].asShort
+    rawIds[Identification.SpellDamageRaw] = root["spellDamageRaw"].asShort
+    rawIds[Identification.DamageBonusRaw] = root["damageBonusRaw"].asShort
+    rawIds[Identification.BonusEarthDamage] = root["bonusEarthDamage"].asShort
+    rawIds[Identification.BonusThunderDamage] = root["bonusThunderDamage"].asShort
+    rawIds[Identification.BonusWaterDamage] = root["bonusWaterDamage"].asShort
+    rawIds[Identification.BonusFireDamage] = root["bonusFireDamage"].asShort
+    rawIds[Identification.BonusAirDamage] = root["bonusAirDamage"].asShort
+    rawIds[Identification.BonusEarthDefense] = root["bonusEarthDefense"].asShort
+    rawIds[Identification.BonusThunderDefense] = root["bonusThunderDefense"].asShort
+    rawIds[Identification.BonusWaterDefense] = root["bonusWaterDefense"].asShort
+    rawIds[Identification.BonusFireDefense] = root["bonusFireDefense"].asShort
+    rawIds[Identification.BonusAirDefense] = root["bonusAirDefense"].asShort
 
     builder.mapIds(if (identified) rawIds else rawIds.mapValues { (_, v) ->
-        if (v > 0) (v * 1.3).coerceAtLeast(1.0).toInt()
-        else if (v < 0) (v * .7).coerceAtMost(-1.0).toInt()
-        else 0
+        if (v > 0) (v * 1.3).coerceAtLeast(1.0).toInt().toShort()
+        else if (v < 0) (v * .7).coerceAtMost(-1.0).toInt().toShort()
+        else 0.toShort()
     })
 
     return builder
