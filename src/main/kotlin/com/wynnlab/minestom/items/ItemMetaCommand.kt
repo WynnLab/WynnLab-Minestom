@@ -1,12 +1,12 @@
 package com.wynnlab.minestom.items
 
+import com.wynnlab.minestom.commands.Subcommand
 import com.wynnlab.minestom.items.ItemCommand.getItemBuilder
 import com.wynnlab.minestom.playerAtLeast2
-import net.minestom.server.command.builder.Command
 import net.minestom.server.command.builder.arguments.ArgumentType
 import net.minestom.server.entity.Player
 
-object ItemMetaCommand : Command("meta") {
+object ItemMetaCommand : Subcommand("meta") {
     init {
         condition = playerAtLeast2
 

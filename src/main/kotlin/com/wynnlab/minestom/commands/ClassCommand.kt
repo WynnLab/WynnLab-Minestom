@@ -1,11 +1,11 @@
 package com.wynnlab.minestom.commands
 
 import com.wynnlab.minestom.gui.ClassGui
-import net.minestom.server.command.builder.Command
+import net.kyori.adventure.text.Component
 import net.minestom.server.command.builder.arguments.ArgumentType
 import net.minestom.server.command.builder.suggestion.SuggestionEntry
 
-object ClassCommand : Command("class") {
+object ClassCommand : Command("Open the class menu and choose a class", "class") {
     init {
         setCondition { sender, _ -> sender.isPlayer }
 

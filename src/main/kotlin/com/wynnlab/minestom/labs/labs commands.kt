@@ -1,14 +1,17 @@
 package com.wynnlab.minestom.labs
 
+import com.wynnlab.minestom.commands.Command
+import com.wynnlab.minestom.commands.Subcommand
 import com.wynnlab.minestom.isAllowed
 import com.wynnlab.minestom.mainInstance
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.event.ClickEvent
 import net.kyori.adventure.text.event.HoverEvent
 import net.kyori.adventure.text.format.NamedTextColor
+import net.minestom.server.MinecraftServer
 import net.minestom.server.command.CommandManager
-import net.minestom.server.command.builder.Command
 import net.minestom.server.command.builder.arguments.ArgumentType
+import net.minestom.server.command.builder.suggestion.SuggestionEntry
 import net.minestom.server.entity.Player
 import net.minestom.server.utils.Position
 import java.util.*
@@ -18,7 +21,16 @@ fun registerLabsCommands(commandManager: CommandManager) {
     commandManager.register(LabCommand)
 }
 
-object LabCommand : Command("lab") {
+object LabCommand : Command(arrayOf(
+    Component.text("WynnLab Labs:"),
+    Component.text("/create", NamedTextColor.AQUA).append(Component.text(": Create your own lab", NamedTextColor.GRAY)),
+    Component.text("/invite", NamedTextColor.AQUA).append(Component.text(": Invite a player to your lab", NamedTextColor.GRAY)),
+    Component.text("/join", NamedTextColor.AQUA).append(Component.text(": Join a lab you have been invited to", NamedTextColor.GRAY)),
+    Component.text("/leave", NamedTextColor.AQUA).append(Component.text(": Leave your current lab", NamedTextColor.GRAY)),
+    Component.text("/transfer", NamedTextColor.AQUA).append(Component.text(": Transfer your lab", NamedTextColor.GRAY)),
+    Component.text("/kick", NamedTextColor.AQUA).append(Component.text(": Kick someone from your lab", NamedTextColor.GRAY)),
+    Component.text("/permissions", NamedTextColor.AQUA).append(Component.text(": Set the permission level of a player on your lab", NamedTextColor.GRAY)),
+), "lab") {
     init {
         addSubcommand(Create)
         addSubcommand(Invite)
@@ -29,7 +41,7 @@ object LabCommand : Command("lab") {
         addSubcommand(Permissions)
     }
 
-    object Create : Command("create") {
+    object Create : Subcommand("create") {
         init {
             setCondition { sender, _ -> sender.isPlayer }
 
@@ -46,14 +58,23 @@ object LabCommand : Command("lab") {
         }
     }
 
-    object Invite : Command("invite") {
+    object Invite : Subcommand("invite") {
         init {
             setCondition { sender, _ -> sender.isPlayer && sender.isAllowed(PERM_LABS_INVITE, 2) }
 
-            val playerArg = ArgumentType.Entity("player").onlyPlayers(true).singleEntity(true)
+            val playerArg = ArgumentType.Word("player").setSuggestionCallback { sender, _, suggestion ->
+                for (player in MinecraftServer.getConnectionManager().onlinePlayers) {
+                    if (player.instance !is Lab || player.instance == sender.asPlayer().instance)
+                        suggestion.addEntry(SuggestionEntry(player.username))
+                }
+            }
 
             addSyntax({ sender, ctx ->
-                val player = ctx[playerArg].findFirstPlayer(sender)!!
+                val player = MinecraftServer.getConnectionManager().getPlayer(ctx[playerArg])
+                if (player == null) {
+                    sender.sendMessage("§cThis player doesn't exist")
+                    return@addSyntax
+                }
                 sender as Player
 
                 (invites[player.uuid] ?: run { val set = hashSetOf<UUID>(); invites[player.uuid] = set; set }).add(sender.uuid)
@@ -70,7 +91,7 @@ object LabCommand : Command("lab") {
         val invites = hashMapOf<UUID, HashSet<UUID>>()
     }
 
-    object Join : Command("join") {
+    object Join : Subcommand("join") {
         init {
             setCondition { sender, _ -> sender.isPlayer }
 
@@ -96,7 +117,7 @@ object LabCommand : Command("lab") {
         }
     }
 
-    object Leave : Command("leave") {
+    object Leave : Subcommand("leave") {
         init {
             setCondition { sender, _ -> sender.isPlayer }
 
@@ -111,7 +132,7 @@ object LabCommand : Command("lab") {
         }
     }
 
-    object Transfer : Command("transfer") {
+    object Transfer : Subcommand("transfer") {
         init {
             setCondition { sender, _ -> sender.isPlayer && ((sender as Player).instance as? Lab?)?.owns(sender) == true }
 
@@ -129,7 +150,7 @@ object LabCommand : Command("lab") {
         }
     }
 
-    object Kick : Command("kick") {
+    object Kick : Subcommand("kick") {
         init {
             setCondition { sender, _ -> sender.isPlayer && sender.isAllowed(PERM_LABS_KICK, 3) }
 
@@ -145,7 +166,7 @@ object LabCommand : Command("lab") {
         }
     }
 
-    object Permissions : Command("permissions", "perms") {
+    object Permissions : Subcommand("permissions", "perms") {
         init {
             setCondition { sender, _ -> sender.isPlayer && ((sender as Player).instance as? Lab?)?.owns(sender) == true }
 

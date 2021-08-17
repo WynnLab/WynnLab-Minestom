@@ -3,11 +3,10 @@ package com.wynnlab.minestom.commands
 import com.wynnlab.minestom.entities.CustomEntity
 import com.wynnlab.minestom.playerAtLeast1
 import net.kyori.adventure.text.Component
-import net.minestom.server.command.builder.Command
 import net.minestom.server.command.builder.arguments.ArgumentType
 import net.minestom.server.entity.EntityType
 
-object DummyCommand : Command("dummy") {
+object DummyCommand : Command("Spawn a dummy. You can specify its health and mob type", "dummy") {
     init {
         condition = playerAtLeast1
 

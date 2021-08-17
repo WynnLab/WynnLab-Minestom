@@ -4,7 +4,6 @@ import com.wynnlab.minestom.players.Rank
 import com.wynnlab.minestom.players.prepareInventory
 import net.kyori.adventure.text.Component
 import net.minestom.server.command.CommandManager
-import net.minestom.server.command.builder.Command
 import net.minestom.server.command.builder.arguments.ArgumentType
 import net.minestom.server.entity.Player
 
@@ -13,7 +12,7 @@ fun registerDebugCommands(commandManager: CommandManager) {
     commandManager.register(RankCommand)
 }
 
-object RLInvCommand : Command("rl-inv") {
+object RLInvCommand : Command("(Debug) Get all menu items back", "rl-inv") {
     init {
         setCondition { sender, _ -> sender.isPlayer }
 
@@ -23,7 +22,7 @@ object RLInvCommand : Command("rl-inv") {
     }
 }
 
-object RankCommand : Command("rank") {
+object RankCommand : Command("Change your rank", "rank") {
     init {
         setCondition { sender, _ -> sender.isPlayer && sender.asPlayer().permissionLevel >= 4 }
 

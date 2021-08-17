@@ -1,7 +1,6 @@
 package com.wynnlab.minestom.commands
 
 import net.minestom.server.command.CommandManager
-import net.minestom.server.command.builder.Command
 
 fun registerPvpCommands(commandManager: CommandManager) {
     commandManager.register(PvpCommand)
@@ -9,7 +8,7 @@ fun registerPvpCommands(commandManager: CommandManager) {
     commandManager.register(StatsCommand)
 }
 
-object PvpCommand : Command("pvp") {
+object PvpCommand : Command("Open the pvp menu", "pvp") {
     init {
         addSyntax({ sender, _ ->
             sender.sendMessage("Open PVP menu")
@@ -17,7 +16,7 @@ object PvpCommand : Command("pvp") {
     }
 }
 
-object HubCommand : Command("hub", "lobby", "l") {
+object HubCommand : Command("Go back to the lobby", "hub", "lobby", "l") {
     init {
         addSyntax({ sender, _ ->
             sender.sendMessage("Sending to hub")
@@ -25,7 +24,7 @@ object HubCommand : Command("hub", "lobby", "l") {
     }
 }
 
-object StatsCommand : Command("stats") {
+object StatsCommand : Command("Show your stats", "stats") {
     init {
         addSyntax({ sender, _ ->
             sender.sendMessage("Show stats")

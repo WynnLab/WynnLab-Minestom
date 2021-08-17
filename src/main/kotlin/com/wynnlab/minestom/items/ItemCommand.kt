@@ -1,16 +1,28 @@
 package com.wynnlab.minestom.items
 
+import com.wynnlab.minestom.commands.Command
+import com.wynnlab.minestom.commands.Subcommand
 import com.wynnlab.minestom.labs.Lab
 import com.wynnlab.minestom.playerAtLeast1
 import com.wynnlab.minestom.playerAtLeast2
 import com.wynnlab.minestom.util.get
-import net.minestom.server.command.builder.Command
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import net.minestom.server.command.builder.arguments.ArgumentType
 import net.minestom.server.command.builder.suggestion.SuggestionEntry
 import net.minestom.server.entity.Player
-import net.minestom.server.item.ItemStack
 
-object ItemCommand : Command("item") {
+object ItemCommand : Command(arrayOf(
+    Component.text("Item tools:"),
+    Component.text("/get", NamedTextColor.AQUA).append(Component.text(": Get an item from the Wynncraft api", NamedTextColor.GRAY)),
+    Component.text("/create", NamedTextColor.AQUA).append(Component.text(": Create a new item concept", NamedTextColor.GRAY)),
+    Component.text("/id", NamedTextColor.AQUA).append(Component.text(": Set an identification of an item concept", NamedTextColor.GRAY)),
+    Component.text("/meta", NamedTextColor.AQUA).append(Component.text(": Change various metadata of an item concept", NamedTextColor.GRAY)),
+    Component.text("/name", NamedTextColor.AQUA).append(Component.text(": Set the name of an item concept", NamedTextColor.GRAY)),
+    Component.text("/lore", NamedTextColor.AQUA).append(Component.text(": Set the lore of an item concept", NamedTextColor.GRAY)),
+    Component.text("/design", NamedTextColor.AQUA).append(Component.text(": Set the design of an item concept", NamedTextColor.GRAY)),
+    Component.text("/build", NamedTextColor.AQUA).append(Component.text(": Get a standard custom item from an item concept", NamedTextColor.GRAY)),
+), "item") {
     init {
         setCondition { sender, _ -> sender.isPlayer && sender.asPlayer().instance is Lab }
 
@@ -24,7 +36,7 @@ object ItemCommand : Command("item") {
         addSubcommand(Get)
     }
 
-    object Create : Command("create") {
+    object Create : Subcommand("create") {
         init {
             condition = playerAtLeast2
 
@@ -41,7 +53,7 @@ object ItemCommand : Command("item") {
         }
     }
 
-    object Identification : Command("identification", "id") {
+    object Identification : Subcommand("identification", "id") {
         init {
             val idArg = ArgumentType.Enum("identification", com.wynnlab.minestom.items.Identification::class.java)
             val valueArg = ArgumentType.Integer("value")
@@ -54,7 +66,7 @@ object ItemCommand : Command("item") {
         }
     }
 
-    object Name : Command("name") {
+    object Name : Subcommand("name") {
         init {
             val nameArg = ArgumentType.String("name")
 
@@ -66,7 +78,7 @@ object ItemCommand : Command("item") {
         }
     }
 
-    object Lore : Command("lore") {
+    object Lore : Subcommand("lore") {
         init {
             val loreArg = ArgumentType.StringArray("lore")
 
@@ -78,7 +90,7 @@ object ItemCommand : Command("item") {
         }
     }
 
-    object Design : Command("design") {
+    object Design : Subcommand("design") {
         init {
             val designArg = ArgumentType.Word("design").setSuggestionCallback { sender, _, suggestion ->
                 getItemBuilder(sender as Player)?.type?.designs?.keys?.forEach { k ->
@@ -94,7 +106,7 @@ object ItemCommand : Command("item") {
         }
     }
 
-    object Build : Command("build") {
+    object Build : Subcommand("build") {
         init {
             addSyntax({ sender, _ ->
                 val builder = getItemBuilder(sender as Player) ?: return@addSyntax
@@ -103,7 +115,7 @@ object ItemCommand : Command("item") {
         }
     }
 
-    object Get : Command("get") {
+    object Get : Subcommand("get") {
         init {
             condition = playerAtLeast1
 

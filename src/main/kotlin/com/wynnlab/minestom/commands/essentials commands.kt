@@ -2,9 +2,9 @@ package com.wynnlab.minestom.commands
 
 import com.wynnlab.minestom.*
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import net.minestom.server.command.CommandManager
-import net.minestom.server.command.builder.Command
 import net.minestom.server.command.builder.arguments.ArgumentType
 import net.minestom.server.entity.Entity
 import net.minestom.server.entity.Player
@@ -16,7 +16,7 @@ fun registerEssentialsCommands(commandManager: CommandManager) {
     commandManager.register(PartyMessageCommand)
 }
 
-object MessageCommand : Command("message", "msg") {
+object MessageCommand : Command("Send a direct message to a player", "message", "msg") {
     init {
         setCondition { sender, _ -> sender.isPlayer }
 
@@ -29,7 +29,7 @@ object MessageCommand : Command("message", "msg") {
     }
 }
 
-object ReplyCommand : Command("reply", "r") {
+object ReplyCommand : Command("Reply to the latest incoming message quickly", "reply", "r") {
     init {
         setCondition { sender, _ -> sender.isPlayer }
 
@@ -46,7 +46,14 @@ object ReplyCommand : Command("reply", "r") {
     }
 }
 
-object PartyCommand : Command("party") {
+object PartyCommand : Command(arrayOf(
+    Component.text("Party tools:", NamedTextColor.GREEN),
+    Component.text("/create", NamedTextColor.AQUA).append(Component.text(": Create a party", NamedTextColor.GRAY)),
+    Component.text("/invite", NamedTextColor.AQUA).append(Component.text(": Invite someone to your party", NamedTextColor.GRAY)),
+    Component.text("/join", NamedTextColor.AQUA).append(Component.text(": Join a party you have been invited to", NamedTextColor.GRAY)),
+    Component.text("/leave", NamedTextColor.AQUA).append(Component.text(": Leave your party", NamedTextColor.GRAY)),
+    Component.text("/message", NamedTextColor.AQUA).append(Component.text(": Send a message to your party (Alias: /p)", NamedTextColor.GRAY)),
+), "party") {
     init {
         setCondition { sender, _ -> sender.isPlayer }
 
@@ -57,7 +64,7 @@ object PartyCommand : Command("party") {
         addSubcommand(Message)
     }
 
-    object Create : Command("create") {
+    object Create : Subcommand("create") {
         init {
             val nameArg = ArgumentType.String("name")
 
@@ -76,7 +83,7 @@ object PartyCommand : Command("party") {
         }
     }
 
-    object Invite : Command("invite") {
+    object Invite : Subcommand("invite") {
         init {
             setCondition { sender, _ -> sender.isPlayer }
 
@@ -89,7 +96,7 @@ object PartyCommand : Command("party") {
         }
     }
 
-    object Join : Command("join") {
+    object Join : Subcommand("join") {
         init {
             setCondition { sender, _ -> sender.isPlayer }
 
@@ -105,16 +112,16 @@ object PartyCommand : Command("party") {
         }
     }
 
-    object Leave : Command("leave")
+    object Leave : Subcommand("leave")
 
-    object Message : Command("message") {
+    object Message : Subcommand("message") {
         init {
             partyMessageInit()
         }
     }
 }
 
-object PartyMessageCommand : Command("p") {
+object PartyMessageCommand : Command("Send a message to your party", "p") {
     init {
         partyMessageInit()
     }

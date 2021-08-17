@@ -61,6 +61,7 @@ fun main() {
     val commandManager = MinecraftServer.getCommandManager()
     registerServerCommands(commandManager)
 
+    commandManager.register(HelpCommand)
     commandManager.register(ClassCommand)
     commandManager.register(CastCommand)
     commandManager.register(ItemCommand)

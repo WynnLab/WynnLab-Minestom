@@ -11,7 +11,6 @@ import net.minestom.server.MinecraftServer
 import net.minestom.server.adventure.audience.Audiences
 import net.minestom.server.command.CommandManager
 import net.minestom.server.command.CommandSender
-import net.minestom.server.command.builder.Command
 import net.minestom.server.command.builder.arguments.ArgumentType
 import net.minestom.server.entity.Entity
 import net.minestom.server.entity.GameMode
@@ -45,7 +44,7 @@ fun CommandSender.message(text: String) {
 }
 val CommandSender.signature get() = if (this is Player) username else "/"
 
-object StopCommand : Command("stop") {
+object StopCommand : Command("Stop the server", "stop") {
     init {
         condition = isAllowed(PERM_SERVER_STOP, 4)
         addSyntax({ sender, _ ->
@@ -55,7 +54,7 @@ object StopCommand : Command("stop") {
     }
 }
 
-object SaveAllCommand : Command("save-all") {
+object SaveAllCommand : Command("Save all instances (that get saved)", "save-all") {
     init {
         condition = isAllowed(PERM_SERVER_SAVE_ALL, 4)
         addSyntax({ _, _ ->
@@ -64,7 +63,7 @@ object SaveAllCommand : Command("save-all") {
     }
 }
 
-object KickCommand : Command("kick") {
+object KickCommand : Command("Kick a player", "kick") {
     init {
         condition = isAllowed(PERM_SERVER_KICK, 4)
 
@@ -82,7 +81,7 @@ object KickCommand : Command("kick") {
     }
 }
 
-object KillCommand : Command("kill") {
+object KillCommand : Command("Kill a player", "kill") {
     init {
         addConditionalSyntax({ sender, _ -> sender.isPlayer }, { sender, _ ->
             sender.asPlayer().kill()
@@ -109,7 +108,7 @@ object KillCommand : Command("kill") {
     }
 }*/
 
-object GamemodeCommand : Command("gamemode", "gm") {
+object GamemodeCommand : Command("Change your gamemode", "gamemode", "gm") {
     init {
         condition = isAllowed(PERM_SERVER_GAMEMODE)
 
@@ -138,7 +137,7 @@ object GamemodeCommand : Command("gamemode", "gm") {
     }
 }
 
-object GiveCommand : Command("give") {
+object GiveCommand : Command("Give yourself or someone else an item", "give") {
     init {
         condition = isAllowed(PERM_SERVER_GIVE)
 
@@ -158,7 +157,7 @@ object GiveCommand : Command("give") {
     }
 }
 
-object SetblockCommand : Command("setblock") {
+object SetblockCommand : Command("Set a block", "setblock") {
     init {
         setCondition { sender, _ -> !sender.isConsole && sender.isAllowed(PERM_SERVER_SETBLOCK) }
 
@@ -176,9 +175,9 @@ object SetblockCommand : Command("setblock") {
     }
 }
 
-object TeleportCommand : Command("teleport", "tp") {
+object TeleportCommand : Command("Teleport", "teleport", "tp") {
     init {
-        setCondition { sender, _ -> sender.isPlayer && sender.isAllowed(PERM_SERVER_TP) }
+        setCondition { sender, _ -> sender.isPlayer && sender.isAllowed(PERM_SERVER_TP, 4) }
 
         val positionArg = ArgumentType.RelativeBlockPosition("position")
         val entitiesArg = ArgumentType.Entity("entities")
@@ -255,7 +254,7 @@ object TeleportCommand : Command("teleport", "tp") {
     }
 }*/
 
-object GetDataCommand : Command("get-data") {
+object GetDataCommand : Command("Get the data of an entity/item", "get-data") {
     init {
         setCondition { sender, _ -> sender.isPlayer }
 
@@ -280,7 +279,7 @@ object GetDataCommand : Command("get-data") {
     }
 }
 
-object OpCommand : Command("op") {
+object OpCommand : Command("Change the op level of a player", "op") {
     init {
         setCondition { sender, _ -> sender.isConsole || sender.isPlayer && sender.asPlayer().permissionLevel > 0 }
 
@@ -311,14 +310,14 @@ object OpCommand : Command("op") {
     }
 }
 
-object PermissionCommand : Command("permission", "perm") {
+object PermissionCommand : Command("Change the permissions of a player", "permission", "perm") {
     init {
         condition = isAllowed(PERM_SERVER_PERMISSIONS)
         addSubcommand(Grant)
         addSubcommand(Revoke)
     }
 
-    object Grant : Command("grant") {
+    object Grant : Subcommand("grant") {
         init {
             val playersArg = ArgumentType.Entity("targets").onlyPlayers(true)
             val permArg = ArgumentType.String("permission")
@@ -332,7 +331,7 @@ object PermissionCommand : Command("permission", "perm") {
         }
     }
 
-    object Revoke : Command("revoke") {
+    object Revoke : Subcommand("revoke") {
         init {
             val playersArg = ArgumentType.Entity("targets").onlyPlayers(true)
             val permArg = ArgumentType.String("permission")
