@@ -250,7 +250,7 @@ sealed class ItemBuilder(
 
         fun itemBuilderName(player: Player) = "${player.username}#${System.currentTimeMillis()}"
 
-        val nameTag = Tag.String("builder-name")
-        val typeTag = Tag.String("builder-type")
+        val nameTag = Tag.String("item-builder-name")
+        val typeTag = Tag.String("item-builder-type")
     }
 }

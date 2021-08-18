@@ -59,7 +59,7 @@ object ItemCommand : Command(arrayOf(
             val valueArg = ArgumentType.Integer("value")
 
             addSyntax({ sender, ctx ->
-                val builder = ItemCommand.getItemBuilder(sender as Player) ?: return@addSyntax
+                val builder = getItemBuilder(sender as Player) ?: return@addSyntax
                 builder.setId(ctx[idArg], ctx[valueArg].toShort())
                 sender.itemInMainHand = builder.item()
             }, idArg, valueArg)
@@ -71,7 +71,7 @@ object ItemCommand : Command(arrayOf(
             val nameArg = ArgumentType.String("name")
 
             addSyntax({ sender, ctx ->
-                val builder = ItemCommand.getItemBuilder(sender as Player) ?: return@addSyntax
+                val builder = getItemBuilder(sender as Player) ?: return@addSyntax
                 builder.name = ctx[nameArg]
                 sender.itemInMainHand = builder.item()
             }, nameArg)
@@ -150,10 +150,12 @@ object ItemCommand : Command(arrayOf(
             }, nameArg)
         }
 
-        private fun getApiItems(name: String): List<String> {
+        private fun getApiItems(name: String): List<String> = try {
             val json = get("https://api.wynncraft.com/public_api.php?action=itemDB&search=${name.replace(" ", "%20")}")
             val items = json.getAsJsonArray("items")
-            return items.mapNotNull { it.asJsonObject.get("name").asString }
+            items.mapNotNull { it.asJsonObject.get("name").asString }
+        } catch (_: Exception) {
+            emptyList()
         }
     }
 

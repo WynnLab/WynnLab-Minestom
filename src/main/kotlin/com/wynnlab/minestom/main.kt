@@ -12,6 +12,7 @@ import com.wynnlab.minestom.labs.registerLabsCommands
 import com.wynnlab.minestom.labs.registerLabsListeners
 import com.wynnlab.minestom.listeners.initServerListeners
 import com.wynnlab.minestom.listeners.initWynnLabListeners
+import com.wynnlab.minestom.mob.MobCommand
 import com.wynnlab.minestom.players.WynnLabLogin
 import com.wynnlab.minestom.players.WynnLabUuidProvider
 import com.wynnlab.minestom.util.listen
@@ -24,14 +25,13 @@ import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import net.minestom.server.MinecraftServer
 import net.minestom.server.adventure.audience.Audiences
+import net.minestom.server.coordinate.Pos
 import net.minestom.server.event.player.PlayerLoginEvent
 import net.minestom.server.event.server.ServerListPingEvent
 import net.minestom.server.extras.lan.OpenToLAN
 import net.minestom.server.extras.lan.OpenToLANConfig
 import net.minestom.server.instance.InstanceContainer
 import net.minestom.server.ping.ServerListPingType
-import net.minestom.server.storage.systems.FileStorageSystem
-import net.minestom.server.utils.Position
 import net.minestom.server.utils.time.TimeUnit
 import kotlin.system.exitProcess
 
@@ -43,9 +43,9 @@ fun main() {
     val connectionManager = MinecraftServer.getConnectionManager()
     connectionManager.setUuidProvider(WynnLabUuidProvider)
 
-    val storageManager = MinecraftServer.getStorageManager()
-    storageManager.defineDefaultStorageSystem(::FileStorageSystem)
-    val storageLocation = storageManager.getLocation("world")
+    //val storageManager = MinecraftServer.getStorageManager()
+    //storageManager.defineDefaultStorageSystem()
+    //val storageLocation = storageManager.getLocation("world")
 
     val schedulerManager = MinecraftServer.getSchedulerManager()
     schedulerManager.buildShutdownTask(::saveAll).makeTransient().schedule()
@@ -55,7 +55,7 @@ fun main() {
     initActionBar()
 
     val instanceManager = MinecraftServer.getInstanceManager()
-    mainInstance = instanceManager.createInstanceContainer(storageLocation)
+    mainInstance = instanceManager.createInstanceContainer()
     mainInstance.chunkGenerator = GeneratorDemo()
 
     val commandManager = MinecraftServer.getCommandManager()
@@ -64,7 +64,6 @@ fun main() {
     commandManager.register(HelpCommand)
     commandManager.register(ClassCommand)
     commandManager.register(CastCommand)
-    commandManager.register(ItemCommand)
     commandManager.register(DummyCommand)
     commandManager.register(MenuCommand)
     registerPvpCommands(commandManager)
@@ -72,18 +71,20 @@ fun main() {
     registerDebugCommands(commandManager)
 
     registerLabsCommands(commandManager)
+    commandManager.register(ItemCommand)
+    commandManager.register(MobCommand)
 
     val globalEventHandler = MinecraftServer.getGlobalEventHandler()
 
     globalEventHandler.listen<PlayerLoginEvent> { event ->
-        event.player.respawnPoint = Position(0.0, 42.0, 0.0)
+        event.player.respawnPoint = Pos(0.0, 42.0, 0.0)
         event.player.permissionLevel = 4
     }
     globalEventHandler.addListener(PlayerLoginEvent::class.java, WynnLabLogin(mainInstance))
 
     globalEventHandler.listen<ServerListPingEvent> { event ->
         val responseData = event.responseData
-        responseData.version = "WynnLab 1.17"
+        responseData.version = "WynnLab 1.17.1"
         responseData.description = when (event.pingType) {
             ServerListPingType.MODERN_FULL_RGB -> motd
             ServerListPingType.OPEN_TO_LAN -> lanMotd
@@ -114,7 +115,8 @@ lateinit var mainInstance: InstanceContainer
 
 fun saveAll() {
     Audiences.players().sendMessage(Component.text("[Server] saving...", NamedTextColor.GRAY))
-    MinecraftServer.getInstanceManager().instances.forEach { if (it is InstanceContainer && it.storageLocation != null) it.saveInstance() }
+    //MinecraftServer.getInstanceManager().instances.forEach { if (it is InstanceContainer /*&& it.storageLocation != null*/) it.saveInstance(); it.saveChunksToStorage() }
+    //TODO: saving
 }
 
 fun stop() {

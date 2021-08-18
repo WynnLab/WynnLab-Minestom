@@ -2,6 +2,7 @@ package com.wynnlab.minestom.listeners
 
 import com.wynnlab.minestom.core.damage.NeutralDamageModifiers
 import com.wynnlab.minestom.core.damage.attack
+import com.wynnlab.minestom.core.player.itemWeapon
 import com.wynnlab.minestom.core.player.refreshClickSequenceBar
 import com.wynnlab.minestom.core.player.resetClickSequenceBar
 import com.wynnlab.minestom.entities.CustomEntity
@@ -45,6 +46,7 @@ private fun onPlayerRightClick(player: Player) {
         6 -> MenuGui().show(player)
         7, 8 -> {}
         else -> {
+            if (player.itemWeapon == null) return
             val spell = when (addToClickSequence(player, true)) {
                 clickSequenceSpellMap[1] /* rlr */ -> 1
                 clickSequenceSpellMap[2] /* rrr */ -> 2
@@ -62,6 +64,7 @@ private fun onPlayerLeftClick(player: Player) {
     if (seq == 2.toByte()) // 1x left-click
         castSpellAndResetClickSequence(player, 0)
     else {
+        if (player.itemWeapon == null) return
         val spell = when (seq) {
             clickSequenceSpellMap[3] /* rll */ -> 3
             clickSequenceSpellMap[4] /* rrl */ -> 4
@@ -137,7 +140,7 @@ private fun castSpellAndResetClickSequence(player: Player, spell: Int) {
     //val p = Particle.particle(ITEM, 10, ParticleType.OffsetAndSpeed(0f, 0f, 0f, 0f), Item(player.itemInMainHand))
     //player.showParticle(p, player.position)
     //player.sendMessage("spell $spell")
-    if (spell > 0 ) player.playSound(Sound.sound(SoundEvent.EXPERIENCE_ORB_PICKUP, Sound.Source.MASTER, 1f, .5f))
+    if (spell > 0 ) player.playSound(Sound.sound(SoundEvent.ENTITY_EXPERIENCE_ORB_PICKUP, Sound.Source.MASTER, 1f, .5f))
     resetClickSequence(player)
 }
 

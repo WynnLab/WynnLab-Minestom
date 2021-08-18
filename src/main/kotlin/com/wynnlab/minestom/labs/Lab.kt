@@ -3,22 +3,24 @@ package com.wynnlab.minestom.labs
 import com.wynnlab.minestom.generator.GeneratorDemo
 import com.wynnlab.minestom.items.ItemBuilder
 import com.wynnlab.minestom.mainInstance
+import com.wynnlab.minestom.mob.MobBuilder
 import com.wynnlab.minestom.players.prepareInventory
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.minestom.server.MinecraftServer
+import net.minestom.server.coordinate.Pos
 import net.minestom.server.entity.GameMode
 import net.minestom.server.entity.Player
 import net.minestom.server.instance.InstanceContainer
 import net.minestom.server.inventory.itemStacksRaw
 import net.minestom.server.item.ItemStack
-import net.minestom.server.utils.Position
 import net.minestom.server.world.DimensionType
 import java.util.*
 import kotlin.collections.HashMap
 
-class Lab(owner: Player) : InstanceContainer(owner.uuid, DimensionType.OVERWORLD, null) {
+class Lab(owner: Player) : InstanceContainer(owner.uuid, DimensionType.OVERWORLD) {
     init {
+        this.saveChunksToStorage()
         MinecraftServer.LOGGER.info("Starting lab...")
         MinecraftServer.getInstanceManager().registerInstance(this)
 
@@ -28,11 +30,12 @@ class Lab(owner: Player) : InstanceContainer(owner.uuid, DimensionType.OVERWORLD
     }
 
     val itemBuilders = HashMap<String, ItemBuilder>()
+    val mobBuilders = HashMap<String, MobBuilder>()
 
     fun owns(player: Player) = uniqueId == player.uuid
 
     fun join(player: Player) {
-        player.setInstance(this, Position(.0, 42.0, .0))
+        player.setInstance(this, Pos(.0, 42.0, .0))
         player.scheduleNextTick {
             (it as Player).playerConnection.sendPacket(MinecraftServer.getCommandManager().createDeclareCommandsPacket(it))
         }
@@ -54,7 +57,7 @@ class Lab(owner: Player) : InstanceContainer(owner.uuid, DimensionType.OVERWORLD
             System.arraycopy(i, 0, player.inventory.itemStacksRaw, 0, i.size)
             player.inventory.update()
         }
-        player.setInstance(mainInstance, Position(.0, 42.0, .0))
+        player.setInstance(mainInstance, Pos(.0, 42.0, .0))
         player.gameMode = GameMode.ADVENTURE
         player.permissionLevel = 0
         player.scheduleNextTick {
