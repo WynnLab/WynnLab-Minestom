@@ -19,7 +19,7 @@ import net.minestom.server.utils.time.TimeUnit
 
 fun initActionBar() {
     scheduleActionBarTask()
-    registerItemChangeListener()
+    //registerItemChangeListener()
 }
 
 private fun scheduleActionBarTask() {
@@ -28,13 +28,13 @@ private fun scheduleActionBarTask() {
     }.repeat(1L, TimeUnit.SECOND).schedule()
 }
 
-private fun registerItemChangeListener() {
+/*private fun registerItemChangeListener() {
     val node = EventNode.event("action-bar-item-change-listener", EventFilter.PLAYER) { e ->
         e is PlayerSwapItemEvent || e is PlayerChangeHeldSlotEvent// || e is InventoryOpenEvent
     }
     node.listen { it.entity.inventory.update() }
     MinecraftServer.getGlobalEventHandler().addChild(node)
-}
+}*/
 
 fun refreshActionBar(player: Player) {
     val actionBar = Component.text()
@@ -60,9 +60,11 @@ fun refreshClickSequenceBar(player: Player) {
 }
 
 fun resetClickSequenceBar(player: Player) {
-    val oldItem = player.itemInMainHand
-    player.itemInMainHand = player.itemInMainHand.withDisplayName(Component.empty())
-    player.inventory.itemStacksRaw[player.heldSlot.toInt()] = oldItem
+    //val oldItem = player.itemInMainHand
+    //player.itemInMainHand = player.itemInMainHand.withDisplayName(Component.empty())
+    //player.inventory.itemStacksRaw[player.heldSlot.toInt()] = oldItem
+    //player.itemInMainHand = oldItem
+    player.inventory.update()
 }
 
 /*fun refreshActionBar(player: Player, scheduled: Boolean) {

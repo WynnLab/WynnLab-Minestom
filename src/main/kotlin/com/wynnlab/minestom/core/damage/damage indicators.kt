@@ -50,7 +50,7 @@ private fun healthIndicatorBelowName(target: DamageTarget) {
 
     val currentPercent = target.health / target.maxHealth
 
-    val customName = Component.text()
+    val belowNameTag = Component.text()
         .append(Component.text("[", NamedTextColor.DARK_RED))
         .append(Component.text("|", healthIndicatorBelowNameBarColor(.08333f, currentPercent)))
         .append(Component.text("|", healthIndicatorBelowNameBarColor(.25f, currentPercent)))
@@ -62,10 +62,10 @@ private fun healthIndicatorBelowName(target: DamageTarget) {
         .append(Component.text("]", NamedTextColor.DARK_RED))
         .build()
 
-    target.ce.belowNameHologram.customName = customName
+    target.ce.belowNameTag = belowNameTag
 
     RefreshDelayTask(target, "remove-hibn") {
-        target.ce.belowNameHologram.isCustomNameVisible = false
+        target.ce.belowNameTag = null
     }.schedule(5, TimeUnit.SECOND)
 
     /*if (newIndicator) {
@@ -116,8 +116,14 @@ private fun healthIndicatorBelowNameBarColor(percentReq: Float, currentPercent: 
 private fun bossBarText(entity: DamageTarget) = Component.text()
     .also { c -> entity.customName?.let { c
         .append(it)
-        .append(Component.text(" - "))
-        .append(Component.text((entity.health + .5f).toInt()))
+        .append(Component.text(" - ", NamedTextColor.GRAY))
+        .append(Component.text((entity.health + .5f).toInt(), NamedTextColor.RED))
+        .append(Component.text("❤", NamedTextColor.DARK_RED))
+        if (entity is CustomEntity.DamageTarget)
+            entity.ce.belowNameTagDefault?.let { d ->
+                c.append(Component.text(" - ", NamedTextColor.GRAY))
+                c.append(d)
+            }
     } }
     .build()
 

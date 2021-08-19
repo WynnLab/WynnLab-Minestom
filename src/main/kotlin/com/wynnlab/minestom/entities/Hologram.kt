@@ -25,6 +25,6 @@ class Hologram(text: Component?) : Entity(EntityType.ARMOR_STAND) {
 
     override fun setCustomName(customName: Component?) {
         super.setCustomName(customName)
-        isCustomNameVisible = hologramNameVisible
+        isCustomNameVisible = hologramNameVisible && customName != null
     }
 }

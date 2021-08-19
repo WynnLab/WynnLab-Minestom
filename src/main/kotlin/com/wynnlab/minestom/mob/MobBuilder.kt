@@ -1,7 +1,11 @@
 package com.wynnlab.minestom.mob
 
+import com.wynnlab.minestom.COLOR_DARKER_GRAY
+import com.wynnlab.minestom.COLOR_LIGHTER_GRAY
 import com.wynnlab.minestom.core.Element
+import com.wynnlab.minestom.entities.CustomEntity
 import com.wynnlab.minestom.items.*
+import com.wynnlab.minestom.textColor
 import com.wynnlab.minestom.util.displayNameNonItalic
 import com.wynnlab.minestom.util.hideAllFlags
 import com.wynnlab.minestom.util.loreNonItalic
@@ -35,7 +39,7 @@ class MobBuilder(val id: String, var name: String, type: EntityType, var level: 
     var ambientSound: Sound? = null
 
     var glowing = false
-    var invisible = false
+    //var invisible = false
     var burning = false
 
     private fun refreshDisplayName() = item.displayNameNonItalic(Component.text(name, NamedTextColor.GOLD))
@@ -59,6 +63,15 @@ class MobBuilder(val id: String, var name: String, type: EntityType, var level: 
         itemLore.add(Component.text(type.namespace().toString(), NamedTextColor.DARK_GRAY))
         itemLore.add(Component.empty())
 
+        itemLore.add(Component.text("${attackSpeed.display} Attack Speed", NamedTextColor.DARK_GRAY))
+        damageComponent("Neutral", Element.Neutral, damage.neutral)?.let { itemLore.add(it) }
+        damageComponent("Earth", Element.Neutral, damage.earth)?.let { itemLore.add(it) }
+        damageComponent("Thunder", Element.Thunder, damage.thunder)?.let { itemLore.add(it) }
+        damageComponent("Water", Element.Water, damage.water)?.let { itemLore.add(it) }
+        damageComponent("Fire", Element.Fire, damage.fire)?.let { itemLore.add(it) }
+        damageComponent("Air", Element.Air, damage.air)?.let { itemLore.add(it) }
+        itemLore.add(Component.empty())
+
         itemLore.add(Component.text("❤ Health: $maxHealth", NamedTextColor.DARK_RED))
         itemLore.add(Component.text().append(Component.text("${Element.Neutral.icon} Base Defense: ", NamedTextColor.GOLD))
             .append(Component.text(baseDefense, NamedTextColor.GRAY)).build())
@@ -75,8 +88,11 @@ class MobBuilder(val id: String, var name: String, type: EntityType, var level: 
         itemLore.add(Component.empty())
 
         if (glowing) itemLore.add(Component.text("+Glowing", NamedTextColor.GRAY))
-        if (invisible) itemLore.add(Component.text("+Invisible", NamedTextColor.GRAY))
+        //if (invisible) itemLore.add(Component.text("+Invisible", NamedTextColor.GRAY))
         if (burning) itemLore.add(Component.text("+Burning", NamedTextColor.GRAY))
+
+        if (glowing || burning) itemLore.add(Component.empty())
+        itemLore.add(Component.text(if (build) "Custom Mob" else "Concept Mob", if (build) NamedTextColor.RED else NamedTextColor.DARK_GRAY))
 
         loreNonItalic(itemLore)
 
@@ -90,9 +106,14 @@ class MobBuilder(val id: String, var name: String, type: EntityType, var level: 
     private fun elementalDefenseComponent(name: String, element: Element, value: Int) = value.takeIf { it != 0 }?.let {
         Component.text().append(Component.text("${element.icon} $name ", element.color)).append(Component.text("Defense: $it", NamedTextColor.GRAY)).build()
     }
+
+    private fun damageComponent(name: String, element: Element, value: IntRange) = value.takeIf { it.last > 0 }?.let {
+        Component.text().append(Component.text("${element.icon} $name ", element.color)).append(Component.text("Damage: ${it.first}-${it.last}", NamedTextColor.GRAY)).build()
+    }
+
     private fun soundComponent(name: String, value: Sound?) = if (value == null) Component.text(name, NamedTextColor.DARK_GRAY, TextDecoration.STRIKETHROUGH)
         else Component.text().append(Component.text("$name: ", NamedTextColor.GREEN))
-            .append(Component.text("${value.sound.namespace()} ", NamedTextColor.GRAY))
+            .append(Component.text("${value.sound.namespace().path} ", NamedTextColor.GRAY))
             .append(Component.text(value.pitch, NamedTextColor.AQUA))
             .build()
 
@@ -100,5 +121,45 @@ class MobBuilder(val id: String, var name: String, type: EntityType, var level: 
         fun mobBuilderName(player: Player) = "${player.username}#${System.currentTimeMillis()}"
 
         val nameTag = Tag.String("mob-builder-name")
+
+        fun setCustomEntityBelowNameTag(entity: CustomEntity) {
+            val c = Component.text()
+            var hasDam = false
+            for ((e, v) in entity.damage) {
+                if (e == Element.Neutral) continue
+                if (v.last > 0) {
+                    c.append(Component.text(e.icon, e.color))
+                    hasDam = true
+                }
+            }
+            if (hasDam)
+                c.append(Component.text(" Dam", COLOR_LIGHTER_GRAY.textColor))
+            val def = Component.text()
+            var hasDef = false
+            val weak = Component.text()
+            var hasWeak = false
+            for ((e, v) in  entity.defense) {
+                if (v == 0) continue
+                else if (v > 0) {
+                    def.append(Component.text(e.icon, e.color))
+                    hasDef = true
+                } else {
+                    weak.append(Component.text(e.icon, e.color))
+                    hasWeak = true
+                }
+            }
+            if (hasDef) {
+                if (hasDam) c.append(Component.text(" "))
+                c.append(def.build())
+                c.append(Component.text(" Def", COLOR_LIGHTER_GRAY.textColor))
+            }
+            if (hasWeak) {
+                if (hasDam || hasDef) c.append(Component.text(" "))
+                c.append(weak.build())
+                c.append(Component.text(" Weak", COLOR_LIGHTER_GRAY.textColor))
+            }
+            if (hasDam || hasDef || hasWeak)
+                entity.belowNameTagDefault = c.build()
+        }
     }
 }

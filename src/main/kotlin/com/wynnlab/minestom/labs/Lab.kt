@@ -35,19 +35,13 @@ class Lab(owner: Player) : InstanceContainer(owner.uuid, DimensionType.OVERWORLD
     fun owns(player: Player) = uniqueId == player.uuid
 
     fun join(player: Player) {
-        player.setInstance(this, Pos(.0, 42.0, .0))
-        player.scheduleNextTick {
-            (it as Player).playerConnection.sendPacket(MinecraftServer.getCommandManager().createDeclareCommandsPacket(it))
+        player.setInstance(this, Pos(.0, 42.0, .0)).thenRun {
+            player.playerConnection.sendPacket(MinecraftServer.getCommandManager().createDeclareCommandsPacket(player))
+            player.sendMessage(Component.text("${player.username} joined the lab", NamedTextColor.YELLOW))
         }
         oldInventories[player.uuid] = player.inventory.itemStacks
         player.inventory.itemStacksRaw.fill(ItemStack.AIR)
         prepareInventory(player)
-
-        //player.sendMessage(Component.text("${player.username} joined the lab", NamedTextColor.YELLOW)) // Yes I know
-        val name = player.username
-        scheduleNextTick {
-            it.sendMessage(Component.text("$name joined the lab", NamedTextColor.YELLOW))
-        }
     }
 
     fun leave(player: Player) {
@@ -57,12 +51,11 @@ class Lab(owner: Player) : InstanceContainer(owner.uuid, DimensionType.OVERWORLD
             System.arraycopy(i, 0, player.inventory.itemStacksRaw, 0, i.size)
             player.inventory.update()
         }
-        player.setInstance(mainInstance, Pos(.0, 42.0, .0))
+        player.setInstance(mainInstance, Pos(.0, 42.0, .0)).thenRun {
+            player.playerConnection.sendPacket(MinecraftServer.getCommandManager().createDeclareCommandsPacket(player))
+        }
         player.gameMode = GameMode.ADVENTURE
         player.permissionLevel = 0
-        player.scheduleNextTick {
-            (it as Player).playerConnection.sendPacket(MinecraftServer.getCommandManager().createDeclareCommandsPacket(it))
-        }
 
         if (players.isEmpty()) {
             delete()

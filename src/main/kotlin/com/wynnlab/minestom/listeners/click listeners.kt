@@ -7,6 +7,9 @@ import com.wynnlab.minestom.core.player.refreshClickSequenceBar
 import com.wynnlab.minestom.core.player.resetClickSequenceBar
 import com.wynnlab.minestom.entities.CustomEntity
 import com.wynnlab.minestom.gui.MenuGui
+import com.wynnlab.minestom.mob.MobCommand
+import com.wynnlab.minestom.mob.getCustomMob
+import com.wynnlab.minestom.mob.mobTypeIdTag
 import com.wynnlab.minestom.tasks.RefreshDelayTask
 import com.wynnlab.minestom.util.listen
 import com.wynnlab.minestom.util.rayCastEntity
@@ -46,6 +49,10 @@ private fun onPlayerRightClick(player: Player) {
         6 -> MenuGui().show(player)
         7, 8 -> {}
         else -> {
+            if (player.itemInMainHand.hasTag(mobTypeIdTag)) {
+                MobCommand.spawn(player.instance ?: return, player.position, getCustomMob(player.itemInMainHand) ?: return)
+                return
+            } //TODO: structure
             if (player.itemWeapon == null) return
             val spell = when (addToClickSequence(player, true)) {
                 clickSequenceSpellMap[1] /* rlr */ -> 1

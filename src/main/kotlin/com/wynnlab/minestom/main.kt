@@ -33,6 +33,7 @@ import net.minestom.server.extras.lan.OpenToLANConfig
 import net.minestom.server.instance.InstanceContainer
 import net.minestom.server.ping.ServerListPingType
 import net.minestom.server.utils.time.TimeUnit
+import kotlin.random.Random
 import kotlin.system.exitProcess
 
 fun main() {
@@ -151,3 +152,5 @@ private val legacyMotd = Component.text().append(lanMotd).append(Component.newli
 val webhookUrl = getProperty("webhook-url")
 
 val faviconBase64 = loadImageBase64("./server-icon.png")?.let { "data:image/png;base64,$it" }
+
+val random = Random(System.currentTimeMillis())

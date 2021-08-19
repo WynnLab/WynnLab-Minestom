@@ -74,13 +74,13 @@ fun writeItemMeta(writer: TagWritable, builder: ItemBuilder) {
     }
 }
 
-val itemTypeIdTag = Tag.Byte("type")
+val itemTypeIdTag = Tag.Byte("item-type-id")
 
-val itemSocketsTag: Tag<Byte> = Tag.Byte("sockets").defaultValue(0)
-val skillRequirementsTag = Tag.ByteArray("skill-requirements")
+val itemSocketsTag: Tag<Byte> = Tag.Byte("item-sockets").defaultValue(0)
+val skillRequirementsTag = Tag.ByteArray("item-skill-requirements")
 
-val itemAttackSpeedTag = Tag.Byte("attack-speed")
-val itemDamageTag = Tag.IntArray("damage")
+val itemAttackSpeedTag = Tag.Byte("item-attack-speed")
+val itemDamageTag = Tag.IntArray("item-damage")
 
-val itemHealthTag = Tag.Short("health")
-val itemDefenseTag = Tag.ByteArray("defense")
+val itemHealthTag = Tag.Short("item-health")
+val itemDefenseTag = Tag.ByteArray("item-defense")

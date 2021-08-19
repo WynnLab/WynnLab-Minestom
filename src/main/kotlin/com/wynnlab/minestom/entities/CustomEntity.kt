@@ -1,6 +1,14 @@
 package com.wynnlab.minestom.entities
 
+import com.wynnlab.minestom.items.AttackSpeed
+import com.wynnlab.minestom.items.Damage
+import com.wynnlab.minestom.items.Defense
+import com.wynnlab.minestom.random
 import net.kyori.adventure.sound.Sound
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.TextComponent
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextColor
 import net.minestom.server.coordinate.Pos
 import net.minestom.server.coordinate.Vec
 import net.minestom.server.entity.Entity
@@ -11,16 +19,53 @@ import net.minestom.server.instance.Instance
 import net.minestom.server.network.packet.server.play.EntityAnimationPacket
 import net.minestom.server.sound.SoundEvent
 import net.minestom.server.tag.Tag
+import org.jetbrains.annotations.ApiStatus
 import java.util.concurrent.CompletableFuture
 
 abstract class CustomEntity(entityType: EntityType) : Entity(entityType) {
+    var level: Int = 0
+    set(value) {
+        field = value
+        @Suppress("deprecation")
+        setCustomName(customName)
+    }
+    var nameColor: TextColor = NamedTextColor.GREEN
+
     var health = 0f
     var maxHealth = 0f
     inline val isDead get() = health <= 0f
 
+    var baseDefense: Float = 0f
+    val defense: Defense = Defense(0, 0, 0, 0, 0)
+
+    var attackSpeed = AttackSpeed.Normal
+    val damage: Damage = Damage(0..0, 0..0, 0..0, 0..0, 0..0, 0..0)
+
     open val hurtSound: Sound = Sound.sound(SoundEvent.ENTITY_GENERIC_HURT, Sound.Source.AMBIENT, 1f, 1f)
     open val deathSound: Sound = Sound.sound(SoundEvent.ENTITY_GENERIC_DEATH, Sound.Source.AMBIENT, 1f, 1f)
     open val ambientSound: Sound? = null
+
+    fun setName(name: String) {
+        @Suppress("deprecation")
+        setCustomName(Component.text(name, nameColor))
+    }
+
+    private var customName: Component? = null
+    final override fun getCustomName(): Component? {
+        return customName
+    }
+    @Deprecated("Doesn't take nameColor into account", replaceWith = ReplaceWith("setName(name)"))
+    final override fun setCustomName(customName: Component?) {
+        this.customName = customName
+        isCustomNameVisible = customName != null
+        if (customName == null) super.setCustomName(null)
+        else super.setCustomName(Component.text()
+            .append(customName)
+            .append(Component.text(" "))
+            .append(Component.text("[Lv. $level]", NamedTextColor.GOLD))
+            .build())
+    }
+    fun getDisplayName() = super.getCustomName()
 
     fun damage(value: Float) {
         health -= value
@@ -50,7 +95,20 @@ abstract class CustomEntity(entityType: EntityType) : Entity(entityType) {
         remove()
     }
 
-    val belowNameHologram = Hologram(null)
+    private val belowNameHologram = Hologram(null)
+
+    var belowNameTagDefault: Component? = null
+    set(value) {
+        field = value
+        belowNameTag = belowNameHologram.customName
+    }
+
+    var belowNameTag: Component?
+    get() = belowNameHologram.customName
+    set(text) {
+        val newTag = text ?: belowNameTagDefault
+        belowNameHologram.customName = newTag
+    }
 
     override fun setInstance(instance: Instance, spawnPosition: Pos): CompletableFuture<Void>? {
         return super.setInstance(instance, spawnPosition).thenRun {
@@ -67,9 +125,25 @@ abstract class CustomEntity(entityType: EntityType) : Entity(entityType) {
         belowNameHologram.refreshPosition(hologramPosition())
     }*/
 
+    private var ambientSoundDelay = 20
+
     override fun update(time: Long) {
-        if (belowNameHologram.isCustomNameVisible)
-            belowNameHologram.refreshPosition(hologramPosition())
+        if (ambientSound != null) {
+            --ambientSoundDelay
+            if (ambientSoundDelay <= 0) {
+                viewersAsAudience.playSound(ambientSound!!)
+                ambientSoundDelay = random.nextInt(10, 40)
+            }
+        }
+        if (viewers.isEmpty()) return
+        if (velocity.isZero) return
+        if (!belowNameHologram.isCustomNameVisible) return
+        belowNameHologram.refreshPosition(hologramPosition())
+    }
+
+    override fun refreshPosition(newPosition: Pos) {
+        super.refreshPosition(newPosition)
+        belowNameHologram.refreshPosition(hologramPosition())
     }
 
     override fun remove() {
@@ -97,7 +171,7 @@ abstract class CustomEntity(entityType: EntityType) : Entity(entityType) {
         override fun <T : Any?> setTag(tag: Tag<T>, value: T?) = ce.setTag(tag, value)
     }
 
-    class Default(entityType: EntityType) : CustomEntity(entityType)
+    open class Default(entityType: EntityType) : CustomEntity(entityType)
 }
 
 private val healthTag = Tag.Integer("health")
