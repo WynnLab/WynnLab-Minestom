@@ -11,8 +11,27 @@ abstract class Command private constructor(
     val description: Array<out Component>,
     name: String,
     aliases: Array<out String>,
-    val sendConsole: Boolean
-) : Command(name, *aliases) {
+    sendConsole: Boolean
+) : Subcommand(aliases, name) {
+    init {
+        if (!sendConsole) {
+            consoleIgnoreCommands.add(this.name)
+            this.aliases?.let {
+                @Suppress("unchecked_cast") consoleIgnoreCommands.addAll(it as Array<out String>)
+            }
+        }
+    }
+
+    constructor(description: String, name: String, vararg aliases: String, sendConsole: Boolean = true) :
+            this(arrayOf(Component.text(description)), name, aliases, sendConsole)
+
+    constructor(description: Array<out Component>, name: String, vararg aliases: String = arrayOf()) :
+            this(description, name, aliases, true)
+}
+
+val consoleIgnoreCommands = mutableListOf<String>()
+
+abstract class Subcommand : Command {
     init {
         setDefaultExecutor { sender, _ ->
             sender.sendMessage("§cInvalid Syntax! §bUsage:")
@@ -24,16 +43,16 @@ abstract class Command private constructor(
         super.setDefaultExecutor(executor)
     }
 
-    constructor(description: String, name: String, vararg aliases: String = arrayOf(), sendConsole: Boolean = true) :
-            this(arrayOf(Component.text(description)), name, aliases, sendConsole)
+    protected constructor(aliases: Array<out String>, name: String) : super(name, *aliases)
 
-    constructor(description: Array<out Component>, name: String, vararg aliases: String = arrayOf()) :
-            this(description, name, aliases, true)
+    constructor(name: String, vararg aliases: String) : super(name, *aliases)
+
+    constructor(name: String) : super(name)
 }
 
-typealias Subcommand = Command
+typealias RawCommand = Command
 
-val Subcommand.usage get() = mutableListOf<String>().apply {
+val RawCommand.usage get() = mutableListOf<String>().apply {
     syntaxes.usage()?.let { add("/$name$it") }
     subcommands.mapNotNullTo(this) {
         it.syntaxes.usage()?.let { u -> "/$name ${it.name}$u" }

@@ -16,7 +16,6 @@ import net.minestom.server.entity.Entity
 import net.minestom.server.entity.GameMode
 import net.minestom.server.entity.Player
 import net.minestom.server.item.ItemMeta
-import net.minestom.server.item.ItemStack
 import net.minestom.server.permission.Permission
 import net.minestom.server.utils.entity.EntityFinder
 import org.jglrxavpok.hephaistos.nbt.NBTCompound
@@ -152,7 +151,7 @@ object GiveCommand : Command("Give yourself or someone else an item", "give") {
             val count = ctx[countArg]
             if (count > 1) item = item.withAmount(count)
             players.forEach { (it as Player).inventory.addItemStack(item) }
-            sender.message("[${sender.signature}] Gave [$count x ${item.material.getName()}] to [${players.size}] player(s)")
+            sender.message("[${sender.signature}] Gave [$count x ${item.material.namespace()}] to [${players.size}] player(s)")
         }, targetsArg, itemArg, countArg)
     }
 }
@@ -170,7 +169,7 @@ object SetblockCommand : Command("Set a block", "setblock") {
             val position = relPos.from(player)
             val block = ctx[blockArg]
             player.instance?.setBlock(position, block)
-            sender.message("[${sender.signature}] Changed block at [$position] to [${block.getName()}]")
+            sender.message("[${sender.signature}] Changed block at [$position] to [${block.namespace()}]")
         }, positionArg, blockArg)
     }
 }
@@ -184,14 +183,14 @@ object TeleportCommand : Command("Teleport", "teleport", "tp") {
         val entityArg = ArgumentType.Entity("entity").singleEntity(true)
 
         addSyntax({ sender, ctx ->
-            val position = ctx[positionArg].from(sender as Player).toPosition() // Please help me (Position not Block...)
+            val position = ctx[positionArg].from(sender as Player).asPosition() // Please help me (Position not Block...)
             sender.teleport(position)
             sender.message("[${sender.signature}] Teleported to [$position]")
         }, positionArg)
 
         addSyntax({ sender, ctx ->
             val entities = ctx[entitiesArg].find(sender as Player)
-            val position = ctx[positionArg].from(sender).toPosition()
+            val position = ctx[positionArg].from(sender).asPosition()
             entities.forEach { it.teleport(position) }
             sender.message("[${sender.signature}] Teleported [${entities.size}] entity/ies to [$position]")
         }, entitiesArg, positionArg)

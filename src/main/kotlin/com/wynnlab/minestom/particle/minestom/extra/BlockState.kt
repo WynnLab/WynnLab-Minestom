@@ -7,6 +7,6 @@ import net.minestom.server.utils.binary.BinaryWriter
 @JvmInline
 value class BlockState(private val block: Block) : ParticleType.BinaryData {
     override fun accept(t: BinaryWriter) {
-        t.writeVarInt(block.blockId.toInt())
+        t.writeVarInt(block.id())
     }
 }

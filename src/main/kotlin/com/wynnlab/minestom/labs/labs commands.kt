@@ -12,10 +12,9 @@ import net.minestom.server.MinecraftServer
 import net.minestom.server.command.CommandManager
 import net.minestom.server.command.builder.arguments.ArgumentType
 import net.minestom.server.command.builder.suggestion.SuggestionEntry
+import net.minestom.server.coordinate.Pos
 import net.minestom.server.entity.Player
-import net.minestom.server.utils.Position
 import java.util.*
-import kotlin.collections.HashSet
 
 fun registerLabsCommands(commandManager: CommandManager) {
     commandManager.register(LabCommand)
@@ -112,7 +111,7 @@ object LabCommand : Command(arrayOf(
                     sender.sendMessage("§cThe lab of ${player.username} is not running")
                     return@addSyntax
                 }
-                sender.setInstance(lab, Position(.0, 42.0, .0))
+                sender.setInstance(lab, Pos(.0, 42.0, .0))
             }, playerArg)
         }
     }
@@ -161,7 +160,7 @@ object LabCommand : Command(arrayOf(
 
                 sender.sendMessage("Kicked ${player.username} off the lab")
                 player.sendMessage("You got kicked off the lab")
-                player.setInstance(mainInstance, Position(.0, 42.0, .0))
+                player.setInstance(mainInstance, Pos(.0, 42.0, .0))
             }, playerArg)
         }
     }

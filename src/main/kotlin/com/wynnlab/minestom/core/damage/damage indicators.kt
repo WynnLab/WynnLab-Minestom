@@ -2,12 +2,13 @@ package com.wynnlab.minestom.core.damage
 
 import com.wynnlab.minestom.entities.CustomEntity
 import com.wynnlab.minestom.entities.Hologram
+import com.wynnlab.minestom.tasks.RefreshDelayTask
 import net.kyori.adventure.bossbar.BossBar
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.minestom.server.MinecraftServer
+import net.minestom.server.coordinate.Pos
 import net.minestom.server.entity.Player
-import net.minestom.server.utils.Position
 import net.minestom.server.utils.time.TimeUnit
 import java.util.*
 import kotlin.random.Random
@@ -20,7 +21,7 @@ fun damageIndicators(source: Player, target: DamageTarget, finalDamage: Damage) 
 }
 
 private fun damageIndicatorHologram(target: DamageTarget, finalDamage: Damage) {
-    val l = Position().apply { set(target.position) }
+    val l = Pos(target.position)
         .add(random.nextDouble(-.3, .3), target.eyeHeight + random.nextDouble(1.0, 1.3), random.nextDouble(-.3, .3))
 
     val text = Component.text()
@@ -63,6 +64,10 @@ private fun healthIndicatorBelowName(target: DamageTarget) {
 
     target.ce.belowNameHologram.customName = customName
 
+    RefreshDelayTask(target, "remove-hibn") {
+        target.ce.belowNameHologram.isCustomNameVisible = false
+    }.schedule(5, TimeUnit.SECOND)
+
     /*if (newIndicator) {
         val pos = Position()
         pos.set(entity.position)
@@ -92,6 +97,10 @@ private fun healthIndicatorBossBar(source: Player, entity: DamageTarget) {
         indicator.name(bossBarText(entity)).progress(bossBarProgress(entity))
 
     source.showBossBar(indicator)
+
+    RefreshDelayTask(source, "remove-hibb-${entity.uuid}") {
+        source.hideBossBar(indicator)
+    }.schedule(5, TimeUnit.SECOND)
 }
 
 /*private fun putHealthIndicatorBelowName(entity: Acquirable<Entity>) = entity.async {

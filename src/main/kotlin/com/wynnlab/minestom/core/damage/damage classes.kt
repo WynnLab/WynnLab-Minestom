@@ -2,8 +2,10 @@ package com.wynnlab.minestom.core.damage
 
 import com.wynnlab.minestom.core.Element
 import net.kyori.adventure.text.Component
+import net.minestom.server.coordinate.Pos
 import net.minestom.server.instance.Instance
-import net.minestom.server.utils.Position
+import net.minestom.server.tag.Tag
+import net.minestom.server.tag.TagHandler
 import java.util.*
 
 interface DamageSource {
@@ -11,12 +13,12 @@ interface DamageSource {
     value class Player(val player: net.minestom.server.entity.Player) : DamageSource
 }
 
-interface DamageTarget {
+interface DamageTarget : TagHandler {
     fun damage(value: Float)
     val health: Float
     val maxHealth: Float
     val instance: Instance?
-    val position: Position
+    val position: Pos
     val eyeHeight: Double
     val uuid: UUID
     val isDead: Boolean
@@ -37,6 +39,10 @@ interface DamageTarget {
         override val customName get() = player.name
         override val health get() = player.health * maxHealth / 20f
         override val maxHealth get() = player.getTag(playerMaxHealthTag)!!.toFloat()
+
+        override fun <T : Any?> getTag(tag: Tag<T>): T? = player.getTag(tag)
+
+        override fun <T : Any?> setTag(tag: Tag<T>, value: T?) = player.setTag(tag, value)
     }
 }
 

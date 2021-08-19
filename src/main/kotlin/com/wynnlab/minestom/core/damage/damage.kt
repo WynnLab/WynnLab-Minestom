@@ -17,7 +17,7 @@ fun Player.attack(other: CustomEntity, modifiers: DamageModifiers) {
 
         // TODO: poison, exploding, ls, ms, thorns, reflection
     }
-    other.takeKnockback(.4f, sin(position.yaw * (PI / 180f)), -cos(position.yaw * (PI / 180f)))
+    other.takeKnockback(.4f, sin(position.yaw() * (PI / 180f)), -cos(position.yaw() * (PI / 180f)))
 }
 
 fun Player.attack(other: Player, modifiers: DamageModifiers) { //TODO: merge
@@ -27,7 +27,7 @@ fun Player.attack(other: Player, modifiers: DamageModifiers) { //TODO: merge
     if (!finalDamage.zero) {
         damageIndicators(this, target, finalDamage)
     }
-    other.takeKnockback(.4f, sin(position.yaw * (PI / 180f)), -cos(position.yaw * (PI / 180f)))
+    other.takeKnockback(.4f, sin(position.yaw() * (PI / 180f)), -cos(position.yaw() * (PI / 180f)))
 }
 
 // returns final damage

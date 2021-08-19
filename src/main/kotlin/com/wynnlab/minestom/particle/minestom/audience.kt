@@ -6,8 +6,8 @@ import com.wynnlab.minestom.particle.adventure.Particle
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
 import net.minestom.server.adventure.audience.PacketGroupingAudience
+import net.minestom.server.coordinate.Pos
 import net.minestom.server.entity.Player
-import net.minestom.server.utils.Position
 
 fun <D : Particle.Data, E : Particle.ExtraData?> Audience.showParticle(particle: Particle<D, E>, emitter: Particle.Emitter) {
     when (this) {
@@ -18,7 +18,7 @@ fun <D : Particle.Data, E : Particle.ExtraData?> Audience.showParticle(particle:
     }
 }
 
-fun <D : Particle.Data, E : Particle.ExtraData?> Audience.showParticle(particle: Particle<D, E>, emitter: Position) {
+fun <D : Particle.Data, E : Particle.ExtraData?> Audience.showParticle(particle: Particle<D, E>, emitter: Pos) {
     when (this) {
         is PacketGroupingAudience -> showParticle(particle, emitter)
         is ForwardingAudience.Single -> showParticle(particle, emitter)
@@ -31,7 +31,7 @@ fun <D : Particle.Data, E : Particle.ExtraData?> ForwardingAudience.showParticle
     audiences().forEach { it.showParticle(particle, emitter) }
 }
 
-fun <D : Particle.Data, E : Particle.ExtraData?> ForwardingAudience.showParticle(particle: Particle<D, E>, emitter: Position) {
+fun <D : Particle.Data, E : Particle.ExtraData?> ForwardingAudience.showParticle(particle: Particle<D, E>, emitter: Pos) {
     audiences().forEach { it.showParticle(particle, emitter) }
 }
 
@@ -39,7 +39,7 @@ fun <D : Particle.Data, E : Particle.ExtraData?> PacketGroupingAudience.showPart
     sendGroupedPacket(createParticlePacket(particle, emitter))
 }
 
-fun <D : Particle.Data, E : Particle.ExtraData?> PacketGroupingAudience.showParticle(particle: Particle<D, E>, emitter: Position) {
+fun <D : Particle.Data, E : Particle.ExtraData?> PacketGroupingAudience.showParticle(particle: Particle<D, E>, emitter: Pos) {
     sendGroupedPacket(createParticlePacket(particle, emitter))
 }
 
@@ -47,7 +47,7 @@ fun <D : Particle.Data, E : Particle.ExtraData?> Player.showParticle(particle: P
     playerConnection.sendPacket(createParticlePacket(particle, emitter))
 }
 
-fun <D : Particle.Data, E : Particle.ExtraData?> Player.showParticle(particle: Particle<D, E>, emitter: Position) {
+fun <D : Particle.Data, E : Particle.ExtraData?> Player.showParticle(particle: Particle<D, E>, emitter: Pos) {
     playerConnection.sendPacket(createParticlePacket(particle, emitter))
 }
 
@@ -55,6 +55,6 @@ fun <D : Particle.Data, E : Particle.ExtraData?> ForwardingAudience.Single.showP
     audience().showParticle(particle, emitter)
 }
 
-fun <D : Particle.Data, E : Particle.ExtraData?> ForwardingAudience.Single.showParticle(particle: Particle<D, E>, emitter: Position) {
+fun <D : Particle.Data, E : Particle.ExtraData?> ForwardingAudience.Single.showParticle(particle: Particle<D, E>, emitter: Pos) {
     audience().showParticle(particle, emitter)
 }

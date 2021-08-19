@@ -2,4 +2,4 @@
 
 package net.minestom.server.item
 
-fun ItemStack.builder() = this.builder()
+fun ItemStack.builder() = ItemStackBuilder(material, meta.builder()).amount(amount).stackingRule(stackingRule)

@@ -3,6 +3,8 @@ package com.wynnlab.minestom.listeners
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.wynnlab.minestom.*
+import com.wynnlab.minestom.commands.Command
+import com.wynnlab.minestom.commands.consoleIgnoreCommands
 import com.wynnlab.minestom.util.listen
 import com.wynnlab.minestom.util.post
 import net.kyori.adventure.text.Component
@@ -23,6 +25,7 @@ val serverPlayerListenersNode = EventNode.type("server-player-listeners", EventF
 
 private fun onPlayerSpawn(e: PlayerSpawnEvent) {
     if (!e.isFirstSpawn) return
+    println(e.player.instance)
 
     val player = e.player
     broadcast(Component.text()
@@ -100,6 +103,7 @@ private fun onPlayerDeath(e: PlayerDeathEvent) {
 }
 
 private fun onPlayerCommand(e: PlayerCommandEvent) {
+    if (consoleIgnoreCommands.contains(e.command)) return
     Audiences.console().sendMessage(Component.text("${e.player.username} issued command: ${e.command}"))
 }
 

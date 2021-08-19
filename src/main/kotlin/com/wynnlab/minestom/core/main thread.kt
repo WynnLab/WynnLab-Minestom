@@ -36,8 +36,8 @@ fun everySecond() {
 
         val jumpHeight = getId(player, Identification.JumpHeight)
         if (jumpHeight != 0) {
-            player.addEffect(Potion(PotionEffect.JUMP, (jumpHeight - 1).toByte(), 21, false, false, true))
-        } else player.removeEffect(PotionEffect.JUMP)
+            player.addEffect(Potion(PotionEffect.JUMP_BOOST, (jumpHeight - 1).toByte(), 21, false, false, true))
+        } else player.removeEffect(PotionEffect.JUMP_BOOST)
     }
 }
 

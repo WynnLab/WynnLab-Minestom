@@ -25,6 +25,6 @@ class ClassGui : Gui("Choose a Class!", InventoryType.CHEST_1_ROW) {
         }
 
         player.closeInventory()
-        player.playSound(Sound.sound(SoundEvent.PLAYER_LEVELUP, Sound.Source.MASTER, 1f, 1f))
+        player.playSound(Sound.sound(SoundEvent.ENTITY_PLAYER_LEVELUP, Sound.Source.MASTER, 1f, 1f))
     }
 }

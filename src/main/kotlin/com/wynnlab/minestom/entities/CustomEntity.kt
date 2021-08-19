@@ -1,6 +1,8 @@
 package com.wynnlab.minestom.entities
 
 import net.kyori.adventure.sound.Sound
+import net.minestom.server.coordinate.Pos
+import net.minestom.server.coordinate.Vec
 import net.minestom.server.entity.Entity
 import net.minestom.server.entity.EntityType
 import net.minestom.server.event.EventDispatcher
@@ -9,15 +11,15 @@ import net.minestom.server.instance.Instance
 import net.minestom.server.network.packet.server.play.EntityAnimationPacket
 import net.minestom.server.sound.SoundEvent
 import net.minestom.server.tag.Tag
-import net.minestom.server.utils.Position
+import java.util.concurrent.CompletableFuture
 
 abstract class CustomEntity(entityType: EntityType) : Entity(entityType) {
     var health = 0f
     var maxHealth = 0f
     inline val isDead get() = health <= 0f
 
-    open val hurtSound: Sound = Sound.sound(SoundEvent.GENERIC_HURT, Sound.Source.AMBIENT, 1f, 1f)
-    open val deathSound: Sound = Sound.sound(SoundEvent.GENERIC_DEATH, Sound.Source.AMBIENT, 1f, 1f)
+    open val hurtSound: Sound = Sound.sound(SoundEvent.ENTITY_GENERIC_HURT, Sound.Source.AMBIENT, 1f, 1f)
+    open val deathSound: Sound = Sound.sound(SoundEvent.ENTITY_GENERIC_DEATH, Sound.Source.AMBIENT, 1f, 1f)
     open val ambientSound: Sound? = null
 
     fun damage(value: Float) {
@@ -41,7 +43,7 @@ abstract class CustomEntity(entityType: EntityType) : Entity(entityType) {
 
         triggerStatus(3)
 
-        velocity.zero()
+        velocity = Vec.ZERO
 
         EventDispatcher.call(EntityDeathEvent(this))
 
@@ -50,14 +52,24 @@ abstract class CustomEntity(entityType: EntityType) : Entity(entityType) {
 
     val belowNameHologram = Hologram(null)
 
-    override fun setInstance(instance: Instance, spawnPosition: Position) {
-        super.setInstance(instance, spawnPosition)
-        belowNameHologram.setInstance(instance, hologramPosition())
+    override fun setInstance(instance: Instance, spawnPosition: Pos): CompletableFuture<Void>? {
+        return super.setInstance(instance, spawnPosition).thenRun {
+            belowNameHologram.setInstance(instance, hologramPosition())
+        }
     }
 
-    override fun sendPositionUpdate(clientSide: Boolean) {
+    /*override fun sendPositionUpdate(clientSide: Boolean) {
         super.sendPositionUpdate(clientSide)
         belowNameHologram.refreshPosition(hologramPosition())
+    }*/
+    /*override fun refreshPosition(newPosition: Pos) {
+        super.refreshPosition(newPosition)
+        belowNameHologram.refreshPosition(hologramPosition())
+    }*/
+
+    override fun update(time: Long) {
+        if (belowNameHologram.isCustomNameVisible)
+            belowNameHologram.refreshPosition(hologramPosition())
     }
 
     override fun remove() {
@@ -65,12 +77,7 @@ abstract class CustomEntity(entityType: EntityType) : Entity(entityType) {
         belowNameHologram.remove()
     }
 
-    private fun hologramPosition(): Position {
-        val pos = Position()
-        pos.set(position)
-        pos.add(.0, eyeHeight, .0)
-        return pos
-    }
+    private fun hologramPosition() = position.add(.0, eyeHeight, .0)
 
     @JvmInline
     value class DamageTarget(val ce: CustomEntity) : com.wynnlab.minestom.core.damage.DamageTarget {
@@ -84,6 +91,10 @@ abstract class CustomEntity(entityType: EntityType) : Entity(entityType) {
         override val uuid get() = ce.getUuid()
         override val isDead get() = ce.isDead
         override val customName get() = ce.customName
+
+        override fun <T : Any?> getTag(tag: Tag<T>): T? = ce.getTag(tag)
+
+        override fun <T : Any?> setTag(tag: Tag<T>, value: T?) = ce.setTag(tag, value)
     }
 
     class Default(entityType: EntityType) : CustomEntity(entityType)

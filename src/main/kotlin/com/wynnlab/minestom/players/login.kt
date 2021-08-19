@@ -21,8 +21,8 @@ object WynnLabUuidProvider : UuidProvider {
     override fun provide(connection: PlayerConnection?, username: String?): UUID {
         val response = try {
             get("https://api.mojang.com/users/profiles/minecraft/$username")
-        } catch (e: HttpRequestException) {
-            MinecraftServer.LOGGER.warn("Could not get UUID for player $username (${e.responseCode})")
+        } catch (e: Exception) {
+            MinecraftServer.LOGGER.warn("Could not get UUID for player $username (${e::class.java.simpleName})")
             return UUID.randomUUID()
         }
         val id = response.get("id").asString
@@ -97,7 +97,7 @@ private fun getAPIData(player: Player): JsonObject? {
             return null
         }
         data
-    } catch (_: HttpRequestException) {
+    } catch (_: Exception) {
         null
     }
 }
