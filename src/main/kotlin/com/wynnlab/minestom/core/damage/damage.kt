@@ -8,34 +8,18 @@ import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
-fun Player.attack(other: CustomEntity, modifiers: DamageModifiers) {
-    val target = CustomEntity.DamageTarget(other)
-    val damage = Damage(1, 0, 0, 0, 0, 0)
-    val finalDamage = damageModified(DamageSource.Player(this), target, damage, modifiers)
+fun Player.attack(target: CustomEntity, modifiers: DamageModifiers) = attack(CustomEntity.DamageTarget(target), modifiers)
+
+fun Player.attack(target: Player, modifiers: DamageModifiers) = attack(DamageTarget.Player(target), modifiers)
+
+fun Player.attack(target: DamageTarget, modifiers: DamageModifiers) {
+    val finalDamage = calculateDamage(DamageSource.Player(this), target, modifiers)
     if (!finalDamage.zero) {
         damageIndicators(this, target, finalDamage)
-
+        damageRaw(target, finalDamage.sum)
         // TODO: poison, exploding, ls, ms, thorns, reflection
     }
-    other.takeKnockback(.4f, sin(position.yaw() * (PI / 180f)), -cos(position.yaw() * (PI / 180f)))
-}
-
-fun Player.attack(other: Player, modifiers: DamageModifiers) { //TODO: merge
-    val target = DamageTarget.Player(other)
-    val damage = Damage(1, 0, 0, 0, 0, 0)
-    val finalDamage = damageModified(DamageSource.Player(this), target, damage, modifiers)
-    if (!finalDamage.zero) {
-        damageIndicators(this, target, finalDamage)
-    }
-    other.takeKnockback(.4f, sin(position.yaw() * (PI / 180f)), -cos(position.yaw() * (PI / 180f)))
-}
-
-// returns final damage
-fun damageModified(source: DamageSource, target: DamageTarget, damage: Damage, modifiers: DamageModifiers): Damage {
-    // TODO: defense
-    val finalDamage = damage.applyConversion(modifiers.conversion)
-    damageRaw(target, finalDamage.sum)
-    return finalDamage
+    target.takeKnockback(.4f, sin(position.yaw() * (PI / 180f)), -cos(position.yaw() * (PI / 180f)))
 }
 
 fun damageRaw(target: DamageTarget, amount: Int) {

@@ -166,6 +166,13 @@ abstract class CustomEntity(entityType: EntityType) : Entity(entityType) {
         override val isDead get() = ce.isDead
         override val customName get() = ce.customName
 
+        override val baseDefense get() = ce.baseDefense
+        override val defense get() = ce.defense
+
+        override fun getEleDefPercent(index: Int) = 0f
+
+        override fun takeKnockback(a: Float, b: Double, c: Double) = ce.takeKnockback(a, b, c)
+
         override fun <T : Any?> getTag(tag: Tag<T>): T? = ce.getTag(tag)
 
         override fun <T : Any?> setTag(tag: Tag<T>, value: T?) = ce.setTag(tag, value)

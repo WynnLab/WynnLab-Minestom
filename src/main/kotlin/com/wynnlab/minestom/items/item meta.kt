@@ -52,6 +52,7 @@ fun writeItemMeta(writer: TagWritable, builder: ItemBuilder) {
     if (builder is ItemBuilder.Weapon) {
         writer.setTag(itemAttackSpeedTag, builder.attackSpeed.ordinal.toByte())
         writer.setTag(itemDamageTag, intArrayOf(
+            builder.damage.neutral.first, builder.damage.neutral.last,
             builder.damage.earth.first, builder.damage.earth.last,
             builder.damage.thunder.first, builder.damage.thunder.last,
             builder.damage.water.first, builder.damage.water.last,

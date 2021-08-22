@@ -14,14 +14,15 @@ enum class Rarity(val nameColor: TextColor) {
     Mythic(NamedTextColor.DARK_PURPLE),
 }
 
-enum class AttackSpeed(val display: String) {
-    SuperSlow("Super Slow"),
-    VerySlow("Very Slow"),
-    Slow("Slow"),
-    Normal("Normal"),
-    Fast("Fast"),
-    VeryFast("Very Fast"),
-    SuperFast("Super Fast")
+
+enum class AttackSpeed(val display: String, val cooldown: Int, val spellMultiplier: Float, val stealChance: Float) {
+    SuperSlow("Super Slow", 39, .51f, .654f),
+    VerySlow("Very Slow", 25, .83f, .402f),
+    Slow("Slow", 13, 1.5f, .222f),
+    Normal("Normal", 10, 2.05f, .163f),
+    Fast("Fast", 8, 2.5f, .133f),
+    VeryFast("Very Fast", 6, 3.1f, .107f),
+    SuperFast("Super Fast", 4, 4.3f, .078f),
 }
 
 data class Damage(
@@ -78,6 +79,15 @@ data class Defense(
         air = other.air
     }
 
+    operator fun get(index: Int) = when (index) {
+        0 -> earth
+        1 -> thunder
+        2 -> water
+        3 -> fire
+        4 -> air
+        else -> error("unreachable")
+    }
+
     override fun iterator() = object : Iterator<Part> {
         private var i = 0
 
@@ -97,6 +107,10 @@ data class Defense(
         val element: Element,
         val value: Int
     )
+
+    companion object {
+        val Zero = Defense(0, 0, 0, 0, 0)
+    }
 }
 
 data class SkillRequirements(
