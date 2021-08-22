@@ -300,9 +300,7 @@ object OpCommand : Command("Change the op level of a player", "op") {
             else {
                 sender.sendMessage("${player.username} has now permission level $levelTo")
                 player.permissionLevel = levelTo
-
-                player.playerConnection.sendPacket(MinecraftServer.getCommandManager().createDeclareCommandsPacket(player))
-
+                player.refreshCommands()
                 sender.message("[${sender.signature}] Changed OP level of [${player.username}] from [$levelFrom] to [$levelTo]")
             }
         }, playerArg, levelArg)

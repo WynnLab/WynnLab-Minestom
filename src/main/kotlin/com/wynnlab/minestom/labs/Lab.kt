@@ -36,7 +36,7 @@ class Lab(owner: Player) : InstanceContainer(owner.uuid, DimensionType.OVERWORLD
 
     fun join(player: Player) {
         player.setInstance(this, Pos(.0, 42.0, .0)).thenRun {
-            player.playerConnection.sendPacket(MinecraftServer.getCommandManager().createDeclareCommandsPacket(player))
+            player.refreshCommands()
             player.sendMessage(Component.text("${player.username} joined the lab", NamedTextColor.YELLOW))
         }
         oldInventories[player.uuid] = player.inventory.itemStacks
@@ -52,7 +52,7 @@ class Lab(owner: Player) : InstanceContainer(owner.uuid, DimensionType.OVERWORLD
             player.inventory.update()
         }
         player.setInstance(mainInstance, Pos(.0, 42.0, .0)).thenRun {
-            player.playerConnection.sendPacket(MinecraftServer.getCommandManager().createDeclareCommandsPacket(player))
+            player.refreshCommands()
         }
         player.gameMode = GameMode.ADVENTURE
         player.permissionLevel = 0
@@ -77,10 +77,8 @@ class Lab(owner: Player) : InstanceContainer(owner.uuid, DimensionType.OVERWORLD
         //MinecraftServer.getInstanceManager().registerInstance(this)
         println(MinecraftServer.getInstanceManager().getInstance(uniqueId) == this)
 
-        players.find { it.uuid == oldOwner }?.let {
-            it.playerConnection.sendPacket(MinecraftServer.getCommandManager().createDeclareCommandsPacket(it))
-        }
-        newOwner.playerConnection.sendPacket(MinecraftServer.getCommandManager().createDeclareCommandsPacket(newOwner))
+        players.find { it.uuid == oldOwner }?.refreshCommands()
+        newOwner.refreshCommands()
     }
 
     private fun delete() {
@@ -92,7 +90,10 @@ class Lab(owner: Player) : InstanceContainer(owner.uuid, DimensionType.OVERWORLD
 
     fun getPermissions(player: Player) = if (player.uuid == uniqueId) 3 else permissions[player.uuid] ?: 0
 
-    fun setPermissions(player: Player, level: Int) { permissions[player.uuid] = level }
+    fun setPermissions(player: Player, level: Int) {
+        permissions[player.uuid] = level
+        player.refreshCommands()
+    }
 
     private val oldInventories = hashMapOf<UUID, Array<ItemStack>>()
 }
