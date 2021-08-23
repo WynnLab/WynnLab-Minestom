@@ -4,6 +4,7 @@ import com.wynnlab.minestom.items.AttackSpeed
 import com.wynnlab.minestom.items.Damage
 import com.wynnlab.minestom.items.Defense
 import com.wynnlab.minestom.random
+import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
@@ -44,6 +45,8 @@ abstract class CustomEntity(entityType: EntityType) : Entity(entityType) {
     open val hurtSound: Sound = Sound.sound(SoundEvent.ENTITY_GENERIC_HURT, Sound.Source.AMBIENT, 1f, 1f)
     open val deathSound: Sound = Sound.sound(SoundEvent.ENTITY_GENERIC_DEATH, Sound.Source.AMBIENT, 1f, 1f)
     open val ambientSound: Sound? = null
+
+    var isPoisoned = false
 
     fun setName(name: String) {
         @Suppress("deprecation")
@@ -172,6 +175,8 @@ abstract class CustomEntity(entityType: EntityType) : Entity(entityType) {
         override fun getEleDefPercent(index: Int) = 0f
 
         override fun takeKnockback(a: Float, b: Double, c: Double) = ce.takeKnockback(a, b, c)
+
+        override val viewersAsAudience get() = ce.viewersAsAudience
 
         override fun <T : Any?> getTag(tag: Tag<T>): T? = ce.getTag(tag)
 

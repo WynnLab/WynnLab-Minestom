@@ -13,11 +13,12 @@ import net.minestom.server.utils.time.TimeUnit
 import java.util.*
 import kotlin.random.Random
 
-fun damageIndicators(source: Player, target: DamageTarget, finalDamage: Damage) {
+fun damageIndicators(source: DamageSource, target: DamageTarget, finalDamage: Damage) {
     if (target.instance == null) return
     damageIndicatorHologram(target, finalDamage)
     healthIndicatorBelowName(target)
-    healthIndicatorBossBar(source, target)
+    if (source is DamageSource.Player)
+        healthIndicatorBossBar(source.player, target)
 }
 
 private fun damageIndicatorHologram(target: DamageTarget, finalDamage: Damage) {
@@ -64,9 +65,7 @@ private fun healthIndicatorBelowName(target: DamageTarget) {
 
     target.ce.belowNameTag = belowNameTag
 
-    RefreshDelayTask(target, "remove-hibn") {
-        target.ce.belowNameTag = null
-    }.schedule(5, TimeUnit.SECOND)
+    RefreshDelayTask(target, "remove-hibn", target::removeHIBN).schedule(5, TimeUnit.SECOND)
 
     /*if (newIndicator) {
         val pos = Position()
@@ -78,6 +77,10 @@ private fun healthIndicatorBelowName(target: DamageTarget) {
         }.repeat(1, TimeUnit.SERVER_TICK).schedule())*/
 
     }*/
+}
+
+private fun CustomEntity.DamageTarget.removeHIBN() {
+    ce.belowNameTag = null
 }
 
 private fun healthIndicatorBossBar(source: Player, entity: DamageTarget) {
@@ -98,17 +101,12 @@ private fun healthIndicatorBossBar(source: Player, entity: DamageTarget) {
 
     source.showBossBar(indicator)
 
-    RefreshDelayTask(source, "remove-hibb-${entity.uuid}") {
-        source.hideBossBar(indicator)
-    }.schedule(5, TimeUnit.SECOND)
+    RefreshDelayTask(source, "remove-hibb-${entity.uuid}", indicator, source::removeHIBB).schedule(5, TimeUnit.SECOND)
 }
 
-/*private fun putHealthIndicatorBelowName(entity: Acquirable<Entity>) = entity.async {
-    val pos = Position()
-    pos.set(it.position)
-    pos.add(.0, it.eyeHeight, .0)
-    healthIndicatorsBelowName[it.uuid]?.refreshPosition(pos)
-}*/
+private fun Player.removeHIBB(indicator: BossBar) {
+    hideBossBar(indicator)
+}
 
 private fun healthIndicatorBelowNameBarColor(percentReq: Float, currentPercent: Float) =
     if (currentPercent < percentReq) NamedTextColor.DARK_GRAY else NamedTextColor.RED

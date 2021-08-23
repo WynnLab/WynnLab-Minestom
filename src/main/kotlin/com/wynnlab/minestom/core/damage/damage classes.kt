@@ -7,10 +7,13 @@ import com.wynnlab.minestom.core.player.getId
 import com.wynnlab.minestom.core.player.itemWeapon
 import com.wynnlab.minestom.items.Defense
 import com.wynnlab.minestom.items.Identification
+import com.wynnlab.minestom.util.tag
+import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
 import net.minestom.server.coordinate.Pos
 import net.minestom.server.instance.Instance
 import net.minestom.server.item.ItemStack
+import net.minestom.server.tag.BooleanTag
 import net.minestom.server.tag.Tag
 import net.minestom.server.tag.TagHandler
 import java.util.*
@@ -20,6 +23,7 @@ interface DamageSource {
     fun getSkill(index: Int): Int
     fun getId(identification: Identification): Int
     val attackSpeedMultiplier: Float
+    val position: Pos
 
     @JvmInline
     value class Player(val player: net.minestom.server.entity.Player) : DamageSource {
@@ -30,6 +34,8 @@ interface DamageSource {
         override fun getId(identification: Identification): Int = getId(player, identification)
 
         override val attackSpeedMultiplier: Float get() = getAttackSpeed(player)?.spellMultiplier ?: 0f
+
+        override val position: Pos get() = player.position
     }
 }
 
@@ -47,6 +53,7 @@ interface DamageTarget : TagHandler {
     val defense: Defense
     fun getEleDefPercent(index: Int): Float
     fun takeKnockback(a: Float, b: Double, c: Double)
+    val viewersAsAudience: Audience
 
     @JvmInline
     value class Player(val player: net.minestom.server.entity.Player) : DamageTarget {
@@ -77,6 +84,8 @@ interface DamageTarget : TagHandler {
         }) / 100f
 
         override fun takeKnockback(a: Float, b: Double, c: Double) = player.takeKnockback(a, b, c)
+
+        override val viewersAsAudience get() = player.viewersAsAudience
 
         override fun <T : Any?> getTag(tag: Tag<T>): T? = player.getTag(tag)
 
@@ -184,3 +193,5 @@ data class Conversion(
 val NeutralConversion = Conversion(1f, 0f, 0f, 0f, 0f, 0f)
 
 val NeutralDamageModifiers = DamageModifiers(false, 1f, NeutralConversion)
+
+private val playerPoisonedTag = BooleanTag("poisoned")

@@ -126,13 +126,13 @@ private val clickSequenceTag = Tag.Byte("click-sequence").defaultValue(0)
 private val clickSequenceSpellMap = byteArrayOf(-1, 16, 13, 25, 22)
 
 private fun scheduleResetClickSeqAndAB(player: Player) {
-    //player.setTag(clickSeqAbTag, 1)
     refreshClickSequenceBar(player)
-    RefreshDelayTask(player, "click-seq-ab") {
-        //player.removeTag(clickSeqAbTag)
-        resetClickSequence(player)
-        resetClickSequenceBar(player)
-    }.schedule(1, TimeUnit.SECOND)
+    RefreshDelayTask(player, "click-seq-ab", player::clickSeqAb).schedule(1, TimeUnit.SECOND)
+}
+
+private fun Player.clickSeqAb() {
+    resetClickSequence(this)
+    resetClickSequenceBar(this)
 }
 
 //val clickSeqAbTag = Tag.Byte("click-seq-ab")

@@ -29,10 +29,10 @@ interface Particle<D : Particle.Data, E : Particle.ExtraData?> : Examinable {
                 override val name = name
             }
 
-        fun <D : Data> particle(type: Type<D, Nothing>, count: Int, data: D, longDistance: Boolean = false): Particle<D, Nothing?> =
+        fun <D : Data> particle(type: Type<D, Nothing?>, count: Int, data: D, longDistance: Boolean = false): Particle<D, Nothing?> =
             particle(type.key(), count, data, null, longDistance)
 
-        fun <D : Data> particle(type: () -> Type<D, Nothing>, count: Int, data: D, longDistance: Boolean = false): Particle<D, Nothing?> =
+        fun <D : Data> particle(type: () -> Type<D, Nothing?>, count: Int, data: D, longDistance: Boolean = false): Particle<D, Nothing?> =
             object : ParticleImpl<D, Nothing?>(count, data, null, longDistance) {
                 override val name get() = type().key()
             }

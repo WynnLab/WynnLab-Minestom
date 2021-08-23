@@ -8,15 +8,21 @@ import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 
-fun Player.attack(target: CustomEntity, modifiers: DamageModifiers) = attack(CustomEntity.DamageTarget(target), modifiers)
+fun Player.attack(target: CustomEntity, modifiers: DamageModifiers) = DamageSource.Player(this).attack(CustomEntity.DamageTarget(target), modifiers)
 
-fun Player.attack(target: Player, modifiers: DamageModifiers) = attack(DamageTarget.Player(target), modifiers)
+fun Player.attack(target: Player, modifiers: DamageModifiers) = DamageSource.Player(this).attack(DamageTarget.Player(target), modifiers)
 
-fun Player.attack(target: DamageTarget, modifiers: DamageModifiers) {
-    val finalDamage = calculateDamage(DamageSource.Player(this), target, modifiers)
+fun DamageSource.attack(target: DamageTarget, modifiers: DamageModifiers) {
+    val finalDamage = calculateDamage(this, target, modifiers)
     if (!finalDamage.zero) {
         damageIndicators(this, target, finalDamage)
         damageRaw(target, finalDamage.sum)
+        if (!modifiers.spell) {
+            poison(this, target)
+            exploding(this, target)
+            lifeSteal(this, target)
+            manaSteal(this, target)
+        }
         // TODO: poison, exploding, ls, ms, thorns, reflection
     }
     target.takeKnockback(.4f, sin(position.yaw() * (PI / 180f)), -cos(position.yaw() * (PI / 180f)))
