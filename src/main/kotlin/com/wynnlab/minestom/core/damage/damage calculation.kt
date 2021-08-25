@@ -1,5 +1,6 @@
 package com.wynnlab.minestom.core.damage
 
+import com.wynnlab.minestom.core.player.skillPercentage
 import com.wynnlab.minestom.items.Identification
 import com.wynnlab.minestom.items.itemDamageTag
 import kotlin.math.roundToInt
@@ -62,10 +63,4 @@ private fun getModifiedDamage(source: DamageSource, target: DamageTarget, baseDa
             else baseDamage[i] * (1 + modifiers[i]) - target.defense[i - 1] * (1 + target.getEleDefPercent(i - 1))
         }).toInt()
     }
-}
-
-private fun skillPercentage(skill: Int): Float = when {
-    skill >= 150 -> .808f
-    skill <= 0 -> 0f
-    else -> (10f * (-0.0000000166f * skill * skill * skill * skill + 0.0000122614f * skill * skill * skill - 0.0044972984f * skill * skill + 0.9931907398f * skill + 0.0093811967f)).roundToInt() / 1000f
 }

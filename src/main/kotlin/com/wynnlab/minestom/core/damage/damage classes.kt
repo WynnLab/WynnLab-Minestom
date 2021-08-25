@@ -1,10 +1,7 @@
 package com.wynnlab.minestom.core.damage
 
 import com.wynnlab.minestom.core.Element
-import com.wynnlab.minestom.core.player.getAttackSpeed
-import com.wynnlab.minestom.core.player.getDefense
-import com.wynnlab.minestom.core.player.getId
-import com.wynnlab.minestom.core.player.itemWeapon
+import com.wynnlab.minestom.core.player.*
 import com.wynnlab.minestom.items.Defense
 import com.wynnlab.minestom.items.Identification
 import com.wynnlab.minestom.util.tag
@@ -29,7 +26,7 @@ interface DamageSource {
     value class Player(val player: net.minestom.server.entity.Player) : DamageSource {
         override val weapon get() = player.itemWeapon
 
-        override fun getSkill(index: Int): Int = 0 //TODO
+        override fun getSkill(index: Int): Int = player.getEffectiveSkill(index)
 
         override fun getId(identification: Identification): Int = getId(player, identification)
 

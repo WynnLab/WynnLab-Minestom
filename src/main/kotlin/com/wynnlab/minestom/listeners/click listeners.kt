@@ -46,7 +46,7 @@ private fun onPlayerUseItem(e: PlayerUseItemEvent) {
 
 private fun onPlayerRightClick(player: Player) {
     when (player.heldSlot.toInt()) {
-        6 -> MenuGui().show(player)
+        6 -> MenuGui.show(player)
         7, 8 -> {}
         else -> {
             if (player.itemInMainHand.hasTag(mobTypeIdTag)) {

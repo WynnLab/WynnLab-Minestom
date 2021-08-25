@@ -7,7 +7,7 @@ object MenuCommand : Command("Open the compass menu", "menu") {
         setCondition { sender, _ -> sender.isPlayer }
 
         addSyntax({ sender, _ ->
-            MenuGui().show(sender.asPlayer())
+            MenuGui.show(sender.asPlayer())
         })
     }
 }

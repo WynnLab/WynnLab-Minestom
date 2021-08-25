@@ -6,18 +6,18 @@ import net.minestom.server.tag.TagReadable
 
 fun getId(player: Player, id: Identification): Int {
     var i = 0
-    getEquipment(player).forEach { if (it != null) i += id.get(it) }
+    player.equipment.forEach { if (it != null) i += id.get(it) }
     return i
 }
 
 fun getHealth(player: Player): Int {
     var i = 0
-    getDefenseEquipment(player).forEach { if (it != null) i += it.getTag(itemHealthTag)!! }
+    player.defenseEquipment.forEach { if (it != null) i += it.getTag(itemHealthTag)!! }
     return i
 }
 
 fun getAttackSpeed(player: Player): AttackSpeed? {
-    val eq = getEquipment(player)
+    val eq = player.equipment
     var i = (eq[0] ?: return null).getTag(itemAttackSpeedTag)!!.toInt()
     eq.forEach { if (it != null) i += Identification.AttackSpeed.get(it) }
     return AttackSpeed.values()[i.coerceIn(0, 6)]
@@ -28,7 +28,7 @@ fun getDamageArray(player: Player) = player.itemInMainHand.takeIf { it.getTag(it
 
 fun getDefense(player: Player): Defense {
     val d = Defense(0, 0, 0, 0, 0)
-    for (item in getDefenseEquipment(player)) {
+    for (item in player.defenseEquipment) {
         if (item == null) continue
         val a = item.getTag(itemDefenseTag)!!
         d.earth += a[0]
@@ -40,27 +40,27 @@ fun getDefense(player: Player): Defense {
     return d
 }
 
-private fun getEquipment(player: Player) = listOf(
-    player.itemWeapon,
-    player.itemHelmet,
-    player.itemChestplate,
-    player.itemLeggings,
-    player.itemBoots,
-    player.itemRing1,
-    player.itemRing2,
-    player.itemBracelet,
-    player.itemNecklace,
+val Player.equipment get() = listOf(
+    itemWeapon,
+    itemHelmet,
+    itemChestplate,
+    itemLeggings,
+    itemBoots,
+    itemRing1,
+    itemRing2,
+    itemBracelet,
+    itemNecklace,
 )
 
-private fun getDefenseEquipment(player: Player) = listOf(
-    player.itemHelmet,
-    player.itemChestplate,
-    player.itemLeggings,
-    player.itemBoots,
-    player.itemRing1,
-    player.itemRing2,
-    player.itemBracelet,
-    player.itemNecklace,
+val Player.defenseEquipment get() = listOf(
+    itemHelmet,
+    itemChestplate,
+    itemLeggings,
+    itemBoots,
+    itemRing1,
+    itemRing2,
+    itemBracelet,
+    itemNecklace,
 )
 
 inline val Player.itemWeapon get() = itemInMainHand.takeIf { it.getTag(itemTypeIdTag) == 1.toByte() }

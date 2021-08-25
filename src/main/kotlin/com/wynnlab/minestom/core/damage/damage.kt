@@ -16,15 +16,15 @@ fun DamageSource.attack(target: DamageTarget, modifiers: DamageModifiers) {
     val finalDamage = calculateDamage(this, target, modifiers)
     if (!finalDamage.zero) {
         damageIndicators(this, target, finalDamage)
-        damageRaw(target, finalDamage.sum)
         if (!modifiers.spell) {
             poison(this, target)
-            exploding(this, target)
+            /*exploding(this, target)
             lifeSteal(this, target)
-            manaSteal(this, target)
+            manaSteal(this, target)*/
         }
         // TODO: poison, exploding, ls, ms, thorns, reflection
     }
+    damageRaw(target, finalDamage.sum)
     target.takeKnockback(.4f, sin(position.yaw() * (PI / 180f)), -cos(position.yaw() * (PI / 180f)))
 }
 
