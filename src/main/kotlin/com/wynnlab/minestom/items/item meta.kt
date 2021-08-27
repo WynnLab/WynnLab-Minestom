@@ -49,6 +49,8 @@ fun writeItemMeta(writer: TagWritable, builder: ItemBuilder) {
         builder.skillRequirements.agility.toUByte().toByte(),
     ))
 
+    writer.setTag(skillRequirementsPositionsTag, builder.skillRequirementsPositions)
+
     if (builder is ItemBuilder.Weapon) {
         writer.setTag(itemAttackSpeedTag, builder.attackSpeed.ordinal.toByte())
         writer.setTag(itemDamageTag, intArrayOf(
@@ -59,6 +61,7 @@ fun writeItemMeta(writer: TagWritable, builder: ItemBuilder) {
             builder.damage.fire.first, builder.damage.fire.last,
             builder.damage.air.first, builder.damage.air.last,
         ))
+        writer.setTag(classReqPosTag, builder.classReqPos)
     } else if (builder is ItemBuilder.Defense) {
         writer.setTag(itemHealthTag, builder.health.toUShort().toShort())
         writer.setTag(itemDefenseTag, byteArrayOf(
@@ -79,6 +82,9 @@ val itemTypeIdTag = Tag.Byte("item-type-id")
 
 val itemSocketsTag: Tag<Byte> = Tag.Byte("item-sockets").defaultValue(0)
 val skillRequirementsTag = Tag.ByteArray("item-skill-requirements")
+val skillRequirementsPositionsTag = Tag.ByteArray("item-skill-requirements-pos")
+
+val classReqPosTag = Tag.Byte("class-req-pos")
 
 val itemAttackSpeedTag = Tag.Byte("item-attack-speed")
 val itemDamageTag = Tag.IntArray("item-damage")

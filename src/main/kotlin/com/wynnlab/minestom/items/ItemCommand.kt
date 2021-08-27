@@ -48,7 +48,7 @@ object ItemCommand : Command(arrayOf(
                 val id = ItemBuilder.itemBuilderName(sender)
                 val builder = ItemBuilder.from(id, ctx[nameArg], ctx[typeArg])
                 lab.itemBuilders[id] = builder
-                sender.inventory.addItemStack(builder.item())
+                sender.inventory.addItemStack(builder.itemFor(sender))
             }, nameArg, typeArg)
         }
     }
@@ -61,7 +61,7 @@ object ItemCommand : Command(arrayOf(
             addSyntax({ sender, ctx ->
                 val builder = getItemBuilder(sender as Player) ?: return@addSyntax
                 builder.setId(ctx[idArg], ctx[valueArg].toShort())
-                sender.itemInMainHand = builder.item()
+                sender.itemInMainHand = builder.itemFor(sender)
             }, idArg, valueArg)
         }
     }
@@ -73,7 +73,7 @@ object ItemCommand : Command(arrayOf(
             addSyntax({ sender, ctx ->
                 val builder = getItemBuilder(sender as Player) ?: return@addSyntax
                 builder.name = ctx[nameArg]
-                sender.itemInMainHand = builder.item()
+                sender.itemInMainHand = builder.itemFor(sender)
             }, nameArg)
         }
     }
@@ -85,7 +85,7 @@ object ItemCommand : Command(arrayOf(
             addSyntax({ sender, ctx ->
                 val builder = getItemBuilder(sender as Player) ?: return@addSyntax
                 builder.setCustomLore(ctx[loreArg])
-                sender.itemInMainHand = builder.item()
+                sender.itemInMainHand = builder.itemFor(sender)
             }, loreArg)
         }
     }
@@ -101,7 +101,7 @@ object ItemCommand : Command(arrayOf(
             addSyntax({ sender, ctx ->
                 val builder = getItemBuilder(sender as Player) ?: return@addSyntax
                 builder.setDesign(ctx[designArg])
-                sender.itemInMainHand = builder.item()
+                sender.itemInMainHand = builder.itemFor(sender)
             }, designArg)
         }
     }
@@ -110,7 +110,7 @@ object ItemCommand : Command(arrayOf(
         init {
             addSyntax({ sender, _ ->
                 val builder = getItemBuilder(sender as Player) ?: return@addSyntax
-                sender.inventory.addItemStack(builder.item(true))
+                sender.inventory.addItemStack(builder.itemFor(sender))
             })
         }
     }
@@ -141,7 +141,7 @@ object ItemCommand : Command(arrayOf(
                     val item = json.getAsJsonArray("items").let { a -> a.find { it.asJsonObject["name"].asString.equals(name, true) }
                         ?: try { a.first() } catch (_: NoSuchElementException) { sender.sendMessage("§cNo such item!"); return@addSyntax } }
                     val builder = itemBuilderFrom(item)
-                    (sender as Player).inventory.addItemStack(builder.item())
+                    (sender as Player).inventory.addItemStack(builder.itemFor(sender))
                     sender.sendMessage("You get \"$name\"")
                 } catch (e: Exception) {
                     sender.sendMessage("§cSomething didn't work")

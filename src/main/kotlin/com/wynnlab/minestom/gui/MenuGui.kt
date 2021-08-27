@@ -93,7 +93,7 @@ object MenuGui : Gui("§c200 §4Skill Points Remaining", InventoryType.CHEST_3_R
     }
 
     override fun onClose(player: Player) {
-        currentSkills.remove(player.uuid)
+        checkPlayerItems(player, currentSkills.remove(player.uuid)!!)
         currentSkillsModified.remove(player.uuid)
     }
 

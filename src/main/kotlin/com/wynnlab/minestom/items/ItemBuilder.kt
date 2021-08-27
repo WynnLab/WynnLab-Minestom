@@ -1,6 +1,8 @@
 package com.wynnlab.minestom.items
 
 import com.wynnlab.minestom.core.Element
+import com.wynnlab.minestom.core.player.checkPlayerItem
+import com.wynnlab.minestom.core.player.modifiedSkills
 import com.wynnlab.minestom.util.displayNameNonItalic
 import com.wynnlab.minestom.util.hideAllFlags
 import com.wynnlab.minestom.util.loreNonItalic
@@ -37,6 +39,15 @@ sealed class ItemBuilder(
     var sockets: Int = 0
 
     val skillRequirements = SkillRequirements(0, 0, 0, 0, 0)
+    val skillRequirementsPositions = ByteArray(5) { -1 }
+    protected fun setSkillRequirementsPositionsAt(at: Int) {
+        var pos = at.toByte()
+        if (skillRequirements.strength != 0) skillRequirementsPositions[0] = pos++
+        if (skillRequirements.dexterity != 0) skillRequirementsPositions[0] = pos++
+        if (skillRequirements.intelligence != 0) skillRequirementsPositions[0] = pos++
+        if (skillRequirements.defense != 0) skillRequirementsPositions[0] = pos++
+        if (skillRequirements.agility != 0) skillRequirementsPositions[0] = pos//++
+    }
 
     val ids: Object2ShortMap<Identification> = Object2ShortOpenHashMap()
     private val idsCats = BooleanArray(Identification.values().last().cat + 1)
@@ -125,7 +136,7 @@ sealed class ItemBuilder(
     protected val SkillRequirements.zero get() = strength == 0 && dexterity == 0 && intelligence == 0 && defense == 0 && agility == 0
 
     private fun skillRequirementComponent(skill: Int, name: String) =
-        skill.takeIf { it != 0 }?.let { Component.text().append(greenCheck).append(Component.text(" $name Min: $it", NamedTextColor.GRAY)).build() }
+        skill.takeIf { it != 0 }?.let { Component.text().append(Component.text("?", NamedTextColor.GRAY)).append(Component.text(" $name Min: $it", NamedTextColor.GRAY)).build() }
 
     private fun refreshDisplayName() = item.displayNameNonItalic(Component.text(name, rarity.nameColor))
 
@@ -145,7 +156,7 @@ sealed class ItemBuilder(
         it.setTag(typeTag, type.name)
     }
 
-    fun item(build: Boolean = false) = item.apply {
+    private fun item(build: Boolean = false) = item.apply {
         refreshDisplayName()
         val itemLore = mutableListOf<Component>()
         lore.mapNotNullTo(itemLore) { it() }
@@ -170,6 +181,8 @@ sealed class ItemBuilder(
         m
     } else it }
 
+    fun itemFor(player: Player, build: Boolean = false) = if (build) item(build).let { checkPlayerItem(player, it, player.modifiedSkills) ?: it } else item(build)
+
     class Weapon(id: String?, name: String, type: ItemType) : ItemBuilder(id, name, type) {
         var attackSpeed: AttackSpeed = AttackSpeed.Normal
 
@@ -179,6 +192,7 @@ sealed class ItemBuilder(
             ItemType.Wand -> "Mage"; ItemType.Bow -> "Archer"; ItemType.Dagger -> "Assassin"
             ItemType.Spear -> "Warrior"; ItemType.Relik -> "Shaman"; else -> error("Unreachable code")
         }
+        var classReqPos: Byte = 0
 
         override val lore = mutableListOf(
             { Component.text("${attackSpeed.display} Attack Speed", NamedTextColor.DARK_GRAY) },
@@ -191,7 +205,11 @@ sealed class ItemBuilder(
             { damage.air.damageComponent("Air", Element.Air) },
             { if (damage.allNone) null else Component.empty() },
             { Component.text().append(greenCheck).append(Component.text(" Class Req: $classReq", NamedTextColor.GRAY)).build() }
-        ).apply { addAll(commonLore) }
+        ).apply {
+            classReqPos = (size - 1).toByte()
+            setSkillRequirementsPositionsAt(size)
+            addAll(commonLore)
+        }
 
         private val IntRange.some get() = first != 0 && last != 0
         private val IntRange.dashed get() = "$first-$last"
@@ -227,6 +245,7 @@ sealed class ItemBuilder(
         ).apply {
             addAll(defenseLore)
             add { if (skillRequirements.zero) null else Component.empty() }
+            setSkillRequirementsPositionsAt(size)
             addAll(commonLore)
         }
     }
@@ -237,6 +256,7 @@ sealed class ItemBuilder(
         ).apply {
             addAll(defenseLore)
             add { if (skillRequirements.zero) null else Component.empty() }
+            setSkillRequirementsPositionsAt(size)
             addAll(commonLore)
         }
     }
