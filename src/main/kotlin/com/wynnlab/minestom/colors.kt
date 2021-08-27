@@ -3,6 +3,7 @@ package com.wynnlab.minestom
 import net.kyori.adventure.text.format.TextColor
 
 const val COLOR_WYNN = 0x82e617
+const val COLOR_DISCORD = 0x000000
 
 const val COLOR_DARKER_GRAY = 0x222222
 const val COLOR_GRAY = 0x666666

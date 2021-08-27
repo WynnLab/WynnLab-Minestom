@@ -1,7 +1,8 @@
 plugins {
     id 'java'
-    id 'org.jetbrains.kotlin.jvm' version '1.5.21'
+    id 'org.jetbrains.kotlin.jvm' version '1.5.30'
     id 'com.github.johnrengelman.shadow' version '5.2.0'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.5.10'
 }
 
 group 'com.wynnlab'
@@ -21,6 +22,7 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
     runtimeOnly "org.jetbrains.kotlin:kotlin-reflect:1.5.30"
+    compileOnly "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1"
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'

@@ -2,6 +2,7 @@ package com.wynnlab.minestom.items
 
 import com.wynnlab.minestom.core.Element
 import com.wynnlab.minestom.core.player.checkPlayerItem
+import com.wynnlab.minestom.core.player.greenCheck
 import com.wynnlab.minestom.core.player.modifiedSkills
 import com.wynnlab.minestom.util.displayNameNonItalic
 import com.wynnlab.minestom.util.hideAllFlags
@@ -40,13 +41,17 @@ sealed class ItemBuilder(
 
     val skillRequirements = SkillRequirements(0, 0, 0, 0, 0)
     val skillRequirementsPositions = ByteArray(5) { -1 }
-    protected fun setSkillRequirementsPositionsAt(at: Int) {
+    private fun setSkillRequirementsPositionsAt(at: Int) {
         var pos = at.toByte()
+        //println(pos)
         if (skillRequirements.strength != 0) skillRequirementsPositions[0] = pos++
-        if (skillRequirements.dexterity != 0) skillRequirementsPositions[0] = pos++
-        if (skillRequirements.intelligence != 0) skillRequirementsPositions[0] = pos++
-        if (skillRequirements.defense != 0) skillRequirementsPositions[0] = pos++
-        if (skillRequirements.agility != 0) skillRequirementsPositions[0] = pos//++
+        if (skillRequirements.dexterity != 0) skillRequirementsPositions[1] = pos++
+        if (skillRequirements.intelligence != 0) skillRequirementsPositions[2] = pos++
+        if (skillRequirements.defense != 0) skillRequirementsPositions[3] = pos++
+        if (skillRequirements.agility != 0) skillRequirementsPositions[4] = pos//++
+        /*println(pos)
+        println(skillRequirements)
+        println(skillRequirementsPositions.contentToString())*/
     }
 
     val ids: Object2ShortMap<Identification> = Object2ShortOpenHashMap()
@@ -100,10 +105,7 @@ sealed class ItemBuilder(
 
     protected abstract val lore: List<() -> Component?>
 
-
-    protected val greenCheck = Component.text("✔", NamedTextColor.GREEN)
-
-    protected val commonLore: List<() -> Component?> = mutableListOf(
+    private val commonLore: List<() -> Component?> = mutableListOf(
         { skillRequirementComponent(skillRequirements.strength, "Strength") },
         { skillRequirementComponent(skillRequirements.dexterity, "Dexterity") },
         { skillRequirementComponent(skillRequirements.intelligence, "Intelligence") },
@@ -160,6 +162,10 @@ sealed class ItemBuilder(
         refreshDisplayName()
         val itemLore = mutableListOf<Component>()
         lore.mapNotNullTo(itemLore) { it() }
+        if (this@ItemBuilder is Weapon) classReqPos = (itemLore.size - 1).toByte()
+        setSkillRequirementsPositionsAt(itemLore.size)
+
+        commonLore.mapNotNullTo(itemLore) { it() }
 
         if (custom) {
             itemLore.add(if (build) Component.text("Custom Item", NamedTextColor.RED) else Component.text("Concept Item", NamedTextColor.DARK_GRAY))
@@ -181,7 +187,7 @@ sealed class ItemBuilder(
         m
     } else it }
 
-    fun itemFor(player: Player, build: Boolean = false) = if (build) item(build).let { checkPlayerItem(player, it, player.modifiedSkills) ?: it } else item(build)
+    fun itemFor(player: Player, build: Boolean = false) = if (build || !custom) item(build).let { checkPlayerItem(it, player.modifiedSkills) ?: it } else item(build)
 
     class Weapon(id: String?, name: String, type: ItemType) : ItemBuilder(id, name, type) {
         var attackSpeed: AttackSpeed = AttackSpeed.Normal
@@ -205,11 +211,11 @@ sealed class ItemBuilder(
             { damage.air.damageComponent("Air", Element.Air) },
             { if (damage.allNone) null else Component.empty() },
             { Component.text().append(greenCheck).append(Component.text(" Class Req: $classReq", NamedTextColor.GRAY)).build() }
-        ).apply {
+        )/*.apply {
             classReqPos = (size - 1).toByte()
             setSkillRequirementsPositionsAt(size)
             addAll(commonLore)
-        }
+        }*/
 
         private val IntRange.some get() = first != 0 && last != 0
         private val IntRange.dashed get() = "$first-$last"
@@ -245,8 +251,8 @@ sealed class ItemBuilder(
         ).apply {
             addAll(defenseLore)
             add { if (skillRequirements.zero) null else Component.empty() }
-            setSkillRequirementsPositionsAt(size)
-            addAll(commonLore)
+            /*setSkillRequirementsPositionsAt(size)
+            addAll(commonLore)*/
         }
     }
 
@@ -256,8 +262,8 @@ sealed class ItemBuilder(
         ).apply {
             addAll(defenseLore)
             add { if (skillRequirements.zero) null else Component.empty() }
-            setSkillRequirementsPositionsAt(size)
-            addAll(commonLore)
+            /*setSkillRequirementsPositionsAt(size)
+            addAll(commonLore)*/
         }
     }
 

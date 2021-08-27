@@ -15,6 +15,7 @@ class MageMain(player: Player) : BasePlayerSpell(player, 0) {
     private val hit = mutableSetOf<DamageTarget>()
 
     override fun onCast() {
+        //println(t)
         val l1: Vec
         val l2: Vec
         run {

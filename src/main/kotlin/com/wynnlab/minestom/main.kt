@@ -2,11 +2,12 @@
 
 package com.wynnlab.minestom
 
-import com.google.gson.JsonObject
 import com.wynnlab.minestom.commands.*
 import com.wynnlab.minestom.core.player.initActionBar
 import com.wynnlab.minestom.core.runIdTasks
+import com.wynnlab.minestom.discord.initDiscordClient
 import com.wynnlab.minestom.generator.GeneratorDemo
+import com.wynnlab.minestom.gui.guiEventNode
 import com.wynnlab.minestom.items.ItemCommand
 import com.wynnlab.minestom.labs.registerLabsCommands
 import com.wynnlab.minestom.labs.registerLabsListeners
@@ -17,7 +18,6 @@ import com.wynnlab.minestom.players.WynnLabLogin
 import com.wynnlab.minestom.players.WynnLabUuidProvider
 import com.wynnlab.minestom.util.listen
 import com.wynnlab.minestom.util.loadImageBase64
-import com.wynnlab.minestom.util.post
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.Style
@@ -99,6 +99,8 @@ fun main() {
     initWynnLabListeners(globalEventHandler)
     registerLabsListeners(globalEventHandler)
 
+    globalEventHandler.addChild(guiEventNode)
+
     val ip = getProperty("server-ip", "0.0.0.0")
     val port = getProperty("server-port", "25565").toIntOrNull() ?: 25565
     server.start(ip, port)
@@ -106,10 +108,12 @@ fun main() {
     if (getProperty("open-to-lan") == "true")
         OpenToLAN.open(OpenToLANConfig())
 
-    if (webhookUrl != null)
+    /*if (webhookUrl != null)
         post(webhookUrl, JsonObject().apply {
             addProperty("content", ":green_circle: **Server started!**")
-        })
+        })*/
+    //if (discordBotToken != null)
+    initDiscordClient()
 }
 
 lateinit var mainInstance: InstanceContainer
@@ -121,10 +125,10 @@ fun saveAll() {
 }
 
 fun stop() {
-    if (webhookUrl != null)
+    /*if (webhookUrl != null)
         post(webhookUrl, JsonObject().apply {
             addProperty("content", ":red_circle: **Server stopped!**")
-        })
+        })*/
     MinecraftServer.stopCleanly()
     exitProcess(0)
 }
@@ -148,8 +152,6 @@ private val motd = Component.text()
 private val lanMotd = LegacyComponentSerializer.legacy('§').deserialize("                     §8play.§b§lWYNNLAB§8.tk")
 private val legacyMotd = Component.text().append(lanMotd).append(Component.newline()).append(
     LegacyComponentSerializer.legacy('§').deserialize("              §d§lWynn §5brought to §d§l1.17")).build()
-
-val webhookUrl = getProperty("webhook-url")
 
 val faviconBase64 = loadImageBase64("./server-icon.png")?.let { "data:image/png;base64,$it" }
 

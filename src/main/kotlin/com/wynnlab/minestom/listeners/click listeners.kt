@@ -143,7 +143,7 @@ private fun castSpellAndResetClickSequence(player: Player, spell: Int) {
         if (it is CustomEntity) player.attack(it, NeutralDamageModifiers)
         else player.attack(it as Player, NeutralDamageModifiers)
     }
-    if (spell == 1) Mage.spells[spell](player).schedule()
+    if (spell == 1) Mage.spells[0](player).schedule()
     //player.setGravity(player.gravityDragPerTick / 2f, player.gravityAcceleration / 2f)
     //val p = Particle.particle(HAPPY_VILLAGER, 10, ParticleType.OffsetAndSpeed(0f, 0f, 0f, 0f))
     //val p = Particle.particle(ITEM, 10, ParticleType.OffsetAndSpeed(0f, 0f, 0f, 0f), Item(player.itemInMainHand))

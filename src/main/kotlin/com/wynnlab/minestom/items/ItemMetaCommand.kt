@@ -14,7 +14,7 @@ object ItemMetaCommand : Subcommand("meta") {
             val itemBuilder = getItemBuilder(sender as Player) ?: return@addSyntax
             val rarity = ctx.get<Rarity>("value")
             itemBuilder.rarity = rarity
-            sender.itemInMainHand = itemBuilder.item()
+            sender.itemInMainHand = itemBuilder.itemFor(sender)
         }, ArgumentType.Literal("rarity"), ArgumentType.Enum("value", Rarity::class.java))
 
         addSyntax(
@@ -23,7 +23,7 @@ object ItemMetaCommand : Subcommand("meta") {
                 val field = ctx.get<String>("skill")
                 val value = ctx.get<Int>("value")
                 SkillRequirements::class.java.getField(field).set(itemBuilder.skillRequirements, value)
-                sender.itemInMainHand = itemBuilder.item()
+                sender.itemInMainHand = itemBuilder.itemFor(sender)
             }, ArgumentType.Literal("skill-req"), ArgumentType.Word("skill").from(
                 "strength", "dexterity", "intelligence", "defense", "agility"
             ), ArgumentType.Integer("value")
@@ -37,7 +37,7 @@ object ItemMetaCommand : Subcommand("meta") {
             }
             val speed = ctx.get<AttackSpeed>("value")
             itemBuilder.attackSpeed = speed
-            sender.itemInMainHand = itemBuilder.item()
+            sender.itemInMainHand = itemBuilder.itemFor(sender)
         }, ArgumentType.Literal("attack-speed"), ArgumentType.Enum("value", AttackSpeed::class.java))
 
         addSyntax(
@@ -50,7 +50,7 @@ object ItemMetaCommand : Subcommand("meta") {
                 val field = ctx.get<String>("element")
                 val value = ctx.get<net.minestom.server.utils.math.IntRange>("value")
                 Damage::class.java.getField(field).set(itemBuilder.damage, value.minimum..value.maximum)
-                sender.itemInMainHand = itemBuilder.item()
+                sender.itemInMainHand = itemBuilder.itemFor(sender)
             }, ArgumentType.Literal("damage"), ArgumentType.Word("element").from(
                 "neutral", "earth", "thunder", "water", "fire", "air"
             ), ArgumentType.IntRange("value")
@@ -64,7 +64,7 @@ object ItemMetaCommand : Subcommand("meta") {
             }
             val health = ctx.get<Int>("value")
             itemBuilder.health = health
-            sender.itemInMainHand = itemBuilder.item()
+            sender.itemInMainHand = itemBuilder.itemFor(sender)
         }, ArgumentType.Literal("health"), ArgumentType.Integer("value"))
 
         addSyntax(
@@ -77,7 +77,7 @@ object ItemMetaCommand : Subcommand("meta") {
                 val field = ctx.get<String>("element")
                 val value = ctx.get<Int>("value")
                 Defense::class.java.getField(field).set(itemBuilder.defense, value)
-                sender.itemInMainHand = itemBuilder.item()
+                sender.itemInMainHand = itemBuilder.itemFor(sender)
             }, ArgumentType.Literal("defense"), ArgumentType.Word("element").from(
                 "earth", "thunder", "water", "fire", "air"
             ), ArgumentType.Integer("value")

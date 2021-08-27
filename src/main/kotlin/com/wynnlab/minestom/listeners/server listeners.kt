@@ -5,6 +5,7 @@ import com.google.gson.JsonObject
 import com.wynnlab.minestom.*
 import com.wynnlab.minestom.commands.Command
 import com.wynnlab.minestom.commands.consoleIgnoreCommands
+import com.wynnlab.minestom.discord.postWebhook
 import com.wynnlab.minestom.util.listen
 import com.wynnlab.minestom.util.post
 import net.kyori.adventure.text.Component
@@ -35,8 +36,9 @@ private fun onPlayerSpawn(e: PlayerSpawnEvent) {
         .append(player.name)
         .build())
 
-    if (webhookUrl != null)
-        post(webhookUrl, JsonObject().apply {
+
+    postWebhook {
+        JsonObject().apply {
             add("embeds", JsonArray().apply {
                 add(JsonObject().apply {
                     addProperty("color", 0x00ff00)
@@ -46,9 +48,11 @@ private fun onPlayerSpawn(e: PlayerSpawnEvent) {
                     })
                 })
             })
-        })
+        }
+    }
 
     player.permissionLevel = permissionLevel(player.uuid)
+
 }
 
 private fun onPlayerDisconnect(e: PlayerDisconnectEvent) {
@@ -60,8 +64,9 @@ private fun onPlayerDisconnect(e: PlayerDisconnectEvent) {
         .append(player.name)
         .build())
 
-    if (webhookUrl != null)
-        post(webhookUrl, JsonObject().apply {
+
+    postWebhook {
+        JsonObject().apply {
             add("embeds", JsonArray().apply {
                 add(JsonObject().apply {
                     addProperty("color", 0xff0000)
@@ -71,7 +76,8 @@ private fun onPlayerDisconnect(e: PlayerDisconnectEvent) {
                     })
                 })
             })
-        })
+        }
+    }
 }
 
 private fun onPlayerChat(e: PlayerChatEvent) {
@@ -89,10 +95,11 @@ private fun onPlayerChat(e: PlayerChatEvent) {
         format.build()
     }
 
-    if (webhookUrl != null)
-        post(webhookUrl, JsonObject().apply {
+    postWebhook {
+        JsonObject().apply {
             addProperty("content", "**${e.player.username}:** ${e.message}")
-        })
+        }
+    }
 }
 
 private fun onPlayerDeath(e: PlayerDeathEvent) {

@@ -5,6 +5,7 @@ package com.wynnlab.minestom.gui
 import net.minestom.server.MinecraftServer
 import net.minestom.server.entity.Player
 import net.minestom.server.event.EventListener
+import net.minestom.server.event.EventNode
 import net.minestom.server.event.inventory.InventoryCloseEvent
 import net.minestom.server.inventory.Inventory
 import net.minestom.server.inventory.InventoryType
@@ -20,7 +21,7 @@ abstract class Gui(
     init {
         initItems()
         inv.addInventoryCondition(this::onClick)
-        MinecraftServer.getGlobalEventHandler().addListener(closeListener)
+        guiEventNode.addListener(closeListener)
     }
 
     fun show(player: Player) {
@@ -35,9 +36,12 @@ abstract class Gui(
     protected abstract fun onClick(player: Player, slot: Int, clickType: ClickType, result: InventoryConditionResult)
 
     private fun onClose(e: InventoryCloseEvent) {
+        if (e.inventory?.windowId != inv.windowId) return
         onClose(e.player)
-        MinecraftServer.getGlobalEventHandler().removeListener(closeListener)
+        //MinecraftServer.getGlobalEventHandler().removeListener(closeListener)
     }
 
     protected open fun onClose(player: Player) = Unit
 }
+
+val guiEventNode = EventNode.all("wynnlab-gui")
