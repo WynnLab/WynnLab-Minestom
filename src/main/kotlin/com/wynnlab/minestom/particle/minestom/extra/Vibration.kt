@@ -1,6 +1,6 @@
 package com.wynnlab.minestom.particle.minestom.extra
 
-import com.wynnlab.minestom.particle.minestom.ParticleType
+import com.wynnlab.minestom.particle.minestom.ParticleTypes
 import net.minestom.server.utils.binary.BinaryWriter
 
 data class Vibration(
@@ -11,7 +11,7 @@ data class Vibration(
     val endY: Float,
     val endZ: Float,
     val ticks: Int
-) : ParticleType.BinaryData {
+) : ParticleTypes.BinaryData {
     override fun accept(t: BinaryWriter) {
         t.writeFloat(startX)
         t.writeFloat(startY)

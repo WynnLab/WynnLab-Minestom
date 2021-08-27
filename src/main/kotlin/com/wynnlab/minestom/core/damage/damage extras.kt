@@ -3,8 +3,7 @@ package com.wynnlab.minestom.core.damage
 import com.wynnlab.minestom.items.Identification
 import com.wynnlab.minestom.particle.adventure.Particle
 import com.wynnlab.minestom.particle.minestom.EFFECT
-import com.wynnlab.minestom.particle.minestom.ENTITY_EFFECT
-import com.wynnlab.minestom.particle.minestom.ParticleType
+import com.wynnlab.minestom.particle.minestom.ParticleTypes
 import com.wynnlab.minestom.particle.minestom.showParticle
 import net.minestom.server.MinecraftServer
 import net.minestom.server.tag.Tag
@@ -34,7 +33,7 @@ private fun poisonTask(target: DamageTarget, amountPerSecond: Int) {
     damageRaw(target, amountPerSecond)
 }
 
-private val poisonParticle = Particle.particle(EFFECT, 15, ParticleType.Color(0f, 1f, 0f, 1f))
+private val poisonParticle = Particle.particle(EFFECT, 15, ParticleTypes.Color(0f, 1f, 0f, 1f))
 
 fun exploding(source: DamageSource, target: DamageTarget) {
 

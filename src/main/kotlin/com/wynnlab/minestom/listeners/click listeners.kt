@@ -1,5 +1,6 @@
 package com.wynnlab.minestom.listeners
 
+import com.wynnlab.minestom.classes.mage.Mage
 import com.wynnlab.minestom.core.damage.NeutralDamageModifiers
 import com.wynnlab.minestom.core.damage.attack
 import com.wynnlab.minestom.core.player.itemWeapon
@@ -142,12 +143,13 @@ private fun castSpellAndResetClickSequence(player: Player, spell: Int) {
         if (it is CustomEntity) player.attack(it, NeutralDamageModifiers)
         else player.attack(it as Player, NeutralDamageModifiers)
     }
+    if (spell == 1) Mage.spells[spell](player).schedule()
     //player.setGravity(player.gravityDragPerTick / 2f, player.gravityAcceleration / 2f)
     //val p = Particle.particle(HAPPY_VILLAGER, 10, ParticleType.OffsetAndSpeed(0f, 0f, 0f, 0f))
     //val p = Particle.particle(ITEM, 10, ParticleType.OffsetAndSpeed(0f, 0f, 0f, 0f), Item(player.itemInMainHand))
     //player.showParticle(p, player.position)
     //player.sendMessage("spell $spell")
-    if (spell > 0 ) player.playSound(Sound.sound(SoundEvent.ENTITY_EXPERIENCE_ORB_PICKUP, Sound.Source.MASTER, 1f, .5f))
+    if (spell > 0) player.playSound(Sound.sound(SoundEvent.ENTITY_EXPERIENCE_ORB_PICKUP, Sound.Source.MASTER, 1f, .5f))
     resetClickSequence(player)
 }
 

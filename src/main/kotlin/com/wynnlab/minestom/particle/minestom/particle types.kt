@@ -7,10 +7,11 @@ package com.wynnlab.minestom.particle.minestom
 import com.wynnlab.minestom.particle.minestom.extra.*
 import net.minestom.server.particle.Particle as MinestomParticle
 
-import com.wynnlab.minestom.particle.minestom.ParticleType as PT
-import com.wynnlab.minestom.particle.minestom.ParticleType.OffsetAndSpeed as O
-import com.wynnlab.minestom.particle.minestom.ParticleType.Color as C
+import com.wynnlab.minestom.particle.minestom.ParticleTypes as PT
+import com.wynnlab.minestom.particle.minestom.ParticleTypes.OffsetAndSpeed as O
+import com.wynnlab.minestom.particle.minestom.ParticleTypes.Color as C
 
+object ParticleType {
 val AMBIENT_ENTITY_EFFECT: PT<C, Nothing?> = PT.ColorParticleType(MinestomParticle.AMBIENT_ENTITY_EFFECT)
 val ANGRY_VILLAGER: PT<O, Nothing?> = PT.DefaultParticleType(MinestomParticle.ANGRY_VILLAGER)
 val BARRIER: PT<O, Nothing?> = PT.DefaultParticleType(MinestomParticle.BARRIER)
@@ -100,3 +101,4 @@ val WAX_ON: PT<O, Nothing?> = PT.DefaultParticleType(MinestomParticle.WAX_ON)
 val WAX_OFF: PT<O, Nothing?> = PT.DefaultParticleType(MinestomParticle.WAX_OFF)
 val ELECTRIC_SPARK: PT<O, Nothing?> = PT.DefaultParticleType(MinestomParticle.ELECTRIC_SPARK)
 val SCRAPE: PT<O, Nothing?> = PT.DefaultParticleType(MinestomParticle.SCRAPE)
+}

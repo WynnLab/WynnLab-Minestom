@@ -30,7 +30,7 @@ fun <D : Particle.Data, E : Particle.ExtraData?> createParticlePacket(particle: 
     packet.particleCount = particle.count
 
     packet.data = when (val e = particle.extraData) {
-        is ParticleType.BinaryData -> {
+        is ParticleTypes.BinaryData -> {
             val writer = BinaryWriter()
             e.accept(writer)
             writer.toByteArray()

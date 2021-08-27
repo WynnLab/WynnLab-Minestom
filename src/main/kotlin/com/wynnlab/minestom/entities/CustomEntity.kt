@@ -156,6 +156,16 @@ abstract class CustomEntity(entityType: EntityType) : Entity(entityType) {
 
     private fun hologramPosition() = position.add(.0, eyeHeight, .0)
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Entity) return false
+        return other.uuid == this.uuid
+    }
+
+    override fun hashCode(): Int {
+        return uuid.hashCode()
+    }
+
     @JvmInline
     value class DamageTarget(val ce: CustomEntity) : com.wynnlab.minestom.core.damage.DamageTarget {
         override fun damage(value: Float) = ce.damage(value)

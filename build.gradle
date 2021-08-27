@@ -17,7 +17,10 @@ repositories {
 dependencies {
     implementation 'com.github.Minestom:Minestom:-SNAPSHOT'
 
+    implementation 'com.github.fauxkiwi:discord-kt:0.1.3'
+
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    runtimeOnly "org.jetbrains.kotlin:kotlin-reflect:1.5.30"
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'

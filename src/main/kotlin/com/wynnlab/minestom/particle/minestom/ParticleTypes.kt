@@ -9,15 +9,15 @@ import java.util.function.Consumer
 import java.util.stream.Stream
 import net.minestom.server.particle.Particle as MinestomParticle
 
-sealed class ParticleType <D : Particle.Data, E : Particle.ExtraData?>
+sealed class ParticleTypes <D : Particle.Data, E : Particle.ExtraData?>
 constructor(private val minestomParticle: MinestomParticle) :
     Particle.Type<D, E>, Keyed by minestomParticle {
 
     internal class DefaultParticleType(minestomParticle: MinestomParticle) :
-        ParticleType<OffsetAndSpeed, Nothing?>(minestomParticle)
+        ParticleTypes<OffsetAndSpeed, Nothing?>(minestomParticle)
 
     internal class ColorParticleType(minestomParticle: MinestomParticle) :
-        ParticleType<Color, Nothing?>(minestomParticle)
+        ParticleTypes<Color, Nothing?>(minestomParticle)
 
     data class OffsetAndSpeed(val offX: Float, val offY: Float, val offZ: Float, val speed: Float) : Particle.Data {
         override fun examinableProperties(): Stream<out ExaminableProperty> = Stream.of(
@@ -40,10 +40,10 @@ constructor(private val minestomParticle: MinestomParticle) :
     fun interface BinaryData : Particle.ExtraData, Consumer<BinaryWriter>
 
     // Internal stuff
-    internal class Block(minestomParticle: MinestomParticle) : ParticleType<OffsetAndSpeed, BlockState>(minestomParticle)
-    internal object DUST : ParticleType<OffsetAndSpeed, Dust>(MinestomParticle.DUST)
+    internal class Block(minestomParticle: MinestomParticle) : ParticleTypes<OffsetAndSpeed, BlockState>(minestomParticle)
+    internal object DUST : ParticleTypes<OffsetAndSpeed, Dust>(MinestomParticle.DUST)
     @Suppress("ClassName")
-    internal object DUST_COLOR_TRANSITION : ParticleType<OffsetAndSpeed, DustTransition>(MinestomParticle.DUST_COLOR_TRANSITION)
-    internal object ITEM : ParticleType<OffsetAndSpeed, Item>(MinestomParticle.ITEM)
-    internal object VIBRATION : ParticleType<OffsetAndSpeed, Vibration>(MinestomParticle.VIBRATION)
+    internal object DUST_COLOR_TRANSITION : ParticleTypes<OffsetAndSpeed, DustTransition>(MinestomParticle.DUST_COLOR_TRANSITION)
+    internal object ITEM : ParticleTypes<OffsetAndSpeed, Item>(MinestomParticle.ITEM)
+    internal object VIBRATION : ParticleTypes<OffsetAndSpeed, Vibration>(MinestomParticle.VIBRATION)
 }

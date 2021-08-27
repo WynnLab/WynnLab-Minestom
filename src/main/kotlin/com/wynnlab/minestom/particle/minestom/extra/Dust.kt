@@ -1,6 +1,6 @@
 package com.wynnlab.minestom.particle.minestom.extra
 
-import com.wynnlab.minestom.particle.minestom.ParticleType
+import com.wynnlab.minestom.particle.minestom.ParticleTypes
 import net.minestom.server.utils.binary.BinaryWriter
 
 data class Dust(
@@ -8,7 +8,7 @@ data class Dust(
     val green: Float,
     val blue: Float,
     val scale: Float
-) : ParticleType.BinaryData {
+) : ParticleTypes.BinaryData {
     override fun accept(t: BinaryWriter) {
         t.writeFloat(red)
         t.writeFloat(green)
