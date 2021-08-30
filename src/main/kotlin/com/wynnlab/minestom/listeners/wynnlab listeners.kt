@@ -11,5 +11,6 @@ val wynnLabPlayerListenersNode = EventNode.type("wynnlab-player-listeners", Even
 
 fun initWynnLabListeners(globalEventHandler: GlobalEventHandler) {
     initClickListeners()
+    initPlayerInventoryClickListeners()
     globalEventHandler.addChild(wynnLabPlayerListenersNode)
 }

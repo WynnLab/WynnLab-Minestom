@@ -1,7 +1,7 @@
 package com.wynnlab.minestom.items
 
 import com.wynnlab.minestom.core.Element
-import com.wynnlab.minestom.core.player.checkPlayerItem
+import com.wynnlab.minestom.core.player.checkPlayerItemSafe
 import com.wynnlab.minestom.core.player.greenCheck
 import com.wynnlab.minestom.core.player.modifiedSkills
 import com.wynnlab.minestom.util.displayNameNonItalic
@@ -187,7 +187,7 @@ sealed class ItemBuilder(
         m
     } else it }
 
-    fun itemFor(player: Player, build: Boolean = false) = if (build || !custom) item(build).let { checkPlayerItem(it, player.modifiedSkills) ?: it } else item(build)
+    fun itemFor(player: Player, build: Boolean = false) = if (build || !custom) item(build).let { checkPlayerItemSafe(it, player.modifiedSkills) ?: it } else item(build)
 
     class Weapon(id: String?, name: String, type: ItemType) : ItemBuilder(id, name, type) {
         var attackSpeed: AttackSpeed = AttackSpeed.Normal

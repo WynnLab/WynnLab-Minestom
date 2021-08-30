@@ -235,8 +235,8 @@ private fun setSkillBookLore(lore: MutableList<Component>, value: Int, modified:
         .append(Component.text("${value + 1} points", NamedTextColor.GOLD))
         .build()
     if (lore.size > 10 && !modified) {
-        lore.removeAt(lore.size)
-        lore.removeAt(lore.size)
+        lore.removeAt(lore.size - 1)
+        lore.removeAt(lore.size - 1)
     } else if (lore.size <= 10 && modified) {
         lore.add(Component.empty())
         lore.add(Component.text("This skill was modified by your equipment", COLOR_WYNN.textColor))

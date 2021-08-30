@@ -3,11 +3,6 @@ package com.wynnlab.minestom.discord
 import com.google.gson.JsonObject
 import com.wynnlab.minestom.*
 import com.wynnlab.minestom.util.post
-import discord.Client
-import discord.DiscordApplication
-import discord.Message
-import discord.events.Event
-import discord.events.MessageCreateEvent
 import net.kyori.adventure.text.Component
 
 val discordWebhookUrl = getProperty("discord-webhook-url")
@@ -20,7 +15,8 @@ inline fun postWebhook(json: () -> JsonObject) {
 
 fun initDiscordClient() {
     if (discordBotToken == null || discordChannelId == null) return
-    (object : DiscordApplication(Client()) {
+
+    /*(object : DiscordApplication(Client()) {
         fun run() {
             client.run(discordBotToken)
         }
@@ -38,7 +34,7 @@ fun initDiscordClient() {
                 .append(Component.text(event.message.content))
                 .build())
         }
-    }).run()
+    }).run()*/
 }
 
 private val discordBroadcastPrefix = Component.text()

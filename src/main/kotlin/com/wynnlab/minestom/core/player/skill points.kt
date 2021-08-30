@@ -2,6 +2,7 @@ package com.wynnlab.minestom.core.player
 
 import com.wynnlab.minestom.items.Identification
 import net.minestom.server.entity.Player
+import net.minestom.server.item.ItemStack
 import net.minestom.server.tag.Tag
 import kotlin.math.roundToInt
 
@@ -22,13 +23,17 @@ val Player.modifiedSkills: IntArray get() {
     val r = IntArray(5) { a[it].toInt() }
     for (e in defenseEquipment) {
         if (e == null) continue
-        r[0] += Identification.Strength.get(e).toInt()
-        r[1] += Identification.Dexterity.get(e).toInt()
-        r[2] += Identification.Intelligence.get(e).toInt()
-        r[3] += Identification.Defense.get(e).toInt()
-        r[4] += Identification.Agility.get(e).toInt()
+        addSkills(r, e)
     }
     return r
+}
+
+fun addSkills(r: IntArray, e: ItemStack) {
+    r[0] += Identification.Strength.get(e).toInt()
+    r[1] += Identification.Dexterity.get(e).toInt()
+    r[2] += Identification.Intelligence.get(e).toInt()
+    r[3] += Identification.Defense.get(e).toInt()
+    r[4] += Identification.Agility.get(e).toInt()
 }
 
 val Player.effectiveSkills: IntArray get() {

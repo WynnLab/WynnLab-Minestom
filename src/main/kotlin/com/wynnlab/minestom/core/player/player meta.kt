@@ -63,12 +63,12 @@ val Player.defenseEquipment get() = listOf(
     itemNecklace,
 )
 
-inline val Player.itemWeapon get() = itemInMainHand.takeIf { it.getTag(itemTypeIdTag) == 1.toByte() }
-inline val Player.itemHelmet get() = helmet.takeIf { it.getTag(itemTypeIdTag) == 2.toByte() }
-inline val Player.itemChestplate get() = chestplate.takeIf { it.getTag(itemTypeIdTag) == 3.toByte() }
-inline val Player.itemLeggings get() = leggings.takeIf { it.getTag(itemTypeIdTag) == 4.toByte() }
-inline val Player.itemBoots get() = boots.takeIf { it.getTag(itemTypeIdTag) == 5.toByte() }
-inline val Player.itemRing1 get() = inventory.getItemStack(9).takeIf { it.getTag(itemTypeIdTag) == 6.toByte() }
-inline val Player.itemRing2 get() = inventory.getItemStack(10).takeIf { it.getTag(itemTypeIdTag) == 6.toByte() }
-inline val Player.itemBracelet get() = inventory.getItemStack(11).takeIf { it.getTag(itemTypeIdTag) == 8.toByte() }
-inline val Player.itemNecklace get() = inventory.getItemStack(12).takeIf { it.getTag(itemTypeIdTag) == 7.toByte() }
+inline val Player.itemWeapon get() = itemInMainHand.takeIf { it.getTag(itemTypeIdTag) == ItemTypeId.WEAPON }
+inline val Player.itemHelmet get() = helmet.takeIf { it.getTag(itemTypeIdTag) == ItemTypeId.HELMET }
+inline val Player.itemChestplate get() = chestplate.takeIf { it.getTag(itemTypeIdTag) == ItemTypeId.CHESTPLATE }
+inline val Player.itemLeggings get() = leggings.takeIf { it.getTag(itemTypeIdTag) == ItemTypeId.LEGGINGS }
+inline val Player.itemBoots get() = boots.takeIf { it.getTag(itemTypeIdTag) == ItemTypeId.BOOTS }
+inline val Player.itemRing1 get() = inventory.getItemStack(9).takeIf { it.getTag(itemTypeIdTag) == ItemTypeId.RING }
+inline val Player.itemRing2 get() = inventory.getItemStack(10).takeIf { it.getTag(itemTypeIdTag) ==ItemTypeId.RING }
+inline val Player.itemBracelet get() = inventory.getItemStack(11).takeIf { it.getTag(itemTypeIdTag) == ItemTypeId.BRACELET }
+inline val Player.itemNecklace get() = inventory.getItemStack(12).takeIf { it.getTag(itemTypeIdTag) == ItemTypeId.NECKLACE }

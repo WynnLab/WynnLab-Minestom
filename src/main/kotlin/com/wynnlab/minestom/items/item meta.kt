@@ -1,5 +1,6 @@
 package com.wynnlab.minestom.items
 
+import net.minestom.server.item.ItemStack
 import net.minestom.server.tag.Tag
 import net.minestom.server.tag.TagWritable
 
@@ -35,6 +36,24 @@ import net.minestom.server.tag.TagWritable
     null
 }*/
 
+/*val ItemStack.isHelmet get() = getTag(itemTypeIdTag) == 2.toByte()
+val ItemStack.isChestplate get() = getTag(itemTypeIdTag) == 3.toByte()
+val ItemStack.isLeggings get() = getTag(itemTypeIdTag) == 4.toByte()
+val ItemStack.isBoots get() = getTag(itemTypeIdTag) == 5.toByte()
+val ItemStack.isRing get() = getTag(itemTypeIdTag) == 6.toByte()
+val ItemStack.isBracelet get() = getTag(itemTypeIdTag) == 8.toByte()
+val ItemStack.isNecklace get() = getTag(itemTypeIdTag) == 7.toByte()*/
+
+object ItemTypeId {
+    const val WEAPON: Byte = 1
+    const val HELMET: Byte = 2
+    const val CHESTPLATE: Byte = 3
+    const val LEGGINGS: Byte = 4
+    const val BOOTS: Byte = 5
+    const val RING: Byte = 6
+    const val BRACELET: Byte = 8
+    const val NECKLACE: Byte = 7
+}
 
 fun writeItemMeta(writer: TagWritable, builder: ItemBuilder) {
     writer.setTag(itemTypeIdTag, (builder.type.ordinal.let { if (it < 5) 1 else it - 3 }).toByte())
