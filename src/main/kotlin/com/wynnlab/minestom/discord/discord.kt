@@ -5,12 +5,22 @@ import com.wynnlab.minestom.*
 import com.wynnlab.minestom.util.post
 import net.kyori.adventure.text.Component
 
-val discordWebhookUrl = getProperty("discord-webhook-url")
+val discordChatWebhookUrl = getProperty("discord-chat-webhook-url")
+val discordLogWebhookUrl = getProperty("discord-log-webhook-url")
 val discordBotToken = getProperty("discord-bot-token")
 val discordChannelId = getProperty("discord-channel-id")?.toLong()
 
-inline fun postWebhook(json: () -> JsonObject) {
-    if (discordWebhookUrl != null) post(discordWebhookUrl, json())
+inline fun postChatWebhook(json: () -> JsonObject) {
+    if (discordChatWebhookUrl != null) post(discordChatWebhookUrl, json())
+}
+
+inline fun postLogWebhook(json: () -> JsonObject) {
+    if (discordLogWebhookUrl != null) post(discordLogWebhookUrl, json())
+}
+
+inline fun postWebhooks(json: () -> JsonObject) {
+    postChatWebhook(json)
+    postLogWebhook(json)
 }
 
 fun initDiscordClient() {

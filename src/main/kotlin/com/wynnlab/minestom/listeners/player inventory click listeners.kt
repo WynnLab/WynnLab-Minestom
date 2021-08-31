@@ -8,7 +8,6 @@ import com.wynnlab.minestom.items.skillRequirementsTag
 import com.wynnlab.minestom.players.snowForSlot
 import com.wynnlab.minestom.util.listen
 import net.minestom.server.entity.GameMode
-import net.minestom.server.entity.Player
 import net.minestom.server.event.EventFilter
 import net.minestom.server.event.EventNode
 import net.minestom.server.event.inventory.InventoryPreClickEvent

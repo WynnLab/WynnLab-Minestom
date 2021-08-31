@@ -2,10 +2,12 @@
 
 package com.wynnlab.minestom
 
+import com.google.gson.JsonObject
 import com.wynnlab.minestom.commands.*
 import com.wynnlab.minestom.core.player.initActionBar
 import com.wynnlab.minestom.core.runIdTasks
 import com.wynnlab.minestom.discord.initDiscordClient
+import com.wynnlab.minestom.discord.postLogWebhook
 import com.wynnlab.minestom.generator.GeneratorDemo
 import com.wynnlab.minestom.gui.guiEventNode
 import com.wynnlab.minestom.items.ItemCommand
@@ -38,6 +40,17 @@ import kotlin.system.exitProcess
 
 fun main() {
     val server = MinecraftServer.init()
+
+    val oldExceptionManager = MinecraftServer.getExceptionManager()
+    MinecraftServer.getExceptionManager().setExceptionHandler {
+        oldExceptionManager.handleException(it)
+        postLogWebhook {
+            JsonObject().apply {
+                addProperty("content", "Exception:\n```$it```")
+            }
+        }
+    }
+
 
     MinecraftServer.setBrandName("WynnLab")
 
@@ -85,7 +98,7 @@ fun main() {
 
     globalEventHandler.listen<ServerListPingEvent> { event ->
         val responseData = event.responseData
-        responseData.version = "WynnLab 1.17.1"
+        responseData.version = "WynnLab ${MinecraftServer.VERSION_NAME}"
         responseData.description = when (event.pingType) {
             ServerListPingType.MODERN_FULL_RGB -> motd
             ServerListPingType.OPEN_TO_LAN -> lanMotd
