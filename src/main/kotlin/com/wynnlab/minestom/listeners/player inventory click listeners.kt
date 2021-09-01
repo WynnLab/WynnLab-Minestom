@@ -33,13 +33,13 @@ private fun onPlayerInventoryClick(e: InventoryPreClickEvent) {
         e.isCancelled = true
         return
     }
-    println("""
+    /*println("""
         =====
         Slot: ${e.slot}
         Type: ${e.clickType}
         Cursor: ${e.cursorItem.material}
         Clicked: ${e.clickedItem.material}
-    """.trimIndent())
+    """.trimIndent())*/
     run clickType@ {
         when (e.clickType) {
             ClickType.START_SHIFT_CLICK -> {

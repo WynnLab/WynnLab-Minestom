@@ -4,10 +4,13 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.wynnlab.minestom.*
 import com.wynnlab.minestom.commands.consoleIgnoreCommands
-import com.wynnlab.minestom.discord.postChatWebhook
 import com.wynnlab.minestom.discord.postLogWebhook
 import com.wynnlab.minestom.discord.postWebhooks
 import com.wynnlab.minestom.util.listen
+import kotlinx.serialization.json.addJsonObject
+import kotlinx.serialization.json.put
+import kotlinx.serialization.json.putJsonArray
+import kotlinx.serialization.json.putJsonObject
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
@@ -43,20 +46,19 @@ private fun onPlayerSpawn(e: PlayerSpawnEvent) {
 
 
     postWebhooks {
-        JsonObject().apply {
-            add("embeds", JsonArray().apply {
-                add(JsonObject().apply {
-                    addProperty("color", 0x00ff00)
-                    add("author", JsonObject().apply {
-                        addProperty("name", "${player.username} has joined the server")
-                        addProperty("icon_url", "https://www.mc-heads.net/avatar/${player.uuid}")
-                    })
-                })
-            })
+        val authorName = "${player.username} has joined the server"
+        val authorIcon = "https://www.mc-heads.net/avatar/${player.uuid}"
+        putJsonArray("embeds") {
+            addJsonObject {
+                put("color", 0x00ff00)
+                putJsonObject("author") {
+                    put("name", authorName)
+                    put("icon_url", authorIcon)
+                }
+            }
         }
     }
 
-    //player.sendMessage(Component.translatable("narrator.button.language"))
     player.sendMessage(languageText)
 
     NotificationCenter.send(welcomeNotification, player)
@@ -75,16 +77,16 @@ private fun onPlayerDisconnect(e: PlayerDisconnectEvent) {
 
 
     postWebhooks {
-        JsonObject().apply {
-            add("embeds", JsonArray().apply {
-                add(JsonObject().apply {
-                    addProperty("color", 0xff0000)
-                    add("author", JsonObject().apply {
-                        addProperty("name", "${player.username} has left the server")
-                        addProperty("icon_url", "https://www.mc-heads.net/avatar/${player.uuid}")
-                    })
-                })
-            })
+        val authorName = "${player.username} has left the server"
+        val authorIcon = "https://www.mc-heads.net/avatar/${player.uuid}"
+        putJsonArray("embeds") {
+            addJsonObject {
+                put("color", 0xff0000)
+                putJsonObject("author") {
+                    put("name", authorName)
+                    put("icon_url", authorIcon)
+                }
+            }
         }
     }
 }
@@ -105,9 +107,12 @@ private fun onPlayerChat(e: PlayerChatEvent) {
     }
 
     postWebhooks {
-        JsonObject().apply {
-            addProperty("content", "**${e.player.username}:** ${e.message}")
-        }
+        val username = e.player.username
+        val avatar = "https://www.mc-heads.net/avatar/${e.player.uuid}"
+        val content = e.message
+        put("username", username)
+        put("avatar_url", avatar)
+        put("content", content)
     }
 }
 
@@ -122,9 +127,12 @@ private fun onPlayerCommand(e: PlayerCommandEvent) {
     if (consoleIgnoreCommands.contains(e.command)) return
     Audiences.console().sendMessage(Component.text("${e.player.username} issued command: ${e.command}"))
     postLogWebhook {
-        JsonObject().apply {
-            addProperty("content", "**${e.player.username}** issued command: __/${e.command}__")
-        }
+        val username = e.player.username
+        val avatar = "https://www.mc-heads.net/avatar/${e.player.uuid}"
+        val content = "**>** /${e.command}"
+        put("username", username)
+        put("avatar_url", avatar)
+        put("content", content)
     }
 }
 

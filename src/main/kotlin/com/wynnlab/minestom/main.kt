@@ -2,7 +2,6 @@
 
 package com.wynnlab.minestom
 
-import com.google.gson.JsonObject
 import com.wynnlab.minestom.commands.*
 import com.wynnlab.minestom.core.player.initActionBar
 import com.wynnlab.minestom.core.runIdTasks
@@ -20,6 +19,7 @@ import com.wynnlab.minestom.players.WynnLabLogin
 import com.wynnlab.minestom.players.WynnLabUuidProvider
 import com.wynnlab.minestom.util.listen
 import com.wynnlab.minestom.util.loadImageBase64
+import kotlinx.serialization.json.put
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.Style
@@ -45,9 +45,7 @@ fun main() {
     MinecraftServer.getExceptionManager().setExceptionHandler {
         oldExceptionManager.handleException(it)
         postLogWebhook {
-            JsonObject().apply {
-                addProperty("content", "Exception:\n```$it```")
-            }
+            put("content", "Exception:\n```$it```")
         }
     }
 
@@ -62,6 +60,11 @@ fun main() {
     //val storageLocation = storageManager.getLocation("world")
 
     val schedulerManager = MinecraftServer.getSchedulerManager()
+    schedulerManager.buildShutdownTask {
+        postLogWebhook {
+            put("content", "> Server stopped :red_circle:")
+        }
+    }.makeTransient().schedule()
     schedulerManager.buildShutdownTask(::saveAll).makeTransient().schedule()
     schedulerManager.buildTask(::saveAll).delay(5, TimeUnit.MINUTE).repeat(5, TimeUnit.MINUTE).schedule()
     runIdTasks()
@@ -121,11 +124,9 @@ fun main() {
     if (getProperty("open-to-lan") == "true")
         OpenToLAN.open(OpenToLANConfig())
 
-    /*if (webhookUrl != null)
-        post(webhookUrl, JsonObject().apply {
-            addProperty("content", ":green_circle: **Server started!**")
-        })*/
-    //if (discordBotToken != null)
+    postLogWebhook {
+        put("content", "> Server started :green_circle:")
+    }
     initDiscordClient()
 }
 

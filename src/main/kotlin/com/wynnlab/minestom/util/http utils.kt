@@ -1,34 +1,46 @@
 package com.wynnlab.minestom.util
 
-import com.google.gson.Gson
-import com.google.gson.JsonObject
-import com.google.gson.JsonParser
-import java.net.HttpURLConnection
-import java.net.URL
-import java.net.http.HttpClient
-import java.net.http.HttpRequest
-import java.net.http.HttpResponse
+import io.ktor.client.*
+import io.ktor.client.engine.java.*
+import io.ktor.client.features.json.*
+import io.ktor.client.features.json.serializer.*
+import io.ktor.client.request.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
 
-fun get(url: String): JsonObject {
-    val jUrl = URL(url)
+@Suppress("DeferredIsResult")
+fun get(url: String) = GlobalScope.async {
+    httpClient.get<JsonObject>(url)
+    /*val jUrl = URL(url)
     val conn = jUrl.openConnection() as HttpURLConnection
     conn.requestMethod = "GET"
     conn.connect()
     if (conn.responseCode != 200) throw HttpRequestException(url, conn.responseCode)
     val stream = jUrl.openStream()
-    return JsonParser.parseReader(stream.reader()).asJsonObject
+    return JsonParser.parseReader(stream.reader()).asJsonObject*/
 }
 
-private val client: HttpClient by lazy { HttpClient.newHttpClient() }
-private val gson by lazy { Gson() }
+/*private val client: HttpClient by lazy { HttpClient.newHttpClient() }
+private val gson by lazy { Gson() }*/
 
-//"https://discord.com/api/webhooks/871724748818763836/a_T9R18nU51xMmWjUIYAZgY1kOvuWaaJHEzUu45mDEOwoEKnZmAr_k6hUSIP4rORCK6T"
-fun post(url: String, json: JsonObject) {
-    val request = HttpRequest.newBuilder(URL(url).toURI())
-        .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(json)))
-        .header("Content-Type", "application/json")
-        .build()
-    client.sendAsync(request, HttpResponse.BodyHandlers.discarding())
+fun post(url: String, json: JsonObject) = GlobalScope.launch {
+    httpClient.post<Unit>(url) {
+        header("Content-Type", "application/json")
+        body = json
+    }
 }
 
-data class HttpRequestException(val address: String, val responseCode: Int) : Exception()
+//data class HttpRequestException(val address: String, val responseCode: Int) : Exception()
+
+val json = Json {
+
+}
+
+val httpClient = HttpClient(Java) {
+    install(JsonFeature) {
+        serializer = KotlinxSerializer(json)
+    }
+}

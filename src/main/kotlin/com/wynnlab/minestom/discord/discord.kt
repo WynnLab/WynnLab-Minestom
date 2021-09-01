@@ -1,8 +1,12 @@
 package com.wynnlab.minestom.discord
 
-import com.google.gson.JsonObject
 import com.wynnlab.minestom.*
 import com.wynnlab.minestom.util.post
+import discord.events.MessageCreateEvent
+import discord.events.ReadyEvent
+import kotlinx.serialization.json.JsonObjectBuilder
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import net.kyori.adventure.text.Component
 
 val discordChatWebhookUrl = getProperty("discord-chat-webhook-url")
@@ -10,15 +14,15 @@ val discordLogWebhookUrl = getProperty("discord-log-webhook-url")
 val discordBotToken = getProperty("discord-bot-token")
 val discordChannelId = getProperty("discord-channel-id")?.toLong()
 
-inline fun postChatWebhook(json: () -> JsonObject) {
-    if (discordChatWebhookUrl != null) post(discordChatWebhookUrl, json())
+inline fun postChatWebhook(json: JsonObjectBuilder.() -> Unit) {
+    if (discordChatWebhookUrl != null) post(discordChatWebhookUrl, buildJsonObject(json))
 }
 
-inline fun postLogWebhook(json: () -> JsonObject) {
-    if (discordLogWebhookUrl != null) post(discordLogWebhookUrl, json())
+inline fun postLogWebhook(json: JsonObjectBuilder.() -> Unit) {
+    if (discordLogWebhookUrl != null) post(discordLogWebhookUrl, buildJsonObject(json))
 }
 
-inline fun postWebhooks(json: () -> JsonObject) {
+inline fun postWebhooks(json: JsonObjectBuilder.() -> Unit) {
     postChatWebhook(json)
     postLogWebhook(json)
 }
@@ -26,25 +30,21 @@ inline fun postWebhooks(json: () -> JsonObject) {
 fun initDiscordClient() {
     if (discordBotToken == null || discordChannelId == null) return
 
-    /*(object : DiscordApplication(Client()) {
-        fun run() {
-            client.run(discordBotToken)
+    val client = discord.Client(guildReadyTimeout = 1f)
+    client.event<ReadyEvent> {
+        println("Discord bot initialized.")
+    }
+    client.event<MessageCreateEvent> { event ->
+        if (event.message.channelId != discordChannelId) return@event
+        if (event.message.content.isEmpty()) return@event
+        if (event.message.author.bot) return@event
+        broadcast(discordBroadcastPrefix.append(Component.text(event.message.content)))
+        postLogWebhook {
+            put("username", event.message.author.toString())
+            put("content", event.message.content)
         }
-
-        //TODO
-        private val channelIdField = Message::class.java.getDeclaredField("channelId").apply { isAccessible = true }
-
-        @Event
-        @Suppress("unused", "RedundantSuspendModifier")
-        suspend fun onMessageCreate(event: MessageCreateEvent) {
-            if (channelIdField.get(event.message) != discordChannelId) return
-            broadcast(Component.text()
-                .append(discordBroadcastPrefix)
-                .append(Component.text("${event.message.author}: "))
-                .append(Component.text(event.message.content))
-                .build())
-        }
-    }).run()*/
+    }
+    client.run(discordBotToken)
 }
 
 private val discordBroadcastPrefix = Component.text()

@@ -6,6 +6,8 @@ import com.wynnlab.minestom.labs.Lab
 import com.wynnlab.minestom.playerAtLeast1
 import com.wynnlab.minestom.playerAtLeast2
 import com.wynnlab.minestom.util.get
+import kotlinx.coroutines.*
+import kotlinx.serialization.json.*
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.minestom.server.command.builder.arguments.ArgumentType
@@ -128,21 +130,27 @@ object ItemCommand : Command(arrayOf(
                     return@setSuggestionCallback
                 }
 
-                val results = getApiItems(itemName)
-                for (r in results) {
-                    suggestion.addEntry(SuggestionEntry(r))
+                runBlocking {
+                    val results = getApiItemsAsync(itemName).await()
+                    for (r in results) {
+                        suggestion.addEntry(SuggestionEntry(r))
+                    }
                 }
             }
 
             addSyntax({ sender, ctx ->
                 try {
                     val name = ctx.getRaw(nameArg)
-                    val json = get("https://api.wynncraft.com/public_api.php?action=itemDB&search=${name.replace(" ", "%20")}")
-                    val item = json.getAsJsonArray("items").let { a -> a.find { it.asJsonObject["name"].asString.equals(name, true) }
-                        ?: try { a.first() } catch (_: NoSuchElementException) { sender.sendMessage("§cNo such item!"); return@addSyntax } }
-                    val builder = itemBuilderFrom(item)
-                    (sender as Player).inventory.addItemStack(builder.itemFor(sender))
-                    sender.sendMessage("You get \"$name\"")
+                    sender.sendMessage("Searching for \"$name\" in the database...")
+                    GlobalScope.launch {
+                        val r = get("https://api.wynncraft.com/public_api.php?action=itemDB&search=${name.replace(" ", "%20")}").await()
+                        val item = (r["items"] ?: return@launch).jsonArray.let {
+                                a -> a.find { it.jsonObject["name"]?.jsonPrimitive?.contentOrNull?.equals(name, true) == true }
+                            ?: try { a.first() } catch (_: NoSuchElementException) { sender.sendMessage("§cNo such item!"); return@launch }
+                        }
+                        val builder = itemBuilderFrom(item)
+                        (sender as Player).inventory.addItemStack(builder.itemFor(sender))
+                    }
                 } catch (e: Exception) {
                     sender.sendMessage("§cSomething didn't work")
                     e.printStackTrace()
@@ -150,12 +158,16 @@ object ItemCommand : Command(arrayOf(
             }, nameArg)
         }
 
-        private fun getApiItems(name: String): List<String> = try {
-            val json = get("https://api.wynncraft.com/public_api.php?action=itemDB&search=${name.replace(" ", "%20")}")
-            val items = json.getAsJsonArray("items")
-            items.mapNotNull { it.asJsonObject.get("name").asString }
-        } catch (_: Exception) {
-            emptyList()
+        private suspend fun getApiItemsAsync(name: String): Deferred<List<String>> = coroutineScope {
+            async {
+                try {
+                    val r = get("https://api.wynncraft.com/public_api.php?action=itemDB&search=${name.replace(" ", "%20")}").await()
+                    val items = r["items"]?.jsonArray ?: JsonArray(emptyList())
+                    items.mapNotNull { it.jsonObject["name"]?.jsonPrimitive?.contentOrNull }
+                } catch (_: Exception) {
+                    emptyList()
+                }
+            }
         }
     }
 

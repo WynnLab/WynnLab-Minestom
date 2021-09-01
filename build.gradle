@@ -2,7 +2,7 @@ plugins {
     id 'java'
     id 'org.jetbrains.kotlin.jvm' version '1.5.30'
     id 'com.github.johnrengelman.shadow' version '5.2.0'
-    id 'org.jetbrains.kotlin.plugin.serialization' version '1.5.10'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.5.30'
 }
 
 group 'com.wynnlab'
@@ -18,11 +18,14 @@ repositories {
 dependencies {
     implementation 'com.github.Minestom:Minestom:-SNAPSHOT'
 
-    //implementation 'com.github.fauxkiwi:discord-kt:0.2.0'
+    implementation 'com.github.fauxkiwi.discord-kt:discord-kt-jvm:a0f813f6'
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
-    runtimeOnly "org.jetbrains.kotlin:kotlin-reflect:1.5.30"
     compileOnly "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1"
+
+    implementation "io.ktor:ktor-client-core:1.6.2"
+    implementation "io.ktor:ktor-client-java:1.6.2"
+    implementation "io.ktor:ktor-client-serialization:1.6.2"
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
@@ -39,7 +42,7 @@ compileJava {
 compileKotlin {
     kotlinOptions {
         jvmTarget = '16'
-        //freeCompilerArgs
+        freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
     }
 }
 
