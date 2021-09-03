@@ -10,25 +10,23 @@ import net.kyori.adventure.text.format.TextDecoration
 import net.minestom.server.MinecraftServer
 import net.minestom.server.command.builder.arguments.ArgumentType
 
-object HelpCommand : Command("Show the help pages","help", "?") {
+object HelpCommand : Command("help", "?") {
     private val help = Book.book(Component.text("Help"), Component.text("WynnLab"),
         Component.text()
             .append(Component.text("play.", COLOR_DARKER_GRAY.textColor))
             .append(Component.text("WYNNLAB", COLOR_WYNN.textColor, TextDecoration.BOLD))
             .append(Component.text(".tk", COLOR_DARKER_GRAY.textColor))
             .append(Component.newline())
-            .append(Component.text("The official Help book"))
+            .append(Component.text("help.title"))
             .append(Component.newline())
             .append(Component.newline())
-            .append(Component.text("Create your personal lab with "))
-            .append(Component.text("/lab create", NamedTextColor.BLUE))
-            .append(Component.text(", create items using "))
-            .append(Component.text("/item create", NamedTextColor.BLUE))
-            .append(Component.text(" or get them from the official Wynncraft api using "))
-            .append(Component.text("/item get", NamedTextColor.BLUE))
-            .append(Component.text(". You can spawn a dummy to test your skills with "))
-            .append(Component.text("/dummy", NamedTextColor.BLUE))
-            .append(Component.text("."))
+            .append(Component.translatable("help.page1",
+                Component.text("/lab create", NamedTextColor.BLUE),
+                Component.text("/item create", NamedTextColor.BLUE),
+                Component.text("/item get", NamedTextColor.BLUE),
+                Component.text("/dummy", NamedTextColor.BLUE),
+                Component.text("/mob create", NamedTextColor.BLUE),
+            ))
             .build(),
     )
 
@@ -38,17 +36,20 @@ object HelpCommand : Command("Show the help pages","help", "?") {
         })
 
         addSyntax({ sender, ctx ->
-            val command = MinecraftServer.getCommandManager().getCommand(ctx.get<String>("command"))
+            val command = MinecraftServer.getCommandManager().getCommand(ctx.get("command"))
             if (command == null) {
-                sender.sendMessage("§cThis command doesn't exist")
+                sender.sendMessage(Component.translatable("command.help.command_not_exist", NamedTextColor.RED))
                 return@addSyntax
             }
-            sender.sendMessage("§fCommand: §b/${command.name}")
+            sender.sendMessage(Component.text()
+                .append(Component.translatable("command.help.field.command", NamedTextColor.WHITE))
+                .append(Component.text("/${command.name}", NamedTextColor.AQUA))
+                .build())
             if (command is Command) {
-                sender.sendMessage("§7Description:")
+                sender.sendMessage(Component.translatable("command.help.field.description", NamedTextColor.GRAY))
                 command.description.forEach(sender::sendMessage)
             }
-            sender.sendMessage("§7Usage:")
+            sender.sendMessage(Component.translatable("command.help.field.usage", NamedTextColor.GRAY))
             command.usage.forEach(sender::sendMessage)
         }, ArgumentType.Word("command"))
     }

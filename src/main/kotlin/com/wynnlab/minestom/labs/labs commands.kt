@@ -21,7 +21,7 @@ fun registerLabsCommands(commandManager: CommandManager) {
 }
 
 object LabCommand : Command(arrayOf(
-    Component.text("WynnLab Labs:"),
+    Component.text("WynnLab Labs:", NamedTextColor.GREEN),
     Component.text("/create", NamedTextColor.AQUA).append(Component.text(": Create your own lab", NamedTextColor.GRAY)),
     Component.text("/invite", NamedTextColor.AQUA).append(Component.text(": Invite a player to your lab", NamedTextColor.GRAY)),
     Component.text("/join", NamedTextColor.AQUA).append(Component.text(": Join a lab you have been invited to", NamedTextColor.GRAY)),

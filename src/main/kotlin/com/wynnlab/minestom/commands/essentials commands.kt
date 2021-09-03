@@ -16,7 +16,7 @@ fun registerEssentialsCommands(commandManager: CommandManager) {
     commandManager.register(PartyMessageCommand)
 }
 
-object MessageCommand : Command("Send a direct message to a player", "message", "msg") {
+object MessageCommand : Command("message", "msg") {
     init {
         setCondition { sender, _ -> sender.isPlayer }
 
@@ -29,7 +29,7 @@ object MessageCommand : Command("Send a direct message to a player", "message", 
     }
 }
 
-object ReplyCommand : Command("Reply to the latest incoming message quickly", "reply", "r") {
+object ReplyCommand : Command("reply", "r") {
     init {
         setCondition { sender, _ -> sender.isPlayer }
 
@@ -47,12 +47,12 @@ object ReplyCommand : Command("Reply to the latest incoming message quickly", "r
 }
 
 object PartyCommand : Command(arrayOf(
-    Component.text("Party tools:", NamedTextColor.GREEN),
-    Component.text("/create", NamedTextColor.AQUA).append(Component.text(": Create a party", NamedTextColor.GRAY)),
-    Component.text("/invite", NamedTextColor.AQUA).append(Component.text(": Invite someone to your party", NamedTextColor.GRAY)),
-    Component.text("/join", NamedTextColor.AQUA).append(Component.text(": Join a party you have been invited to", NamedTextColor.GRAY)),
-    Component.text("/leave", NamedTextColor.AQUA).append(Component.text(": Leave your party", NamedTextColor.GRAY)),
-    Component.text("/message", NamedTextColor.AQUA).append(Component.text(": Send a message to your party (Alias: /p)", NamedTextColor.GRAY)),
+    Component.translatable("command.party.description", NamedTextColor.GREEN),
+    Component.text("/create: ", NamedTextColor.AQUA).append(Component.translatable("command.party.create.description", NamedTextColor.GRAY)),
+    Component.text("/invite: ", NamedTextColor.AQUA).append(Component.translatable("command.party.invite.description", NamedTextColor.GRAY)),
+    Component.text("/join: ", NamedTextColor.AQUA).append(Component.translatable("command.party.join.description", NamedTextColor.GRAY)),
+    Component.text("/leave: ", NamedTextColor.AQUA).append(Component.translatable("command.party.leave.description", NamedTextColor.GRAY)),
+    Component.text("/message: ", NamedTextColor.AQUA).append(Component.translatable("command.party.message.description", NamedTextColor.GRAY)),
 ), "party") {
     init {
         setCondition { sender, _ -> sender.isPlayer }

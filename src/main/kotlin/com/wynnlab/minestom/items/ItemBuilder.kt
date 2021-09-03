@@ -106,11 +106,11 @@ sealed class ItemBuilder(
     protected abstract val lore: List<() -> Component?>
 
     private val commonLore: List<() -> Component?> = mutableListOf(
-        { skillRequirementComponent(skillRequirements.strength, "Strength") },
-        { skillRequirementComponent(skillRequirements.dexterity, "Dexterity") },
-        { skillRequirementComponent(skillRequirements.intelligence, "Intelligence") },
-        { skillRequirementComponent(skillRequirements.defense, "Defense") },
-        { skillRequirementComponent(skillRequirements.agility, "Agility") },
+        { skillRequirementComponent(skillRequirements.strength, "skill.strength") },
+        { skillRequirementComponent(skillRequirements.dexterity, "skill.dexterity") },
+        { skillRequirementComponent(skillRequirements.intelligence, "skill.intelligence") },
+        { skillRequirementComponent(skillRequirements.defense, "skill.defense") },
+        { skillRequirementComponent(skillRequirements.agility, "skill.agility") },
         { Component.empty() }
     ).apply {
         var cat = -1
@@ -137,8 +137,11 @@ sealed class ItemBuilder(
 
     protected val SkillRequirements.zero get() = strength == 0 && dexterity == 0 && intelligence == 0 && defense == 0 && agility == 0
 
-    private fun skillRequirementComponent(skill: Int, name: String) =
-        skill.takeIf { it != 0 }?.let { Component.text().append(Component.text("?", NamedTextColor.GRAY)).append(Component.text(" $name Min: $it", NamedTextColor.GRAY)).build() }
+    private fun skillRequirementComponent(skill: Int, skillKey: String) =
+        skill.takeIf { it != 0 }?.let {
+            //Component.text().append(Component.text("?", NamedTextColor.GRAY)).append(Component.text(" $skillKey Min: $it", NamedTextColor.GRAY)).build()
+            Component.translatable("item.skill_requirement", NamedTextColor.GRAY, Component.text("?", NamedTextColor.GRAY), Component.translatable(skillKey), Component.text(it))
+        }
 
     private fun refreshDisplayName() = item.displayNameNonItalic(Component.text(name, rarity.nameColor))
 
@@ -168,7 +171,7 @@ sealed class ItemBuilder(
         commonLore.mapNotNullTo(itemLore) { it() }
 
         if (custom) {
-            itemLore.add(if (build) Component.text("Custom Item", NamedTextColor.RED) else Component.text("Concept Item", NamedTextColor.DARK_GRAY))
+            itemLore.add(if (build) Component.translatable("item.custom_item", NamedTextColor.RED) else Component.translatable("item.concept_item", NamedTextColor.DARK_GRAY))
             itemLore.add(Component.empty())
         }
 
@@ -176,7 +179,7 @@ sealed class ItemBuilder(
         if (customLore.isNotEmpty()) itemLore.add(Component.empty())
 
         itemLore.add(Component.text("$rarity $type", rarity.nameColor))
-        if (sockets > 0) itemLore.add(Component.text("[0/$sockets] Powder Slots", NamedTextColor.DARK_GRAY))
+        if (sockets > 0) itemLore.add(Component.translatable("item.powder_slots", NamedTextColor.DARK_GRAY, Component.text("0"), Component.text(sockets)))
 
         loreNonItalic(itemLore)
 
@@ -201,27 +204,36 @@ sealed class ItemBuilder(
         var classReqPos: Byte = 0
 
         override val lore = mutableListOf(
-            { Component.text("${attackSpeed.display} Attack Speed", NamedTextColor.DARK_GRAY) },
+            { Component.translatable("item.attack_speed", NamedTextColor.DARK_GRAY, attackSpeed.display) },
             { Component.empty() },
-            { damage.neutral.takeIf { it.some }?.let { Component.text("${Element.Neutral.icon} Neutral Damage: ${it.dashed}", NamedTextColor.GOLD) } },
-            { damage.earth.damageComponent("Earth", Element.Earth) },
-            { damage.thunder.damageComponent("Thunder", Element.Thunder) },
-            { damage.water.damageComponent("Water", Element.Water) },
-            { damage.fire.damageComponent("Fire", Element.Fire) },
-            { damage.air.damageComponent("Air", Element.Air) },
+            { damage.neutral.takeIf { it.some }?.let {
+                Component.text()
+                    .append(Element.Neutral.componentWithIcon)
+                    .append(Component.text(" "))
+                    .append(Component.translatable("identification.damage"))
+                    .append(Component.text(": ${it.dashed}"))
+                    .color(NamedTextColor.GOLD)
+                    .build()
+            } },
+            { damage.earth.damageComponent(Element.Earth) },
+            { damage.thunder.damageComponent(Element.Thunder) },
+            { damage.water.damageComponent(Element.Water) },
+            { damage.fire.damageComponent(Element.Fire) },
+            { damage.air.damageComponent(Element.Air) },
             { if (damage.allNone) null else Component.empty() },
-            { Component.text().append(greenCheck).append(Component.text(" Class Req: $classReq", NamedTextColor.GRAY)).build() }
-        )/*.apply {
-            classReqPos = (size - 1).toByte()
-            setSkillRequirementsPositionsAt(size)
-            addAll(commonLore)
-        }*/
+            { Component.translatable("item.class_requirement", NamedTextColor.GRAY, greenCheck, Component.translatable(classReq)) }
+        )
 
         private val IntRange.some get() = first != 0 && last != 0
         private val IntRange.dashed get() = "$first-$last"
         private val Damage.allNone get() = !neutral.some && !earth.some && !thunder.some && !water.some && !air.some
-        private fun IntRange.damageComponent(name: String, element: Element): Component? = takeIf { it.some }?.let {
-            Component.text().append(Component.text("${element.icon} $name ", element.color)).append(Component.text("Damage: ${it.dashed}", NamedTextColor.GRAY)).build()
+        private fun IntRange.damageComponent(element: Element): Component? = takeIf { it.some }?.let {
+            Component.text()
+                .append(element.componentWithIcon)
+                .append(Component.text(" "))
+                .append(Component.translatable("identification.damage", NamedTextColor.GRAY))
+                .append(Component.text(": ${it.dashed}", NamedTextColor.GRAY))
+                .build()
         }
     }
 
@@ -231,17 +243,22 @@ sealed class ItemBuilder(
         val defense: com.wynnlab.minestom.items.Defense = Defense(0, 0, 0, 0, 0)
 
         protected val defenseLore: List<() -> Component?> = listOf(
-            { health.takeIf { it != 0 }?.let { Component.text("❤ Health: $it", NamedTextColor.DARK_RED) } },
-            { defense.earth.defenseComponent("Earth", Element.Earth) },
-            { defense.thunder.defenseComponent("Thunder", Element.Thunder) },
-            { defense.water.defenseComponent("Water", Element.Water) },
-            { defense.fire.defenseComponent("Fire", Element.Fire) },
-            { defense.air.defenseComponent("Air", Element.Air) },
+            { health.takeIf { it != 0 }?.let { Component.translatable("item.health", NamedTextColor.DARK_RED, Component.text(it)) } },
+            { defense.earth.defenseComponent(Element.Earth) },
+            { defense.thunder.defenseComponent(Element.Thunder) },
+            { defense.water.defenseComponent(Element.Water) },
+            { defense.fire.defenseComponent(Element.Fire) },
+            { defense.air.defenseComponent(Element.Air) },
         )
 
         protected val com.wynnlab.minestom.items.Defense.zero get() = earth == 0 && thunder == 0 && water == 0 && fire == 0 && air == 0
-        private fun Int.defenseComponent(name: String, element: Element): Component? = takeIf { it != 0 }?.let {
-            Component.text().append(Component.text("${element.icon} $name ", element.color)).append(Component.text("Defense: $it", NamedTextColor.GRAY)).build()
+        private fun Int.defenseComponent(element: Element): Component? = takeIf { it != 0 }?.let {
+            Component.text()
+                .append(element.componentWithIcon)
+                .append(Component.text(" "))
+                .append(Component.translatable("identification.damage", NamedTextColor.GRAY))
+                .append(Component.text(": $it", NamedTextColor.GRAY))
+                .build()
         }
     }
 
@@ -251,8 +268,6 @@ sealed class ItemBuilder(
         ).apply {
             addAll(defenseLore)
             add { if (skillRequirements.zero) null else Component.empty() }
-            /*setSkillRequirementsPositionsAt(size)
-            addAll(commonLore)*/
         }
     }
 
@@ -262,8 +277,6 @@ sealed class ItemBuilder(
         ).apply {
             addAll(defenseLore)
             add { if (skillRequirements.zero) null else Component.empty() }
-            /*setSkillRequirementsPositionsAt(size)
-            addAll(commonLore)*/
         }
     }
 

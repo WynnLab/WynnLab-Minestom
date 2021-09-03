@@ -18,7 +18,7 @@ import net.minestom.server.instance.Instance
 import net.minestom.server.sound.SoundEvent
 
 object MobCommand : Command(arrayOf(
-    Component.text("Mob tools:", NamedTextColor.GREEN)
+    Component.translatable("command.mob.description", NamedTextColor.GREEN)
 ), "mob") {
     init {
         setCondition { sender, _ -> sender.isPlayer && sender.asPlayer().instance is Lab }

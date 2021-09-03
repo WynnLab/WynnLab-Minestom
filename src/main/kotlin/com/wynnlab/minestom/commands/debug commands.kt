@@ -12,7 +12,7 @@ fun registerDebugCommands(commandManager: CommandManager) {
     commandManager.register(RankCommand)
 }
 
-object RLInvCommand : Command("(Debug) Get all menu items back", "rl-inv") {
+object RLInvCommand : Command("rl-inv") {
     init {
         setCondition { sender, _ -> sender.isPlayer }
 
@@ -22,7 +22,7 @@ object RLInvCommand : Command("(Debug) Get all menu items back", "rl-inv") {
     }
 }
 
-object RankCommand : Command("Change your rank", "rank") {
+object RankCommand : Command("rank") {
     init {
         setCondition { sender, _ -> sender.isPlayer && sender.asPlayer().permissionLevel >= 4 }
 

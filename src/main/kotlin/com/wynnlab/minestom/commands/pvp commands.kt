@@ -8,7 +8,7 @@ fun registerPvpCommands(commandManager: CommandManager) {
     commandManager.register(StatsCommand)
 }
 
-object PvpCommand : Command("Open the pvp menu", "pvp") {
+object PvpCommand : Command("pvp") {
     init {
         addSyntax({ sender, _ ->
             sender.sendMessage("Open PVP menu")
@@ -16,7 +16,7 @@ object PvpCommand : Command("Open the pvp menu", "pvp") {
     }
 }
 
-object HubCommand : Command("Go back to the lobby", "hub", "lobby", "l") {
+object HubCommand : Command("hub", "lobby", "l") {
     init {
         addSyntax({ sender, _ ->
             sender.sendMessage("Sending to hub")
@@ -24,7 +24,7 @@ object HubCommand : Command("Go back to the lobby", "hub", "lobby", "l") {
     }
 }
 
-object StatsCommand : Command("Show your stats", "stats") {
+object StatsCommand : Command("stats") {
     init {
         addSyntax({ sender, _ ->
             sender.sendMessage("Show stats")

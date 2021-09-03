@@ -15,15 +15,15 @@ import net.minestom.server.command.builder.suggestion.SuggestionEntry
 import net.minestom.server.entity.Player
 
 object ItemCommand : Command(arrayOf(
-    Component.text("Item tools:"),
-    Component.text("/get", NamedTextColor.AQUA).append(Component.text(": Get an item from the Wynncraft api", NamedTextColor.GRAY)),
-    Component.text("/create", NamedTextColor.AQUA).append(Component.text(": Create a new item concept", NamedTextColor.GRAY)),
-    Component.text("/id", NamedTextColor.AQUA).append(Component.text(": Set an identification of an item concept", NamedTextColor.GRAY)),
-    Component.text("/meta", NamedTextColor.AQUA).append(Component.text(": Change various metadata of an item concept", NamedTextColor.GRAY)),
-    Component.text("/name", NamedTextColor.AQUA).append(Component.text(": Set the name of an item concept", NamedTextColor.GRAY)),
-    Component.text("/lore", NamedTextColor.AQUA).append(Component.text(": Set the lore of an item concept", NamedTextColor.GRAY)),
-    Component.text("/design", NamedTextColor.AQUA).append(Component.text(": Set the design of an item concept", NamedTextColor.GRAY)),
-    Component.text("/build", NamedTextColor.AQUA).append(Component.text(": Get a standard custom item from an item concept", NamedTextColor.GRAY)),
+    Component.translatable("command.item.description"),
+    Component.text("/get: ", NamedTextColor.AQUA).append(Component.translatable("command.item.get.description", NamedTextColor.GRAY)),
+    Component.text("/create: ", NamedTextColor.AQUA).append(Component.translatable("command.item.create.description", NamedTextColor.GRAY)),
+    Component.text("/id: ", NamedTextColor.AQUA).append(Component.translatable("command.item.id.description", NamedTextColor.GRAY)),
+    Component.text("/meta: ", NamedTextColor.AQUA).append(Component.translatable("command.item.meta.description", NamedTextColor.GRAY)),
+    Component.text("/name: ", NamedTextColor.AQUA).append(Component.translatable("command.item.name.description", NamedTextColor.GRAY)),
+    Component.text("/lore: ", NamedTextColor.AQUA).append(Component.translatable("command.item.lore.description", NamedTextColor.GRAY)),
+    Component.text("/design: ", NamedTextColor.AQUA).append(Component.translatable("command.item.design.description", NamedTextColor.GRAY)),
+    Component.text("/build: ", NamedTextColor.AQUA).append(Component.translatable("command.item.build.description", NamedTextColor.GRAY)),
 ), "item") {
     init {
         setCondition { sender, _ -> sender.isPlayer && sender.asPlayer().instance is Lab }
@@ -141,18 +141,21 @@ object ItemCommand : Command(arrayOf(
             addSyntax({ sender, ctx ->
                 try {
                     val name = ctx.getRaw(nameArg)
-                    sender.sendMessage("Searching for \"$name\" in the database...")
+                    sender.sendMessage(Component.translatable("command.item.get.searching", Component.text(name)))
                     GlobalScope.launch {
                         val r = get("https://api.wynncraft.com/public_api.php?action=itemDB&search=${name.replace(" ", "%20")}").await()
                         val item = (r["items"] ?: return@launch).jsonArray.let {
                                 a -> a.find { it.jsonObject["name"]?.jsonPrimitive?.contentOrNull?.equals(name, true) == true }
-                            ?: try { a.first() } catch (_: NoSuchElementException) { sender.sendMessage("§cNo such item!"); return@launch }
+                            ?: try { a.first() } catch (_: NoSuchElementException) {
+                                sender.sendMessage(Component.text("command.item.get.not_found", NamedTextColor.RED))
+                                return@launch
+                            }
                         }
                         val builder = itemBuilderFrom(item)
                         (sender as Player).inventory.addItemStack(builder.itemFor(sender))
                     }
                 } catch (e: Exception) {
-                    sender.sendMessage("§cSomething didn't work")
+                    sender.sendMessage(Component.text("command.item.get.other_error", NamedTextColor.RED))
                     e.printStackTrace()
                 }
             }, nameArg)

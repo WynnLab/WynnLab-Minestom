@@ -1,8 +1,7 @@
 package com.wynnlab.minestom.listeners
 
-import com.google.gson.JsonArray
-import com.google.gson.JsonObject
 import com.wynnlab.minestom.*
+import com.wynnlab.minestom.commands.component
 import com.wynnlab.minestom.commands.consoleIgnoreCommands
 import com.wynnlab.minestom.discord.postLogWebhook
 import com.wynnlab.minestom.discord.postWebhooks
@@ -116,9 +115,11 @@ private fun onPlayerChat(e: PlayerChatEvent) {
     }
 }
 
+const val NUM_DEATH_MESSAGES = 1
+
 private fun onPlayerDeath(e: PlayerDeathEvent) {
-    val deathMessage = Component.text().append(e.player.name)
-        .append(Component.text(" thought this would be as easy as Wynncraft. Wrong.")).build()
+    val deathMessageId = random.nextInt(NUM_DEATH_MESSAGES) + 1
+    val deathMessage = Component.translatable("death_message_$deathMessageId", e.player.component)
     e.chatMessage = deathMessage
     e.player.isEnableRespawnScreen = false
 }
@@ -151,9 +152,9 @@ private fun permissionLevel(uuid: UUID) = if (uuid.toString() == "4182ab6a-4698-
 
 
 private val welcomeNotification = Notification(Component.text()
-    .append(Component.text("Welcome to WynnLab!"))
+    .append(Component.translatable("notification.welcome.welcome"))
     .append(Component.newline())
-    .append(Component.text("Type /help for help."))
+    .append(Component.text("notification.welcome.help"))
     .build(),
     FrameType.TASK, ItemStack.of(Material.COMPASS))
 

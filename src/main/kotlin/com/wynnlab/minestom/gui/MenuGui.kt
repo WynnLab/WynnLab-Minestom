@@ -25,10 +25,8 @@ import java.util.*
 import kotlin.math.roundToInt
 
 object MenuGui : Gui("§c200 §4Skill Points Remaining", InventoryType.CHEST_3_ROW) {
-    private fun getTitle(player: Player) = Component.text()
-        .append(Component.text(player.remainingSkillAssigns, NamedTextColor.RED))
-        .append(Component.text(" Skill Points Remaining", NamedTextColor.DARK_RED))
-        .build()
+    private fun getTitle(player: Player) = Component.translatable("gui.menu.skill_points_remaining", NamedTextColor.DARK_RED,
+        Component.text(player.remainingSkillAssigns, NamedTextColor.RED))
 
     private val guildBannerItem = guildBannerItem()
 
@@ -93,7 +91,7 @@ object MenuGui : Gui("§c200 §4Skill Points Remaining", InventoryType.CHEST_3_R
     }
 
     override fun onClose(player: Player) {
-        println("Close")
+        //println("Close")
         checkPlayerItems(player, currentSkills.remove(player.uuid)!!)
         currentSkillsModified.remove(player.uuid)
     }
@@ -114,32 +112,33 @@ object MenuGui : Gui("§c200 §4Skill Points Remaining", InventoryType.CHEST_3_R
         player.upgradeSkill(skillIndex, actualAdd)
     }
 
+    // TODO: localized skill book items
     private val eachPointInThisSkill = Component.text("Each point in this skill", NamedTextColor.GRAY)
-    private val damageYouMayInfilct = Component.text("damage you may inflict.", NamedTextColor.GRAY)
+    private val damageYouMayInflict = Component.text("damage you may inflict.", NamedTextColor.GRAY)
     private val strBookItem = abilityBookItem(Component.text("Strength", NamedTextColor.DARK_GREEN), listOf(
         eachPointInThisSkill,
         LegacyComponentSerializer.legacy('&').deserialize("&7will&d increase &7any damage"),
         LegacyComponentSerializer.legacy('&').deserialize("&7you deal and increase the &2✤ Earth"),
-        damageYouMayInfilct
+        damageYouMayInflict
     ))
     private val dexBookItem = abilityBookItem(Component.text("Dexterity", NamedTextColor.YELLOW), listOf(
         eachPointInThisSkill,
         LegacyComponentSerializer.legacy('&').deserialize("&7will&d increase &7the chance"),
         LegacyComponentSerializer.legacy('&').deserialize("&7to do a critical hit (doubling"),
         LegacyComponentSerializer.legacy('&').deserialize("&7damage) and increase the &e✦ Thunder"),
-        damageYouMayInfilct
+        damageYouMayInflict
     ))
     private val intBookItem = abilityBookItem(Component.text("Intelligence", NamedTextColor.AQUA), listOf(
         eachPointInThisSkill,
         LegacyComponentSerializer.legacy('&').deserialize("&7will&d reduce &7mana used"),
         LegacyComponentSerializer.legacy('&').deserialize("&7by spells and increase the &b❉ Water"),
-        damageYouMayInfilct
+        damageYouMayInflict
     ))
     private val defBookItem = abilityBookItem(Component.text("Defense", NamedTextColor.RED), listOf(
         eachPointInThisSkill,
         LegacyComponentSerializer.legacy('&').deserialize("&7will&d reduce &7any damage"),
         LegacyComponentSerializer.legacy('&').deserialize("&7you take and increase the &c✹ Fire"),
-        damageYouMayInfilct
+        damageYouMayInflict
     ))
     private val agiBookItem = abilityBookItem(Component.text("Agility", NamedTextColor.WHITE), listOf(
         eachPointInThisSkill,
@@ -163,10 +162,10 @@ private fun ItemStackBuilder.skillBookAmount(modified: Boolean, amount: Int) = a
 }
 
 private val resetSkillPointsItem = ItemStack.builder(Material.GOLDEN_SHOVEL)
-    .displayNameNonItalic(Component.text("Reset Skill Points", NamedTextColor.YELLOW))
+    .displayNameNonItalic(Component.translatable("gui.menu.reset_skill_points", NamedTextColor.YELLOW))
     .loreNonItalic(Component.text()
-        .append(Component.text("Cost: ", NamedTextColor.GRAY))
-        .append(Component.text("0 Soul Points", NamedTextColor.WHITE))
+        .append(Component.translatable("gui.menu.reset_skill_points.cost", NamedTextColor.GRAY))
+        .append(Component.translatable("gui.menu.reset_skill_points.cost.soul_points", NamedTextColor.WHITE))
         .build())
     .meta { it
         .damage(21)
@@ -176,28 +175,24 @@ private val resetSkillPointsItem = ItemStack.builder(Material.GOLDEN_SHOVEL)
     .build()
 
 private val tomesItem = ItemStack.builder(Material.ENCHANTED_BOOK)
-    .displayNameNonItalic(Component.text("Mastery Tomes", Style.style(NamedTextColor.DARK_PURPLE, TextDecoration.BOLD)))
+    .displayNameNonItalic(Component.translatable("gui.menu.tomes", Style.style(NamedTextColor.DARK_PURPLE, TextDecoration.BOLD)))
     .build()
 
 private fun guildBannerItem() = ItemStack.builder(Material.BLACK_BANNER)
-    .displayNameNonItalic(Component.text("View Your Guild", Style.style(NamedTextColor.AQUA, TextDecoration.BOLD)))
+    .displayNameNonItalic(Component.translatable("gui.menu.guild", Style.style(NamedTextColor.AQUA, TextDecoration.BOLD)))
     .build()
 
 private val settingsItem = ItemStack.builder(Material.CRAFTING_TABLE)
-    .displayNameNonItalic(Component.text("WynnLab Settings"))
+    .displayNameNonItalic(Component.translatable("gui.menu.settings"))
     .build()
 
 private val jukeboxItem = ItemStack.builder(Material.JUKEBOX)
-    .displayNameNonItalic(Component.text("Jukebox", NamedTextColor.AQUA))
+    .displayNameNonItalic(Component.translatable("gui.menu.jukebox", NamedTextColor.AQUA))
     .build()
 
 
 private fun abilityBookItem(name: Component, lore: List<Component>) = ItemStack.builder(Material.BOOK).amount(1)
-    .displayNameNonItalic(Component.text()
-        .append(Component.text("Upgrade your ", NamedTextColor.LIGHT_PURPLE))
-        .append(name)
-        .append(Component.text(" skill", NamedTextColor.LIGHT_PURPLE))
-        .build())
+    .displayNameNonItalic(Component.translatable("gui.menu.skill_book.upgrade", NamedTextColor.LIGHT_PURPLE, name))
     .loreNonItalic(skillBookLoreGeneric.apply { addAll(lore) })
 
 private fun skillBookLore(builder: ItemStackBuilder, modified: Boolean, amount: Int) {
@@ -212,10 +207,10 @@ private fun skillBookLore(builder: ItemStackBuilder, modified: Boolean, amount: 
 private val skillBookLoreGeneric get() = mutableListOf<Component>(
     Component.empty(),
     Component.text()
-        .append(Component.text("      "))
-        .append(Component.text("Now", NamedTextColor.GRAY, TextDecoration.BOLD))
-        .append(Component.text("             "))
-        .append(Component.text("Next", NamedTextColor.GOLD, TextDecoration.BOLD))
+        .append(Component.translatable("gui.menu.skill_book.now.spaces"))
+        .append(Component.translatable("gui.menu.skill_book.now", NamedTextColor.GRAY, TextDecoration.BOLD))
+        .append(Component.translatable("gui.menu.skill_book.next.spaces"))
+        .append(Component.translatable("gui.menu.skill_book.next", NamedTextColor.GOLD, TextDecoration.BOLD))
         .build(),
     Component.empty(),
     Component.empty(),
@@ -231,14 +226,14 @@ private fun setSkillBookLore(lore: MutableList<Component>, value: Int, modified:
         .append(Component.text("${(skillPercentage(value + 1) * 1000).roundToInt() / 10f}%", NamedTextColor.YELLOW))
         .build()
     lore[3] = Component.text()
-        .append(Component.text("     $value points        ", NamedTextColor.GRAY))
-        .append(Component.text("${value + 1} points", NamedTextColor.GOLD))
+        .append(Component.translatable("gui.menu.skill_book.now.points", NamedTextColor.GRAY, Component.text(value)))
+        .append(Component.translatable("gui.menu.skill_book.next.points", NamedTextColor.GOLD, Component.text(value + 1)))
         .build()
     if (lore.size > 10 && !modified) {
         lore.removeAt(lore.size - 1)
         lore.removeAt(lore.size - 1)
     } else if (lore.size <= 10 && modified) {
         lore.add(Component.empty())
-        lore.add(Component.text("This skill was modified by your equipment", COLOR_WYNN.textColor))
+        lore.add(Component.translatable("gui.menu.skill_book.modified", COLOR_WYNN.textColor))
     }
 }

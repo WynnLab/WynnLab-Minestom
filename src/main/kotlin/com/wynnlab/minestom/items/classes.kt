@@ -1,6 +1,7 @@
 package com.wynnlab.minestom.items
 
 import com.wynnlab.minestom.core.Element
+import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 
@@ -15,14 +16,16 @@ enum class Rarity(val nameColor: TextColor) {
 }
 
 
-enum class AttackSpeed(val display: String, val cooldown: Int, val spellMultiplier: Float, val stealChance: Float) {
-    SuperSlow("Super Slow", 39, .51f, .654f),
-    VerySlow("Very Slow", 25, .83f, .402f),
-    Slow("Slow", 13, 1.5f, .222f),
-    Normal("Normal", 10, 2.05f, .163f),
-    Fast("Fast", 8, 2.5f, .133f),
-    VeryFast("Very Fast", 6, 3.1f, .107f),
-    SuperFast("Super Fast", 4, 4.3f, .078f),
+enum class AttackSpeed(displayKey: String, val cooldown: Int, val spellMultiplier: Float, val stealChance: Float) {
+    SuperSlow("attack_speed.super_slow", 39, .51f, .654f),
+    VerySlow("attack_speed.very_slow", 25, .83f, .402f),
+    Slow("attack_speed.slow", 13, 1.5f, .222f),
+    Normal("attack_speed.normal", 10, 2.05f, .163f),
+    Fast("attack_speed.fast", 8, 2.5f, .133f),
+    VeryFast("attack_speed.very_fast", 6, 3.1f, .107f),
+    SuperFast("attack_speed.super_fast", 4, 4.3f, .078f),
+    ;
+    val display = Component.translatable(displayKey)
 }
 
 data class Damage(

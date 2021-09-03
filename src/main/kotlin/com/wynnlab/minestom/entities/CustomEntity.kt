@@ -65,7 +65,7 @@ abstract class CustomEntity(entityType: EntityType) : Entity(entityType) {
         else super.setCustomName(Component.text()
             .append(customName)
             .append(Component.text(" "))
-            .append(Component.text("[Lv. $level]", NamedTextColor.GOLD))
+            .append(Component.translatable("mob.name.level", NamedTextColor.GOLD, Component.text(level)))
             .build())
     }
     fun getDisplayName() = super.getCustomName()

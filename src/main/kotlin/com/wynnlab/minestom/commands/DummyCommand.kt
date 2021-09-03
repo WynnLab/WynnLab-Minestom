@@ -6,7 +6,7 @@ import net.kyori.adventure.text.Component
 import net.minestom.server.command.builder.arguments.ArgumentType
 import net.minestom.server.entity.EntityType
 
-object DummyCommand : Command("Spawn a dummy. You can specify its health and mob type", "dummy") {
+object DummyCommand : Command("dummy") {
     init {
         condition = playerAtLeast1
 

@@ -4,6 +4,7 @@ import com.wynnlab.minestom.*
 import com.wynnlab.minestom.core.player.getId
 import com.wynnlab.minestom.items.Identification
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.ComponentLike
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextDecoration
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
@@ -16,6 +17,7 @@ import net.minestom.server.entity.Entity
 import net.minestom.server.entity.GameMode
 import net.minestom.server.entity.Player
 import net.minestom.server.item.ItemMeta
+import net.minestom.server.item.ItemStack
 import net.minestom.server.permission.Permission
 import net.minestom.server.utils.entity.EntityFinder
 import org.jglrxavpok.hephaistos.nbt.NBTCompound
@@ -36,24 +38,37 @@ fun registerServerCommands(commandManager: CommandManager) {
     commandManager.register(PermissionCommand)
 }
 
-fun CommandSender.message(text: String) {
-    val c = Component.text(text, NamedTextColor.GRAY, TextDecoration.ITALIC)
-    sendMessage(c)
-    if (!isConsole) Audiences.console().sendMessage(c)
+fun CommandSender.message(key: String, vararg args: ComponentLike) {
+    val c = Component.text()
+        .append(Component.text("[${if (this.isPlayer) this.asPlayer().username else if (this.isConsole) "Console" else "Unknown"}] "))
+        .append(if (args.isEmpty()) Component.translatable(key) else Component.translatable(key, *args))
+        .style {
+            it.color(NamedTextColor.GRAY)
+            it.decorate(TextDecoration.ITALIC)
+        }
+        .build()
+    Audiences.console().sendMessage(c)
+    val permLvl = if (this.isPlayer) this.asPlayer().permissionLevel else 4
+    MinecraftServer.getConnectionManager().onlinePlayers.forEach {
+        if (it.permissionLevel >= permLvl) it.sendMessage(c)
+    }
 }
-val CommandSender.signature get() = if (this is Player) username else "/"
 
-object StopCommand : Command("Stop the server", "stop") {
+val Player.component get() = name.hoverEvent(this)
+val Entity.component get() = (customName ?: Component.text(uuid.toString())).hoverEvent(this)
+val ItemStack.component get() = (displayName ?: Component.translatable("${if (material.isBlock) "block" else "item"}.${material.namespace().domain}.${material.namespace().path}"))
+
+object StopCommand : Command("stop") {
     init {
         condition = isAllowed(PERM_SERVER_STOP, 4)
         addSyntax({ sender, _ ->
-            sender.message("Stopping the server")
+            sender.message("commands.stop.stopping")
             stop()
         })
     }
 }
 
-object SaveAllCommand : Command("Save all instances (that get saved)", "save-all") {
+object SaveAllCommand : Command("save-all") {
     init {
         condition = isAllowed(PERM_SERVER_SAVE_ALL, 4)
         addSyntax({ _, _ ->
@@ -62,7 +77,7 @@ object SaveAllCommand : Command("Save all instances (that get saved)", "save-all
     }
 }
 
-object KickCommand : Command("Kick a player", "kick") {
+object KickCommand : Command("kick") {
     init {
         condition = isAllowed(PERM_SERVER_KICK, 4)
 
@@ -71,16 +86,14 @@ object KickCommand : Command("Kick a player", "kick") {
 
         addSyntax({ sender, ctx ->
             val player = ctx[playerArg].findFirstPlayer(sender)!!
-            val message = ctx.getRaw(messageArg)
-            player.kick(
-                LegacyComponentSerializer.legacy('&').deserialize(message)
-            )
-            sender.message("[${sender.signature}] Kicked [$player]. Reason: [$message]")
+            val message = LegacyComponentSerializer.legacy('&').deserialize(ctx.getRaw(messageArg))
+            player.kick(message)
+            sender.message("commands.kick.success", player.component, message)
         }, playerArg, messageArg)
     }
 }
 
-object KillCommand : Command("Kill a player", "kill") {
+object KillCommand : Command("kill") {
     init {
         addConditionalSyntax({ sender, _ -> sender.isPlayer }, { sender, _ ->
             sender.asPlayer().kill()
@@ -91,7 +104,8 @@ object KillCommand : Command("Kill a player", "kill") {
         addConditionalSyntax(isAllowed(PERM_SERVER_KILL_OTHERS, 4), { sender, ctx ->
             val targets = ctx[targetsArg].find(sender)
             targets.forEach { if (it is Player) it.kill() else it.remove() }
-            sender.message("[${sender.signature}] Killed [${targets.size}] entity/ies")
+            if (targets.size != 1) sender.message("commands.kill.success.multiple", Component.text(targets.size))
+            else if (targets.size == 1) sender.message("commands.kill.success.single", targets[0].component)
         }, targetsArg)
     }
 }
@@ -107,7 +121,7 @@ object KillCommand : Command("Kill a player", "kill") {
     }
 }*/
 
-object GamemodeCommand : Command("Change your gamemode", "gamemode", "gm") {
+object GamemodeCommand : Command("gamemode", "gm") {
     init {
         condition = isAllowed(PERM_SERVER_GAMEMODE)
 
@@ -116,27 +130,31 @@ object GamemodeCommand : Command("Change your gamemode", "gamemode", "gm") {
         val targetsArg = ArgumentType.Entity("targets").onlyPlayers(true)
             .setDefaultValue { EntityFinder().setTargetSelector(EntityFinder.TargetSelector.SELF) }
 
-        fun setGameMode(players: List<Entity>, gameMode: GameMode) {
+        fun setGameMode(sender: CommandSender, players: List<Entity>, gameMode: GameMode) {
             players.forEach { (it as Player).gameMode = gameMode }
+            val gameModeComponent = Component.translatable("gameMode.${gameMode.name.lowercase()}")
+            if (players.size == 1) {
+                val p = players[0]
+                if (p == sender) sender.message("commands.gamemode.success.self", gameModeComponent)
+                else sender.message("commands.gamemode.success.other", p.component, gameModeComponent)
+            } else sender.message("commands.gamemode.success.multiple", Component.text(players.size), gameModeComponent)
         }
 
         addSyntax({ sender, ctx ->
             val targets = ctx[targetsArg].find(sender)
             val gameMode = GameMode.valueOf(ctx[gamemodeNameArg].uppercase())
-            setGameMode(targets, gameMode)
-            sender.message("[${sender.signature}] Set gamemode of [${targets.size}] player(s) to [$gameMode]")
+            setGameMode(sender, targets, gameMode)
         }, gamemodeNameArg, targetsArg)
 
         addSyntax({ sender, ctx ->
             val targets = ctx[targetsArg].find(sender)
             val gameMode = GameMode.fromId(ctx[gamemodeIndexArg].toByte())!!
-            setGameMode(targets, gameMode)
-            sender.message("[${sender.signature}] Set gamemode of [${targets.size}] player(s) to [$gameMode]")
+            setGameMode(sender, targets, gameMode)
         }, gamemodeIndexArg, targetsArg)
     }
 }
 
-object GiveCommand : Command("Give yourself or someone else an item", "give") {
+object GiveCommand : Command("give") {
     init {
         condition = isAllowed(PERM_SERVER_GIVE)
 
@@ -151,12 +169,13 @@ object GiveCommand : Command("Give yourself or someone else an item", "give") {
             val count = ctx[countArg]
             if (count > 1) item = item.withAmount(count)
             players.forEach { (it as Player).inventory.addItemStack(item) }
-            sender.message("[${sender.signature}] Gave [$count x ${item.material.namespace()}] to [${players.size}] player(s)")
+            //sender.message("[${sender.signature}] Gave [$count x ${item.material.namespace()}] to [${players.size}] player(s)")
+            if (players.size != 1) sender.message("commands.give.success.single", Component.text(count), item.component)
         }, targetsArg, itemArg, countArg)
     }
 }
 
-object SetblockCommand : Command("Set a block", "setblock") {
+object SetblockCommand : Command("setblock") {
     init {
         setCondition { sender, _ -> !sender.isConsole && sender.isAllowed(PERM_SERVER_SETBLOCK) }
 
@@ -169,12 +188,13 @@ object SetblockCommand : Command("Set a block", "setblock") {
             val position = relPos.from(player)
             val block = ctx[blockArg]
             player.instance?.setBlock(position, block)
-            sender.message("[${sender.signature}] Changed block at [$position] to [${block.namespace()}]")
+            //sender.message("[${sender.signature}] Changed block at [$position] to [${block.namespace()}]")
+            sender.message("commands.setblock.success", Component.text(position.blockX()), Component.text(position.blockY()), Component.text(position.blockZ()))
         }, positionArg, blockArg)
     }
 }
 
-object TeleportCommand : Command("Teleport", "teleport", "tp") {
+object TeleportCommand : Command("teleport", "tp") {
     init {
         setCondition { sender, _ -> sender.isPlayer && sender.isAllowed(PERM_SERVER_TP, 4) }
 
@@ -185,27 +205,34 @@ object TeleportCommand : Command("Teleport", "teleport", "tp") {
         addSyntax({ sender, ctx ->
             val position = ctx[positionArg].from(sender as Player).asPosition() // Please help me (Position not Block...)
             sender.teleport(position)
-            sender.message("[${sender.signature}] Teleported to [$position]")
+            //sender.message("[${sender.signature}] Teleported to [$position]")
+            sender.message("commands.teleport.success.location.single", sender.component, Component.text(position.blockX()), Component.text(position.blockY()), Component.text(position.blockZ()))
         }, positionArg)
 
         addSyntax({ sender, ctx ->
             val entities = ctx[entitiesArg].find(sender as Player)
             val position = ctx[positionArg].from(sender).asPosition()
             entities.forEach { it.teleport(position) }
-            sender.message("[${sender.signature}] Teleported [${entities.size}] entity/ies to [$position]")
+            if (entities.size != 1)
+                sender.message("commands.teleport.success.location.single", Component.text(entities.size), Component.text(position.blockX()), Component.text(position.blockY()), Component.text(position.blockZ()))
+            else
+                sender.message("commands.teleport.success.location.multiple", entities[0].component, Component.text(position.blockX()), Component.text(position.blockY()), Component.text(position.blockZ()))
         }, entitiesArg, positionArg)
 
         addSyntax({ sender, ctx ->
             val entity = ctx[entityArg].findFirstEntity(sender as Player)!!
             sender.teleport(entity.position)
-            sender.message("[${sender.signature}] Teleported to [${entity.entityType}]")
+            //sender.message("[${sender.signature}] Teleported to [${entity.entityType}]")
+            sender.message("commands.teleport.success.entity.single", sender.component, entity.component)
         }, entityArg)
 
         addSyntax({ sender, ctx ->
             val entities = ctx[entitiesArg].find(sender as Player)
             val entity = ctx[entityArg].findFirstEntity(sender)!!
             entities.forEach { it.teleport(entity.position) }
-            sender.message("[${sender.name}] Teleported [${entities.size}] entity/ies to [${entity.entityType}]")
+            //sender.message("[${sender.name}] Teleported [${entities.size}] entity/ies to [${entity.entityType}]")
+            if (entities.size != 1) sender.message("commands.teleport.success.entity.multiple", Component.text(entities.size), entity.component)
+            else sender.message("commands.teleport.success.entity.single", entities[0].component, entity.component)
         }, entitiesArg, entityArg)
     }
 }
@@ -253,7 +280,7 @@ object TeleportCommand : Command("Teleport", "teleport", "tp") {
     }
 }*/
 
-object GetDataCommand : Command("Get the data of an entity/item", "get-data") {
+object GetDataCommand : Command("get-data") {
     init {
         setCondition { sender, _ -> sender.isPlayer }
 
@@ -278,7 +305,7 @@ object GetDataCommand : Command("Get the data of an entity/item", "get-data") {
     }
 }
 
-object OpCommand : Command("Change the op level of a player", "op") {
+object OpCommand : Command("op") {
     init {
         setCondition { sender, _ -> sender.isConsole || sender.isPlayer && sender.asPlayer().permissionLevel > 0 }
 
@@ -301,13 +328,14 @@ object OpCommand : Command("Change the op level of a player", "op") {
                 sender.sendMessage("${player.username} has now permission level $levelTo")
                 player.permissionLevel = levelTo
                 player.refreshCommands()
-                sender.message("[${sender.signature}] Changed OP level of [${player.username}] from [$levelFrom] to [$levelTo]")
+                //sender.message("[${sender.signature}] Changed OP level of [${player.username}] from [$levelFrom] to [$levelTo]")
+                sender.message("commands.op.success.level", player.component, Component.text(levelFrom), Component.text(levelTo))
             }
         }, playerArg, levelArg)
     }
 }
 
-object PermissionCommand : Command("Change the permissions of a player", "permission", "perm") {
+object PermissionCommand : Command("permission", "perm") {
     init {
         condition = isAllowed(PERM_SERVER_PERMISSIONS)
         addSubcommand(Grant)

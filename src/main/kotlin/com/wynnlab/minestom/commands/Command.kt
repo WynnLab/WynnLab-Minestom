@@ -22,8 +22,8 @@ abstract class Command private constructor(
         }
     }
 
-    constructor(description: String, name: String, vararg aliases: String, sendConsole: Boolean = true) :
-            this(arrayOf(Component.text(description)), name, aliases, sendConsole)
+    constructor(name: String, vararg aliases: String, sendConsole: Boolean = true) :
+            this(arrayOf(Component.translatable("command.$name.description")), name, aliases, sendConsole)
 
     constructor(description: Array<out Component>, name: String, vararg aliases: String = arrayOf()) :
             this(description, name, aliases, true)

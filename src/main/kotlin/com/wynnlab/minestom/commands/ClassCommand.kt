@@ -5,7 +5,7 @@ import net.kyori.adventure.text.Component
 import net.minestom.server.command.builder.arguments.ArgumentType
 import net.minestom.server.command.builder.suggestion.SuggestionEntry
 
-object ClassCommand : Command("Open the class menu and choose a class", "class") {
+object ClassCommand : Command("class") {
     init {
         setCondition { sender, _ -> sender.isPlayer }
 

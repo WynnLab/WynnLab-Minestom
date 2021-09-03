@@ -133,7 +133,7 @@ fun main() {
 lateinit var mainInstance: InstanceContainer
 
 fun saveAll() {
-    Audiences.players().sendMessage(Component.text("[Server] saving...", NamedTextColor.GRAY))
+    Audiences.players().sendMessage(Component.translatable("server.saving", NamedTextColor.GRAY))
     //MinecraftServer.getInstanceManager().instances.forEach { if (it is InstanceContainer /*&& it.storageLocation != null*/) it.saveInstance(); it.saveChunksToStorage() }
     //TODO: saving
 }
