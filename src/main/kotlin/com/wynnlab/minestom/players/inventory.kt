@@ -29,19 +29,18 @@ fun prepareInventory(player: Player) {
 }
 
 private val compassItem = ItemStack.builder(Material.COMPASS)
-    .displayNameNonItalic(Component.text("Character Info", COLOR_LIGHT_BLUE.textColor))
-    .loreNonItalic(Component.text("View and manage your skills", COLOR_PALE_BLUE.textColor))
+    .displayNameNonItalic(Component.translatable("inventory.compass", COLOR_LIGHT_BLUE.textColor))
+    .loreNonItalic(Component.translatable("inventory.compass.lore", COLOR_PALE_BLUE.textColor))
     .build()
 
 private val questBookItem = ItemStack.builder(Material.WRITTEN_BOOK)
-    .displayNameNonItalic(Component.text("Quest Book", NamedTextColor.LIGHT_PURPLE))
-    .loreNonItalic(Component.text()
-        .append(Component.text("Quests: ", COLOR_PURPLE.textColor))
+    .displayNameNonItalic(Component.translatable("inventory.quest_book", NamedTextColor.LIGHT_PURPLE))
+    .loreNonItalic(Component.translatable("inventory.quest_book.quests", COLOR_PURPLE.textColor, Component.text()
         .append(Component.text("0/0", COLOR_PINK.textColor))
         .append(Component.text( " [", COLOR_PURPLE.textColor))
         .append(Component.text("100%", COLOR_PINK.textColor))
         .append(Component.text("]", COLOR_PURPLE.textColor))
-        .build())
+        .build()))
     .meta(WrittenBookMeta::class.java) { it
         .author("WynnLab")
         .generation(WrittenBookMeta.WrittenBookGeneration.ORIGINAL)
@@ -49,38 +48,35 @@ private val questBookItem = ItemStack.builder(Material.WRITTEN_BOOK)
     .build()
 
 private val soulPointsItem = ItemStack.builder(Material.NETHER_STAR)
-    .displayName(Component.text()
-        .append(Component.text("15", NamedTextColor.YELLOW))
-        .append(Component.text(" Soul Points", Style.style(COLOR_PALE_AQUA_BLUE.textColor, TextDecoration.BOLD)))
-        .build())
+    .displayName(Component.translatable("inventory.soul_points", Style.style(COLOR_PALE_AQUA_BLUE.textColor, TextDecoration.BOLD), Component.text("15", NamedTextColor.YELLOW)))
     .loreNonItalic(
-        Component.text("Having less soul points increases", NamedTextColor.GRAY),
-        Component.text("the chance of dropping items upon", NamedTextColor.GRAY),
-        Component.text("death.", NamedTextColor.GRAY),
+        Component.translatable("inventory.soul_points.lore.1", NamedTextColor.GRAY),
+        Component.translatable("inventory.soul_points.lore.2", NamedTextColor.GRAY),
+        Component.translatable("inventory.soul_points.lore.3", NamedTextColor.GRAY),
     )
     .build()
 
 
 val emptyPouch = ItemStack.builder(Material.BUNDLE)
-    .displayNameNonItalic(Component.text("Magic Pouch", COLOR_GOLD.textColor))
+    .displayNameNonItalic(Component.translatable("inventory.pouch", COLOR_GOLD.textColor))
     .loreNonItalic(
-        Component.text().append(Component.text("Left-Click", NamedTextColor.WHITE)).append(Component.text(" to view contents", NamedTextColor.GRAY)).build(),
-        Component.text().append(Component.text("Right-Click", NamedTextColor.WHITE)).append(Component.text(" to clear", NamedTextColor.GRAY)).build(),
+        Component.translatable("inventory.pouch.view", NamedTextColor.GRAY, Component.keybind("key.attack")),
+        Component.translatable("inventory.pouch.clear", NamedTextColor.GRAY, Component.keybind("key.use")),
     )
     .build()
 
 
 private val snowRing1 = ItemStack.builder(Material.SNOW)
-    .displayNameNonItalic(Component.text("Ring Slot", NamedTextColor.GRAY).append(Component.text("", NamedTextColor.BLACK)))
+    .displayNameNonItalic(Component.translatable("inventory.slot.ring", NamedTextColor.GRAY).append(Component.text("", NamedTextColor.BLACK)))
     .build()
 private val snowRing2 = ItemStack.builder(Material.SNOW)
-    .displayNameNonItalic(Component.text("Ring Slot", NamedTextColor.GRAY).append(Component.text("", NamedTextColor.DARK_BLUE)))
+    .displayNameNonItalic(Component.translatable("inventory.slot.ring", NamedTextColor.GRAY).append(Component.text("", NamedTextColor.DARK_BLUE)))
     .build()
 private val snowBracelet = ItemStack.builder(Material.SNOW)
-    .displayNameNonItalic(Component.text("Bracelet Slot", NamedTextColor.GRAY))
+    .displayNameNonItalic(Component.translatable("inventory.slot.bracelet", NamedTextColor.GRAY))
     .build()
 private val snowNecklace = ItemStack.builder(Material.SNOW)
-    .displayNameNonItalic(Component.text("Necklace Slot", NamedTextColor.GRAY))
+    .displayNameNonItalic(Component.translatable("inventory.slot.necklace", NamedTextColor.GRAY))
     .build()
 
 fun snowForSlot(slot: Int) = when (slot) {
