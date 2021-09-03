@@ -9,7 +9,7 @@ import net.minestom.server.network.packet.server.play.ParticlePacket
 import net.minestom.server.utils.binary.BinaryWriter
 
 fun <D : Particle.Data, E : Particle.ExtraData?> createParticlePacket(particle: Particle<D, E>, emitter: Particle.Emitter): ParticlePacket {
-    TODO("Emitter is not Position")
+    error("Emitter is not Position")
 }
 
 fun <D : Particle.Data, E : Particle.ExtraData?> createParticlePacket(particle: Particle<D, E>, emitter: Pos): ParticlePacket {

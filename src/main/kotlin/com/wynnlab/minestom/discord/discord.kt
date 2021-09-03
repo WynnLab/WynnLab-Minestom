@@ -8,6 +8,8 @@ import kotlinx.serialization.json.JsonObjectBuilder
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import net.kyori.adventure.text.Component
+import kotlin.time.Duration
+import kotlin.time.ExperimentalTime
 
 val discordChatWebhookUrl = getProperty("discord-chat-webhook-url")
 val discordLogWebhookUrl = getProperty("discord-log-webhook-url")
@@ -27,10 +29,11 @@ inline fun postWebhooks(json: JsonObjectBuilder.() -> Unit) {
     postLogWebhook(json)
 }
 
+@OptIn(ExperimentalTime::class)
 fun initDiscordClient() {
     if (discordBotToken == null || discordChannelId == null) return
 
-    val client = discord.Client(guildReadyTimeout = 1f)
+    val client = discord.Client(guildReadyTimeout = Duration.seconds(1))
     client.event<ReadyEvent> {
         println("Discord bot initialized.")
     }
@@ -41,6 +44,9 @@ fun initDiscordClient() {
         broadcast(discordBroadcastPrefix.append(Component.text(event.message.content)))
         postLogWebhook {
             put("username", event.message.author.toString())
+            event.message.author.avatar?.let { avatar ->
+                put("avatar_url", "https://cdn.discordapp.com/avatars/${event.message.author.id}/$avatar.png")
+            }
             put("content", event.message.content)
         }
     }
