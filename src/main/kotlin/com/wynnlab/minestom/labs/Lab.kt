@@ -37,7 +37,7 @@ class Lab(owner: Player) : InstanceContainer(owner.uuid, DimensionType.OVERWORLD
     fun join(player: Player) {
         player.setInstance(this, Pos(.0, 42.0, .0)).thenRun {
             player.refreshCommands()
-            player.sendMessage(Component.text("${player.username} joined the lab", NamedTextColor.YELLOW))
+            player.sendMessage(Component.translatable("lab.join", NamedTextColor.YELLOW, Component.text(player.username)))
         }
         oldInventories[player.uuid] = player.inventory.itemStacks
         player.inventory.itemStacksRaw.fill(ItemStack.AIR)
@@ -45,7 +45,7 @@ class Lab(owner: Player) : InstanceContainer(owner.uuid, DimensionType.OVERWORLD
     }
 
     fun leave(player: Player) {
-        sendMessage(Component.text("${player.username} left the lab", NamedTextColor.YELLOW))
+        player.sendMessage(Component.translatable("lab.leave", NamedTextColor.YELLOW, Component.text(player.username)))
 
         oldInventories[player.uuid]?.let { i ->
             System.arraycopy(i, 0, player.inventory.itemStacksRaw, 0, i.size)

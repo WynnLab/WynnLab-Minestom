@@ -21,14 +21,14 @@ fun registerLabsCommands(commandManager: CommandManager) {
 }
 
 object LabCommand : Command(arrayOf(
-    Component.text("WynnLab Labs:", NamedTextColor.GREEN),
-    Component.text("/create", NamedTextColor.AQUA).append(Component.text(": Create your own lab", NamedTextColor.GRAY)),
-    Component.text("/invite", NamedTextColor.AQUA).append(Component.text(": Invite a player to your lab", NamedTextColor.GRAY)),
-    Component.text("/join", NamedTextColor.AQUA).append(Component.text(": Join a lab you have been invited to", NamedTextColor.GRAY)),
-    Component.text("/leave", NamedTextColor.AQUA).append(Component.text(": Leave your current lab", NamedTextColor.GRAY)),
-    Component.text("/transfer", NamedTextColor.AQUA).append(Component.text(": Transfer your lab", NamedTextColor.GRAY)),
-    Component.text("/kick", NamedTextColor.AQUA).append(Component.text(": Kick someone from your lab", NamedTextColor.GRAY)),
-    Component.text("/permissions", NamedTextColor.AQUA).append(Component.text(": Set the permission level of a player on your lab", NamedTextColor.GRAY)),
+    Component.translatable("command.lab.description", NamedTextColor.GREEN),
+    Component.text("/create: ", NamedTextColor.AQUA).append(Component.translatable("command.lab.create.description", NamedTextColor.GRAY)),
+    Component.text("/invite: ", NamedTextColor.AQUA).append(Component.translatable("command.lab.invite.description", NamedTextColor.GRAY)),
+    Component.text("/join: ", NamedTextColor.AQUA).append(Component.translatable("command.lab.join.description", NamedTextColor.GRAY)),
+    Component.text("/leave: ", NamedTextColor.AQUA).append(Component.translatable("command.lab.leave.description", NamedTextColor.GRAY)),
+    Component.text("/transfer: ", NamedTextColor.AQUA).append(Component.translatable("command.lab.transfer.description", NamedTextColor.GRAY)),
+    Component.text("/kick: ", NamedTextColor.AQUA).append(Component.translatable("command.lab.kick.description", NamedTextColor.GRAY)),
+    Component.text("/permissions: ", NamedTextColor.AQUA).append(Component.translatable("command.lab.permissions.description", NamedTextColor.GRAY)),
 ), "lab") {
     init {
         addSubcommand(Create)
@@ -77,13 +77,12 @@ object LabCommand : Command(arrayOf(
                 sender as Player
 
                 (invites[player.uuid] ?: run { val set = hashSetOf<UUID>(); invites[player.uuid] = set; set }).add(sender.uuid)
-                player.sendMessage(Component.text()
-                    .append(Component.text(sender.username, NamedTextColor.AQUA))
-                    .append(Component.text(" invited you to their lab. "))
-                    .append(Component.text("Click here to join!", NamedTextColor.YELLOW)
-                        .hoverEvent(HoverEvent.showText(Component.text("Click to join!")))
+                player.sendMessage(Component.translatable("lab.invited",
+                    Component.text(sender.username, NamedTextColor.AQUA),
+                    Component.translatable("lab.invited.click.text", NamedTextColor.YELLOW)
+                        .hoverEvent(HoverEvent.showText(Component.translatable("lab.invited.click.hover")))
                         .clickEvent(ClickEvent.runCommand("/lab join ${sender.username}")))
-                    .build())
+                )
             }, playerArg)
         }
 
@@ -142,7 +141,7 @@ object LabCommand : Command(arrayOf(
                 sender as Player
 
                 getLab(sender)!!.run {
-                    sendMessage(Component.text("This lab was transferred to ${player.username}"))
+                    sendMessage(Component.translatable("lab.transferred", Component.text(player.username)))
                     transfer(player)
                 }
             }, playerArg)

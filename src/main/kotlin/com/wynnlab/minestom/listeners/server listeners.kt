@@ -154,7 +154,7 @@ private fun permissionLevel(uuid: UUID) = if (uuid.toString() == "4182ab6a-4698-
 private val welcomeNotification = Notification(Component.text()
     .append(Component.translatable("notification.welcome.welcome"))
     .append(Component.newline())
-    .append(Component.text("notification.welcome.help"))
+    .append(Component.translatable("notification.welcome.help"))
     .build(),
     FrameType.TASK, ItemStack.of(Material.COMPASS))
 

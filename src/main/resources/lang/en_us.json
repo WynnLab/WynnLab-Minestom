@@ -86,6 +86,13 @@
     "identification.rainbow_spell_damage": "Rainbow Spell Damage",
     "identification.jump_height": "Jump Height",
 
+    "lab.join": "%s joined the lab",
+    "lab.leave": "%s left the lab",
+    "lab.invited": "%s invited you to their lab. %s",
+    "lab.invited.click.text": "Click here to join!",
+    "lab.invited.click.hover": "Click to join!",
+    "lab.transferred": "This lab was transferred to %s",
+
     "mob.name.level": "[Lv. %s]",
     "mob.below_name.damage": " Dam",
     "mob.below_name.weakness": " Weak",
@@ -124,7 +131,18 @@
     "command.pvp.description": "Open the pvp menu",
     "command.hub.description": "Go back to the lobby",
     "command.stats.description": "Show your stats",
+
+    "command.lab.description": "WynnLab Labs:",
+    "command.lab.create.description": "Create your own lab",
+    "command.lab.invite.description": "Invite a player to your lab",
+    "command.lab.join.description": "Join a lab you have been invited to",
+    "command.lab.leave.description": "Leave your current lab",
+    "command.lab.transfer.description": "Transfer your lab",
+    "command.lab.kick.description": "Kick someone from your lab",
+    "command.lab.permissions.description": "Set the permission level of a player on your lab",
+
     "command.mob.description": "Mob tools:",
+
     "command.item.description": "Item tools:",
     "command.item.get.description": "Get an item from the Wynncraft api",
     "command.item.get.searching": "Searching for \"%s\" in the database...",
