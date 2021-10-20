@@ -1,6 +1,8 @@
 package com.wynnlab.minestom.listeners
 
+import com.wynnlab.minestom.base.playerClassTag
 import com.wynnlab.minestom.classes.mage.Mage
+import com.wynnlab.minestom.classes.mage.getClassById
 import com.wynnlab.minestom.core.damage.NeutralDamageModifiers
 import com.wynnlab.minestom.core.damage.attack
 import com.wynnlab.minestom.core.player.itemWeapon
@@ -139,11 +141,12 @@ private fun Player.clickSeqAb() {
 //val clickSeqAbTag = Tag.Byte("click-seq-ab")
 
 private fun castSpellAndResetClickSequence(player: Player, spell: Int) {
-    if (spell == 0) player.rayCastEntity(maxDistance = 4.0) { it is CustomEntity || it is Player }?.let {
+    /*if (spell == 0) player.rayCastEntity(maxDistance = 4.0) { it is CustomEntity || it is Player }?.let {
         if (it is CustomEntity) player.attack(it, NeutralDamageModifiers)
         else player.attack(it as Player, NeutralDamageModifiers)
     }
-    if (spell == 1) Mage.spells[0](player).schedule()
+    if (spell == 1) Mage.spells[0](player).schedule()*/
+    getClassById(player.getTag(playerClassTag) ?: "null")?.spells?.getOrNull(spell)?.invoke(player)?.schedule()
     //player.setGravity(player.gravityDragPerTick / 2f, player.gravityAcceleration / 2f)
     //val p = Particle.particle(HAPPY_VILLAGER, 10, ParticleType.OffsetAndSpeed(0f, 0f, 0f, 0f))
     //val p = Particle.particle(ITEM, 10, ParticleType.OffsetAndSpeed(0f, 0f, 0f, 0f), Item(player.itemInMainHand))

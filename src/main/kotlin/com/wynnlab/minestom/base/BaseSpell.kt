@@ -19,6 +19,7 @@ abstract class BaseSpell(private val duration: Int) : Runnable {
     override fun run() {
         ++t
 
+        //println(t)
         onTick()
 
         if (t >= duration)
@@ -35,6 +36,7 @@ abstract class BaseSpell(private val duration: Int) : Runnable {
     }
 
     fun schedule(delay: Duration = Duration.ZERO, period: Duration = Duration.of(1L, TimeUnit.SERVER_TICK)) {
+        //println("Scheduled spell ${this::class.simpleName}")
         task = MinecraftServer.getSchedulerManager().buildTask(this).delay(delay).repeat(period).schedule()
         onCast()
     }

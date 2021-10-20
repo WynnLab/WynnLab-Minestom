@@ -4,6 +4,7 @@ import com.wynnlab.minestom.particle.adventure.Particle
 import it.unimi.dsi.fastutil.objects.Object2ShortArrayMap
 import it.unimi.dsi.fastutil.objects.Object2ShortMap
 import net.kyori.adventure.key.Key
+import net.minestom.server.coordinate.Point
 import net.minestom.server.coordinate.Pos
 import net.minestom.server.network.packet.server.play.ParticlePacket
 import net.minestom.server.utils.binary.BinaryWriter
@@ -12,7 +13,7 @@ fun <D : Particle.Data, E : Particle.ExtraData?> createParticlePacket(particle: 
     error("Emitter is not Position")
 }
 
-fun <D : Particle.Data, E : Particle.ExtraData?> createParticlePacket(particle: Particle<D, E>, emitter: Pos): ParticlePacket {
+fun <D : Particle.Data, E : Particle.ExtraData?> createParticlePacket(particle: Particle<D, E>, emitter: Point): ParticlePacket {
     val packet = ParticlePacket()
     packet.particleId = ids.getShort(particle.name).toInt()
     packet.longDistance = particle.longDistance

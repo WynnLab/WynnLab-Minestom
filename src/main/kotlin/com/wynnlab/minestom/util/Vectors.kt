@@ -18,7 +18,7 @@ class Vectors(private val start: Vec, private val end: Vec, private val step: Do
 
         override fun next(): Vec {
             currentDist += step
-            if (currentDistSqr != distSqr && currentDistSqr > distSqr) ended = true
+            if (currentDistSqr > distSqr) ended = true
             if (ended) return end
             current += addVec
             return current

@@ -174,5 +174,7 @@
     "commands.gamemode.success.multiple": "Set %s players' gamemode to %s",
     "commands.op.success.level": "Set op level of %s from %s to %s",
 
-    "server.saving": "[Server] saving..."
+    "server.saving": "[Server] saving...",
+
+    "class.mage.name": "Mage"
 }

@@ -3,6 +3,7 @@ package com.wynnlab.minestom.base
 import net.minestom.server.entity.Player
 import net.minestom.server.item.ItemStack
 import net.minestom.server.tag.BooleanTag
+import net.minestom.server.tag.Tag
 
 abstract class BaseClass(
     val id: String,
@@ -20,4 +21,5 @@ abstract class BaseClass(
     )
 }
 
+val playerClassTag = Tag.String("class")
 val playerCloneClassTag = BooleanTag("clone-class")
