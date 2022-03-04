@@ -5,7 +5,6 @@ import net.minestom.server.instance.ChunkGenerator
 import net.minestom.server.instance.ChunkPopulator
 import net.minestom.server.instance.batch.ChunkBatch
 import net.minestom.server.instance.block.Block
-import net.minestom.server.world.biomes.Biome
 
 class GeneratorDemo : ChunkGenerator {
     override fun generateChunkData(batch: ChunkBatch, chunkX: Int, chunkZ: Int) {
@@ -15,9 +14,9 @@ class GeneratorDemo : ChunkGenerator {
                     batch.setBlock(x, y, z, if (y < 35) Block.STONE else if (y < 39) Block.DIRT else Block.GRASS_BLOCK)
     }
 
-    override fun fillBiomes(biomes: Array<Biome>, chunkX: Int, chunkZ: Int) {
+    /*override fun fillBiomes(biomes: Array<Biome>, chunkX: Int, chunkZ: Int) {
         biomes.fill(Biome.PLAINS)
-    }
+    }*/
 
     override fun getPopulators(): MutableList<ChunkPopulator>? = null
 }

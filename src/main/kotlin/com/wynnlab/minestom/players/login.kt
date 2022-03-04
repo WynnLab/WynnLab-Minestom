@@ -36,6 +36,7 @@ object WynnLabUuidProvider : UuidProvider {
 }
 
 class WynnLabLogin(private val spawningInstance: Instance) : Consumer<PlayerLoginEvent> {
+    @OptIn(DelicateCoroutinesApi::class)
     override fun accept(e: PlayerLoginEvent) {
         e.setSpawningInstance(spawningInstance)
 

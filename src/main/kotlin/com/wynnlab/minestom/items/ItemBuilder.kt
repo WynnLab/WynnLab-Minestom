@@ -27,12 +27,12 @@ sealed class ItemBuilder(
 
     fun setDesign(design: String) {
         type.designs[design]?.let { (m, d) ->
-            item = ItemStack.builder(m).meta { itemMeta(it, d); it }
+            item = ItemStack.builder(m).meta<ItemMetaBuilder> { itemMeta(it, d); it }
         }
     }
 
     fun setDesign(material: Material, damage: Int) {
-        item = ItemStack.builder(material).meta { itemMeta(it, damage); it }
+        item = ItemStack.builder(material).meta<ItemMetaBuilder> { itemMeta(it, damage); it }
     }
 
     var rarity: Rarity = Rarity.Normal
@@ -146,7 +146,7 @@ sealed class ItemBuilder(
     private fun refreshDisplayName() = item.displayNameNonItalic(Component.text(name, rarity.nameColor))
 
     private var item = ItemStack.builder(type.designs["Basic"]!!.material)
-        .meta {
+        .meta<ItemMetaBuilder> {
             itemMeta(it, type.designs["Basic"]!!.damage)
             it
         }
@@ -183,8 +183,8 @@ sealed class ItemBuilder(
 
         loreNonItalic(itemLore)
 
-        meta { writeItemMeta(it, this@ItemBuilder); it }
-    }.build().let { if (build || !custom) it.withMeta { m -> m
+        meta<ItemMetaBuilder> { writeItemMeta(it, this@ItemBuilder); it }
+    }.build().let { if (build || !custom) it.withMeta<ItemMetaBuilder> { m -> m
         .clearEnchantment()
         m.removeTag(nameTag)
         m

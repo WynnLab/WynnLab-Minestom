@@ -4,7 +4,6 @@ import com.wynnlab.minestom.core.Element
 import com.wynnlab.minestom.core.player.*
 import com.wynnlab.minestom.items.Defense
 import com.wynnlab.minestom.items.Identification
-import com.wynnlab.minestom.util.tag
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
 import net.minestom.server.coordinate.Pos

@@ -23,7 +23,7 @@ class MobBuilder(val id: String, var name: String, type: EntityType, var level: 
     var type = type
     set(value) {
         field = value
-        item = ItemStack.builder(typeItemOf(value)).meta { itemMeta(it); it }
+        item = ItemStack.builder(typeItemOf(value)).meta<ItemMetaBuilder> { itemMeta(it); it }
     }
 
     var attackSpeed = AttackSpeed.Normal
@@ -43,7 +43,7 @@ class MobBuilder(val id: String, var name: String, type: EntityType, var level: 
 
     private fun refreshDisplayName() = item.displayNameNonItalic(Component.text(name, NamedTextColor.GOLD))
 
-    private var item = ItemStack.builder(typeItemOf(type)).meta { itemMeta(it); it }
+    private var item = ItemStack.builder(typeItemOf(type)).meta<ItemMetaBuilder> { itemMeta(it); it }
 
     private fun itemMeta(it: ItemMetaBuilder) {
         it
@@ -94,8 +94,8 @@ class MobBuilder(val id: String, var name: String, type: EntityType, var level: 
 
         loreNonItalic(itemLore)
 
-        meta { writeMobMeta(it, this@MobBuilder); it }
-    }.build().let { if (build) it.withMeta { m -> m
+        meta<ItemMetaBuilder> { writeMobMeta(it, this@MobBuilder); it }
+    }.build().let { if (build) it.withMeta<ItemMetaBuilder> { m -> m
         .clearEnchantment()
         m.removeTag(nameTag)
         m
@@ -138,7 +138,7 @@ class MobBuilder(val id: String, var name: String, type: EntityType, var level: 
                 }
             }
             if (hasDam)
-                c.append(Component.translatable("mob.below_name.damage", COLOR_LIGHTER_GRAY.textColor))
+                c.append(Component.translatable("mob.below_name.damage", COLOR_LIGHTER_GRAY))
             val def = Component.text()
             var hasDef = false
             val weak = Component.text()
@@ -156,12 +156,12 @@ class MobBuilder(val id: String, var name: String, type: EntityType, var level: 
             if (hasDef) {
                 if (hasDam) c.append(Component.text(" "))
                 c.append(def.build())
-                c.append(Component.translatable("mob.below_name.defense", COLOR_LIGHTER_GRAY.textColor))
+                c.append(Component.translatable("mob.below_name.defense", COLOR_LIGHTER_GRAY))
             }
             if (hasWeak) {
                 if (hasDam || hasDef) c.append(Component.text(" "))
                 c.append(weak.build())
-                c.append(Component.translatable("mob.below_name.weakness", COLOR_LIGHTER_GRAY.textColor))
+                c.append(Component.translatable("mob.below_name.weakness", COLOR_LIGHTER_GRAY))
             }
             if (hasDam || hasDef || hasWeak)
                 entity.belowNameTagDefault = c.build()

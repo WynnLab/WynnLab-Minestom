@@ -1,8 +1,8 @@
 plugins {
     id 'java'
-    id 'org.jetbrains.kotlin.jvm' version '1.5.30'
-    id 'com.github.johnrengelman.shadow' version '5.2.0'
-    id 'org.jetbrains.kotlin.plugin.serialization' version '1.5.30'
+    id 'org.jetbrains.kotlin.jvm' version '1.6.10'
+    //id 'com.github.johnrengelman.shadow' version '5.2.0'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.6.10'
 }
 
 group 'com.wynnlab'
@@ -12,13 +12,13 @@ repositories {
     mavenCentral()
     maven { url 'https://repo.spongepowered.org/maven' }
     maven { url 'https://jitpack.io' }
-    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+    //maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
 }
 
 dependencies {
-    implementation 'com.github.Minestom:Minestom:4680dbd64e'
+    implementation 'com.github.Minestom:Minestom:-SNAPSHOT'
 
-    implementation 'com.github.fauxkiwi.discord-kt:discord-kt-jvm:0.2.2'
+    //implementation 'com.github.fauxkiwi.discord-kt:discord-kt-jvm:0.2.2'
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
     compileOnly "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1"
@@ -41,7 +41,7 @@ compileJava {
 
 compileKotlin {
     kotlinOptions {
-        jvmTarget = '16'
+        jvmTarget = '17'
         freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
     }
 }
@@ -52,6 +52,10 @@ jar {
     }
 }
 
-shadowJar {
-    archiveName "server.jar"
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
 }
+
+/*shadowJar {
+    archiveName "server.jar"
+}*/

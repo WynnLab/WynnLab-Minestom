@@ -9,7 +9,6 @@ import net.kyori.adventure.sound.Sound
 import net.minestom.server.adventure.audience.PacketGroupingAudience
 import net.minestom.server.coordinate.Point
 import net.minestom.server.entity.Player
-import kotlin.math.max
 
 abstract class BasePlayerSpell(
     val player: Player,

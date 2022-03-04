@@ -1,4 +1,4 @@
-package com.wynnlab.minestom.discord
+/*package com.wynnlab.minestom.discord
 
 import com.wynnlab.minestom.*
 import com.wynnlab.minestom.util.post
@@ -57,4 +57,4 @@ private val discordBroadcastPrefix = Component.text()
     .append(Component.text("[", COLOR_DARKER_GRAY.textColor))
     .append(Component.text("Discord", COLOR_DISCORD.textColor))
     .append(Component.text("] ", COLOR_DARKER_GRAY.textColor))
-    .build()
+    .build()*/

@@ -1,8 +1,9 @@
 package com.wynnlab.minestom.items
 
-import net.minestom.server.item.ItemStack
 import net.minestom.server.tag.Tag
 import net.minestom.server.tag.TagWritable
+import org.jglrxavpok.hephaistos.nbt.NBTByteArray
+import org.jglrxavpok.hephaistos.nbt.NBTIntArray
 
 /*fun readItemMeta(reader: TagReadable): ItemBuilderMeta? = try {
     val meta = when (reader.getTag(typeTag)) {
@@ -60,7 +61,7 @@ fun writeItemMeta(writer: TagWritable, builder: ItemBuilder) {
 
     writer.setTag(itemSocketsTag, builder.sockets.toByte())
 
-    writer.setTag(skillRequirementsTag, byteArrayOf(
+    writer.setTag(skillRequirementsTag, NBTByteArray(
         builder.skillRequirements.strength.toUByte().toByte(),
         builder.skillRequirements.dexterity.toUByte().toByte(),
         builder.skillRequirements.intelligence.toUByte().toByte(),
@@ -68,11 +69,11 @@ fun writeItemMeta(writer: TagWritable, builder: ItemBuilder) {
         builder.skillRequirements.agility.toUByte().toByte(),
     ))
 
-    writer.setTag(skillRequirementsPositionsTag, builder.skillRequirementsPositions)
+    writer.setTag(skillRequirementsPositionsTag, NBTByteArray(*builder.skillRequirementsPositions))
 
     if (builder is ItemBuilder.Weapon) {
         writer.setTag(itemAttackSpeedTag, builder.attackSpeed.ordinal.toByte())
-        writer.setTag(itemDamageTag, intArrayOf(
+        writer.setTag(itemDamageTag, NBTIntArray(
             builder.damage.neutral.first, builder.damage.neutral.last,
             builder.damage.earth.first, builder.damage.earth.last,
             builder.damage.thunder.first, builder.damage.thunder.last,
@@ -83,7 +84,7 @@ fun writeItemMeta(writer: TagWritable, builder: ItemBuilder) {
         writer.setTag(classReqPosTag, builder.classReqPos)
     } else if (builder is ItemBuilder.Defense) {
         writer.setTag(itemHealthTag, builder.health.toUShort().toShort())
-        writer.setTag(itemDefenseTag, byteArrayOf(
+        writer.setTag(itemDefenseTag, NBTByteArray(
             builder.defense.earth.toUByte().toByte(),
             builder.defense.thunder.toUByte().toByte(),
             builder.defense.water.toUByte().toByte(),
@@ -100,13 +101,13 @@ fun writeItemMeta(writer: TagWritable, builder: ItemBuilder) {
 val itemTypeIdTag = Tag.Byte("item-type-id")
 
 val itemSocketsTag: Tag<Byte> = Tag.Byte("item-sockets").defaultValue(0)
-val skillRequirementsTag = Tag.ByteArray("item-skill-requirements")
-val skillRequirementsPositionsTag = Tag.ByteArray("item-skill-requirements-pos")
+val skillRequirementsTag = Tag.NBT<NBTByteArray>("item-skill-requirements")
+val skillRequirementsPositionsTag = Tag.NBT<NBTByteArray>("item-skill-requirements-pos")
 
 val classReqPosTag = Tag.Byte("class-req-pos")
 
 val itemAttackSpeedTag = Tag.Byte("item-attack-speed")
-val itemDamageTag = Tag.IntArray("item-damage")
+val itemDamageTag = Tag.NBT<NBTIntArray>("item-damage")
 
 val itemHealthTag = Tag.Short("item-health")
-val itemDefenseTag = Tag.ByteArray("item-defense")
+val itemDefenseTag = Tag.NBT<NBTByteArray>("item-defense")

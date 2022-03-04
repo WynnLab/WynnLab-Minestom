@@ -3,7 +3,6 @@ package com.wynnlab.minestom.core.damage
 import com.wynnlab.minestom.core.player.skillPercentage
 import com.wynnlab.minestom.items.Identification
 import com.wynnlab.minestom.items.itemDamageTag
-import kotlin.math.roundToInt
 
 val standardConversion = doubleArrayOf(1.0, .0, .0, .0, .0, .0)
 private val noDamage = doubleArrayOf(.0, .0, .0, .0, .0, .0)

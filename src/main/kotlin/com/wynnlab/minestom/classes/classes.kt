@@ -1,6 +1,7 @@
-package com.wynnlab.minestom.classes.mage
+package com.wynnlab.minestom.classes
 
 import com.wynnlab.minestom.base.BaseClass
+import com.wynnlab.minestom.classes.mage.Mage
 
 val classes: List<BaseClass> = listOf(
     Mage

@@ -27,6 +27,7 @@ fun Entity.rayCastEntity(direction: Vec = position.direction(), maxDistance: Dou
         null
     }
 
+//TODO
 fun <T> Entity.rayCast(direction: Vec, maxDistance: Double, condition: (Pos) -> T?): T? {
     var pos = position.add(.0, eyeHeight, .0)
 

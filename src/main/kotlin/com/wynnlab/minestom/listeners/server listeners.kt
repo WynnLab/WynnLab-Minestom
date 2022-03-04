@@ -1,15 +1,11 @@
 package com.wynnlab.minestom.listeners
 
+//import com.wynnlab.minestom.discord.postLogWebhook
+//import com.wynnlab.minestom.discord.postWebhooks
 import com.wynnlab.minestom.*
 import com.wynnlab.minestom.commands.component
 import com.wynnlab.minestom.commands.consoleIgnoreCommands
-import com.wynnlab.minestom.discord.postLogWebhook
-import com.wynnlab.minestom.discord.postWebhooks
 import com.wynnlab.minestom.util.listen
-import kotlinx.serialization.json.addJsonObject
-import kotlinx.serialization.json.put
-import kotlinx.serialization.json.putJsonArray
-import kotlinx.serialization.json.putJsonObject
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
@@ -37,14 +33,14 @@ private fun onPlayerSpawn(e: PlayerSpawnEvent) {
 
     val player = e.player
     broadcast(Component.text()
-        .append(Component.text("[", COLOR_GRAY.textColor))
-        .append(Component.text("+", COLOR_GREEN.textColor))
-        .append(Component.text("] ", COLOR_GRAY.textColor))
+        .append(Component.text("[", COLOR_GRAY))
+        .append(Component.text("+", COLOR_GREEN))
+        .append(Component.text("] ", COLOR_GRAY))
         .append(player.name)
         .build())
 
 
-    postWebhooks {
+    /*postWebhooks {
         val authorName = "${player.username} has joined the server"
         val authorIcon = "https://www.mc-heads.net/avatar/${player.uuid}"
         putJsonArray("embeds") {
@@ -56,7 +52,7 @@ private fun onPlayerSpawn(e: PlayerSpawnEvent) {
                 }
             }
         }
-    }
+    }*/
 
     player.sendMessage(languageText)
 
@@ -68,14 +64,14 @@ private fun onPlayerSpawn(e: PlayerSpawnEvent) {
 private fun onPlayerDisconnect(e: PlayerDisconnectEvent) {
     val player = e.player
     broadcast(Component.text()
-        .append(Component.text("[", COLOR_GRAY.textColor))
-        .append(Component.text("-", COLOR_RED.textColor))
-        .append(Component.text("] ", COLOR_GRAY.textColor))
+        .append(Component.text("[", COLOR_GRAY))
+        .append(Component.text("-", COLOR_RED))
+        .append(Component.text("] ", COLOR_GRAY))
         .append(player.name)
         .build())
 
 
-    postWebhooks {
+    /*postWebhooks {
         val authorName = "${player.username} has left the server"
         val authorIcon = "https://www.mc-heads.net/avatar/${player.uuid}"
         putJsonArray("embeds") {
@@ -87,7 +83,7 @@ private fun onPlayerDisconnect(e: PlayerDisconnectEvent) {
                 }
             }
         }
-    }
+    }*/
 }
 
 private fun onPlayerChat(e: PlayerChatEvent) {
@@ -105,14 +101,14 @@ private fun onPlayerChat(e: PlayerChatEvent) {
         format.build()
     }
 
-    postWebhooks {
+    /*postWebhooks {
         val username = e.player.username
         val avatar = "https://www.mc-heads.net/avatar/${e.player.uuid}"
         val content = e.message
         put("username", username)
         put("avatar_url", avatar)
         put("content", content)
-    }
+    }*/
 }
 
 const val NUM_DEATH_MESSAGES = 1
@@ -127,14 +123,14 @@ private fun onPlayerDeath(e: PlayerDeathEvent) {
 private fun onPlayerCommand(e: PlayerCommandEvent) {
     if (consoleIgnoreCommands.contains(e.command)) return
     Audiences.console().sendMessage(Component.text("${e.player.username} issued command: ${e.command}"))
-    postLogWebhook {
+    /*postLogWebhook {
         val username = e.player.username
         val avatar = "https://www.mc-heads.net/avatar/${e.player.uuid}"
         val content = "**>** /${e.command}"
         put("username", username)
         put("avatar_url", avatar)
         put("content", content)
-    }
+    }*/
 }
 
 fun initServerListeners(globalEventHandler: GlobalEventHandler) {
@@ -161,7 +157,7 @@ private val welcomeNotification = Notification(Component.text()
 private val languageText = Component.text()
     .append(Component.translatable("narrator.button.language", NamedTextColor.GRAY))
     .append(Component.text(": ", NamedTextColor.GRAY))
-    .append(Component.translatable("language.name", COLOR_AQUA.textColor))
+    .append(Component.translatable("language.name", COLOR_AQUA))
     .append(Component.text(" (", NamedTextColor.GRAY))
     .append(Component.translatable("language.region", NamedTextColor.GRAY))
     .append(Component.text(")", NamedTextColor.GRAY))

@@ -6,9 +6,9 @@
 # WynnLab-Minestom
 Experimental reimplementation of WynnLab/Wynncraft on the Minestom platform.
 
-Wynncraft Recreation as Minecraft 1.17 server.
+Wynncraft Recreation as Minecraft 1.18 server.
 
-### Try it on our Minecraft server: play.<b>wynnlab</b>.tk
+<!--### Try it on our Minecraft server: play.<b>wynnlab</b>.tk-->
 
 
 (The old bukkit implementation is archived, but more complete, you can find it [here](https://github.com/wynnlab/wynnlab-core))

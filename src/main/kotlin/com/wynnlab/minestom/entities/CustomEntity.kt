@@ -4,10 +4,8 @@ import com.wynnlab.minestom.items.AttackSpeed
 import com.wynnlab.minestom.items.Damage
 import com.wynnlab.minestom.items.Defense
 import com.wynnlab.minestom.random
-import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.TextComponent
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import net.minestom.server.coordinate.Pos
@@ -20,7 +18,6 @@ import net.minestom.server.instance.Instance
 import net.minestom.server.network.packet.server.play.EntityAnimationPacket
 import net.minestom.server.sound.SoundEvent
 import net.minestom.server.tag.Tag
-import org.jetbrains.annotations.ApiStatus
 import java.util.concurrent.CompletableFuture
 
 abstract class CustomEntity(entityType: EntityType) : Entity(entityType) {
@@ -58,6 +55,7 @@ abstract class CustomEntity(entityType: EntityType) : Entity(entityType) {
         return customName
     }
     @Deprecated("Doesn't take nameColor into account", replaceWith = ReplaceWith("setName(name)"))
+    @Suppress("unused")
     final override fun setCustomName(customName: Component?) {
         this.customName = customName
         isCustomNameVisible = customName != null
@@ -80,9 +78,7 @@ abstract class CustomEntity(entityType: EntityType) : Entity(entityType) {
 
         viewersAsAudience.playSound(hurtSound)
 
-        val entityAnimationPacket = EntityAnimationPacket()
-        entityAnimationPacket.entityId = entityId
-        entityAnimationPacket.animation = EntityAnimationPacket.Animation.TAKE_DAMAGE
+        val entityAnimationPacket = EntityAnimationPacket(entityId, EntityAnimationPacket.Animation.TAKE_DAMAGE)
         sendPacketToViewers(entityAnimationPacket)
     }
 

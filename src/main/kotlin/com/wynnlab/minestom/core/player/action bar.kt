@@ -4,15 +4,10 @@ import com.wynnlab.minestom.core.damage.playerMaxHealthTag
 import com.wynnlab.minestom.listeners.clickSeqAbComponent
 import com.wynnlab.minestom.textColor
 import com.wynnlab.minestom.util.displayNameNonItalic
-import com.wynnlab.minestom.util.listen
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent
 import net.minestom.server.MinecraftServer
 import net.minestom.server.entity.Player
-import net.minestom.server.event.EventFilter
-import net.minestom.server.event.EventNode
-import net.minestom.server.event.player.PlayerChangeHeldSlotEvent
-import net.minestom.server.event.player.PlayerSwapItemEvent
 import net.minestom.server.inventory.itemStacksRaw
 import net.minestom.server.item.builder
 import net.minestom.server.utils.time.TimeUnit

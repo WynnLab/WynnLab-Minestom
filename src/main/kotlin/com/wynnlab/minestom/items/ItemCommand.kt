@@ -117,6 +117,7 @@ object ItemCommand : Command(arrayOf(
         }
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     object Get : Subcommand("get") {
         init {
             condition = playerAtLeast1

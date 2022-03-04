@@ -1,21 +1,16 @@
 package com.wynnlab.minestom.listeners
 
 import com.wynnlab.minestom.base.playerClassTag
-import com.wynnlab.minestom.classes.mage.Mage
-import com.wynnlab.minestom.classes.mage.getClassById
-import com.wynnlab.minestom.core.damage.NeutralDamageModifiers
-import com.wynnlab.minestom.core.damage.attack
+import com.wynnlab.minestom.classes.getClassById
 import com.wynnlab.minestom.core.player.itemWeapon
 import com.wynnlab.minestom.core.player.refreshClickSequenceBar
 import com.wynnlab.minestom.core.player.resetClickSequenceBar
-import com.wynnlab.minestom.entities.CustomEntity
 import com.wynnlab.minestom.gui.MenuGui
 import com.wynnlab.minestom.mob.MobCommand
 import com.wynnlab.minestom.mob.getCustomMob
 import com.wynnlab.minestom.mob.mobTypeIdTag
 import com.wynnlab.minestom.tasks.RefreshDelayTask
 import com.wynnlab.minestom.util.listen
-import com.wynnlab.minestom.util.rayCastEntity
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.TextComponent

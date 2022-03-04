@@ -5,31 +5,33 @@ import io.ktor.client.engine.java.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
 import io.ktor.client.request.*
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 
 @Suppress("DeferredIsResult")
-fun get(url: String) = GlobalScope.async {
-    httpClient.get<JsonObject>(url)
-    /*val jUrl = URL(url)
+suspend fun get(url: String) = coroutineScope {
+    async {
+        httpClient.get<JsonObject>(url)
+        /*val jUrl = URL(url)
     val conn = jUrl.openConnection() as HttpURLConnection
     conn.requestMethod = "GET"
     conn.connect()
     if (conn.responseCode != 200) throw HttpRequestException(url, conn.responseCode)
     val stream = jUrl.openStream()
     return JsonParser.parseReader(stream.reader()).asJsonObject*/
+    }
 }
 
 /*private val client: HttpClient by lazy { HttpClient.newHttpClient() }
 private val gson by lazy { Gson() }*/
 
-fun post(url: String, json: JsonObject) = GlobalScope.launch {
-    httpClient.post<Unit>(url) {
-        header("Content-Type", "application/json")
-        body = json
+suspend fun post(url: String, json: JsonObject) = coroutineScope {
+    launch {
+        httpClient.post<Unit>(url) {
+            header("Content-Type", "application/json")
+            body = json
+        }
     }
 }
 

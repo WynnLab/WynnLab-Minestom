@@ -16,10 +16,7 @@ import net.minestom.server.entity.Player
 import net.minestom.server.inventory.InventoryType
 import net.minestom.server.inventory.click.ClickType
 import net.minestom.server.inventory.condition.InventoryConditionResult
-import net.minestom.server.item.ItemStack
-import net.minestom.server.item.ItemStackBuilder
-import net.minestom.server.item.Material
-import net.minestom.server.item.lore
+import net.minestom.server.item.*
 import net.minestom.server.sound.SoundEvent
 import java.util.*
 import kotlin.math.roundToInt
@@ -51,7 +48,7 @@ object MenuGui : Gui("§c200 §4Skill Points Remaining", InventoryType.CHEST_3_R
         val a = player.assignedSkills
         var m = 0
         for (i in 0..4) {
-            if (s[i] != a[i].toInt()) m += 1 shl i
+            if (s[i] != player.assignedSkill(i, a).toInt()) m += 1 shl i
         }
         currentSkillsModified[player.uuid] = m
 
@@ -98,9 +95,8 @@ object MenuGui : Gui("§c200 §4Skill Points Remaining", InventoryType.CHEST_3_R
 
     private fun ItemStackBuilder.upgradeSkill(player: Player, skillIndex: Int, add: Int) = apply {
         val cs = currentSkills[player.uuid] ?: return@apply
-        val assigned = player.assignedSkills
-        val rem = 200 - assigned.sum()
-        val to100 = 100 - assigned[skillIndex]
+        val rem = player.remainingSkillAssigns
+        val to100 = 100 - player.assignedSkill(skillIndex)
         val actualAdd = if (rem > 0 && to100 > 0) {
             player.playSound(successAddSound)
             add.coerceAtMost(rem).coerceAtMost(to100)
@@ -167,7 +163,7 @@ private val resetSkillPointsItem = ItemStack.builder(Material.GOLDEN_SHOVEL)
         .append(Component.translatable("gui.menu.reset_skill_points.cost", NamedTextColor.GRAY))
         .append(Component.translatable("gui.menu.reset_skill_points.cost.soul_points", NamedTextColor.WHITE))
         .build())
-    .meta { it
+    .meta<ItemMetaBuilder> { it
         .damage(21)
         .unbreakable(true)
         .hideAllFlags()
@@ -234,6 +230,6 @@ private fun setSkillBookLore(lore: MutableList<Component>, value: Int, modified:
         lore.removeAt(lore.size - 1)
     } else if (lore.size <= 10 && modified) {
         lore.add(Component.empty())
-        lore.add(Component.translatable("gui.menu.skill_book.modified", COLOR_WYNN.textColor))
+        lore.add(Component.translatable("gui.menu.skill_book.modified", COLOR_WYNN))
     }
 }

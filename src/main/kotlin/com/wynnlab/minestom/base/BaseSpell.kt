@@ -10,10 +10,13 @@ abstract class BaseSpell(private val duration: Int) : Runnable {
 
     private lateinit var task: Task
 
+    @Suppress("EmptyMethod")
     open fun onCast() {}
 
+    @Suppress("EmptyMethod")
     open fun onTick() {}
 
+    @Suppress("EmptyMethod")
     open fun onCancel() {}
 
     override fun run() {

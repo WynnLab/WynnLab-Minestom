@@ -1,7 +1,6 @@
 package com.wynnlab.minestom.commands
 
 import com.wynnlab.minestom.gui.ClassGui
-import net.kyori.adventure.text.Component
 import net.minestom.server.command.builder.arguments.ArgumentType
 import net.minestom.server.command.builder.suggestion.SuggestionEntry
 

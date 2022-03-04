@@ -2,7 +2,6 @@
 
 package com.wynnlab.minestom.gui
 
-import net.minestom.server.MinecraftServer
 import net.minestom.server.entity.Player
 import net.minestom.server.event.EventListener
 import net.minestom.server.event.EventNode

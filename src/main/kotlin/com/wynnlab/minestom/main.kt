@@ -5,8 +5,8 @@ package com.wynnlab.minestom
 import com.wynnlab.minestom.commands.*
 import com.wynnlab.minestom.core.player.initActionBar
 import com.wynnlab.minestom.core.runIdTasks
-import com.wynnlab.minestom.discord.initDiscordClient
-import com.wynnlab.minestom.discord.postLogWebhook
+//import com.wynnlab.minestom.discord.initDiscordClient
+//import com.wynnlab.minestom.discord.postLogWebhook
 import com.wynnlab.minestom.generator.GeneratorDemo
 import com.wynnlab.minestom.gui.guiEventNode
 import com.wynnlab.minestom.items.ItemCommand
@@ -15,14 +15,10 @@ import com.wynnlab.minestom.labs.registerLabsListeners
 import com.wynnlab.minestom.listeners.initServerListeners
 import com.wynnlab.minestom.listeners.initWynnLabListeners
 import com.wynnlab.minestom.mob.MobCommand
-import com.wynnlab.minestom.particle.adventure.Particle
-import com.wynnlab.minestom.particle.minestom.ParticleType
-import com.wynnlab.minestom.particle.minestom.ParticleTypes
-import com.wynnlab.minestom.particle.minestom.showParticle
 import com.wynnlab.minestom.players.WynnLabLogin
 import com.wynnlab.minestom.players.WynnLabUuidProvider
 import com.wynnlab.minestom.util.*
-import kotlinx.serialization.json.put
+import kotlinx.coroutines.coroutineScope
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.Style
@@ -41,15 +37,15 @@ import net.minestom.server.utils.time.TimeUnit
 import kotlin.random.Random
 import kotlin.system.exitProcess
 
-fun main() {
+suspend fun main() = coroutineScope {
     val server = MinecraftServer.init()
 
-    val oldExceptionManager = MinecraftServer.getExceptionManager()
+    val oldExceptionHandler = MinecraftServer.getExceptionManager().exceptionHandler
     MinecraftServer.getExceptionManager().setExceptionHandler {
-        oldExceptionManager.handleException(it)
-        postLogWebhook {
+        oldExceptionHandler.handleException(it)
+        /*postLogWebhook {
             put("content", "Exception:\n```$it```")
-        }
+        }*/
     }
 
 
@@ -63,12 +59,12 @@ fun main() {
     //val storageLocation = storageManager.getLocation("world")
 
     val schedulerManager = MinecraftServer.getSchedulerManager()
-    schedulerManager.buildShutdownTask {
+    /*schedulerManager.buildShutdownTask {
         postLogWebhook {
             put("content", "> Server stopped :red_circle:")
         }
-    }.makeTransient().schedule()
-    schedulerManager.buildShutdownTask(::saveAll).makeTransient().schedule()
+    }.makeTransient().schedule()*/
+    schedulerManager.buildShutdownTask(::saveAll)//.schedule()
     schedulerManager.buildTask(::saveAll).delay(5, TimeUnit.MINUTE).repeat(5, TimeUnit.MINUTE).schedule()
     runIdTasks()
 
@@ -100,6 +96,7 @@ fun main() {
         event.player.respawnPoint = Pos(0.0, 42.0, 0.0)
         event.player.permissionLevel = 4
     }
+
     globalEventHandler.addListener(PlayerLoginEvent::class.java, WynnLabLogin(mainInstance))
 
     globalEventHandler.listen<ServerListPingEvent> { event ->
@@ -127,10 +124,10 @@ fun main() {
     if (getProperty("open-to-lan") == "true")
         OpenToLAN.open(OpenToLANConfig())
 
-    postLogWebhook {
+    /*postLogWebhook {
         put("content", "> Server started :green_circle:")
     }
-    initDiscordClient()
+    initDiscordClient()*/
 }
 
 lateinit var mainInstance: InstanceContainer
@@ -155,15 +152,15 @@ fun broadcast(message: Component) {
 }
 
 private val motd = Component.text()
-    .append(Component.text("                     play.", COLOR_DARKER_GRAY.textColor))
-    .append(Component.text("WYNNLAB", Style.style(COLOR_WYNN.textColor, TextDecoration.BOLD)))
-    .append(Component.text(".tk", COLOR_DARKER_GRAY.textColor))
+    .append(Component.text("                     play.", COLOR_DARKER_GRAY))
+    .append(Component.text("WYNNLAB", Style.style(COLOR_WYNN, TextDecoration.BOLD)))
+    .append(Component.text(".tk", COLOR_DARKER_GRAY))
     .append(Component.text("                beta ", NamedTextColor.GRAY))
-    .append(Component.text("✦", COLOR_ORANGE.textColor))
+    .append(Component.text("✦", COLOR_ORANGE))
     .append(Component.newline())
-    .append(Component.text("              Wynn", Style.style(COLOR_PINK.textColor, TextDecoration.BOLD)))
-    .append(Component.text(" brought to ", COLOR_PURPLE.textColor))
-    .append(Component.text("1.17", Style.style(COLOR_PINK.textColor, TextDecoration.BOLD)))
+    .append(Component.text("              Wynn", Style.style(COLOR_PINK, TextDecoration.BOLD)))
+    .append(Component.text(" brought to ", COLOR_PURPLE))
+    .append(Component.text("1.18", Style.style(COLOR_PINK, TextDecoration.BOLD)))
     .build()
 
 private val lanMotd = LegacyComponentSerializer.legacy('§').deserialize("                     §8play.§b§lWYNNLAB§8.tk")

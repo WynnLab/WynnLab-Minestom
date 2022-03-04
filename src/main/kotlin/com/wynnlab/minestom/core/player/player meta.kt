@@ -2,7 +2,6 @@ package com.wynnlab.minestom.core.player
 
 import com.wynnlab.minestom.items.*
 import net.minestom.server.entity.Player
-import net.minestom.server.tag.TagReadable
 
 fun getId(player: Player, id: Identification): Int {
     var i = 0

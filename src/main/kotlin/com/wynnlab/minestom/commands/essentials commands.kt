@@ -140,11 +140,11 @@ private fun Command.partyMessageInit() {
 private val conversations = mutableMapOf<Player, Player>()
 
 private fun pm(sender: Player, receivers: List<Entity>, specifiedReceiver: String, text: String) {
-    val you = Component.text("You", COLOR_WYNN.textColor)
-    val senderComponent = sender.name.colorIfAbsent(COLOR_AQUA.textColor)
+    val you = Component.text("You", COLOR_WYNN)
+    val senderComponent = sender.name.colorIfAbsent(COLOR_AQUA)
     val textComponent = LegacyComponentSerializer.legacy('&').deserialize(text)
 
-    sender.sendMessage(pmComponent(you, Component.text(specifiedReceiver, (if (specifiedReceiver.startsWith('@')) COLOR_AQUA else COLOR_PURPLE).textColor), textComponent))
+    sender.sendMessage(pmComponent(you, Component.text(specifiedReceiver, if (specifiedReceiver.startsWith('@')) COLOR_AQUA else COLOR_PURPLE), textComponent))
     for (receiver in receivers) {
         receiver as Player
         receiver.sendMessage(pmComponent(senderComponent, you, textComponent))
@@ -153,9 +153,9 @@ private fun pm(sender: Player, receivers: List<Entity>, specifiedReceiver: Strin
 }
 
 private fun pmComponent(s: Component, r: Component, text: Component) = Component.text()
-    .append(Component.text("[", COLOR_GRAY.textColor))
+    .append(Component.text("[", COLOR_GRAY))
     .append(s)
-    .append(Component.text(" ➤ ", COLOR_PEACH.textColor))
+    .append(Component.text(" ➤ ", COLOR_PEACH))
     .append(r)
-    .append(Component.text("] ", COLOR_GRAY.textColor))
+    .append(Component.text("] ", COLOR_GRAY))
     .append(text)

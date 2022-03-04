@@ -2,16 +2,13 @@ package com.wynnlab.minestom.gui
 
 import com.wynnlab.minestom.base.playerClassTag
 import com.wynnlab.minestom.base.playerCloneClassTag
-import com.wynnlab.minestom.classes.mage.Mage
-import com.wynnlab.minestom.classes.mage.classes
+import com.wynnlab.minestom.classes.classes
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
 import net.minestom.server.entity.Player
 import net.minestom.server.inventory.InventoryType
 import net.minestom.server.inventory.click.ClickType
 import net.minestom.server.inventory.condition.InventoryConditionResult
-import net.minestom.server.item.ItemStack
-import net.minestom.server.item.Material
 import net.minestom.server.sound.SoundEvent
 
 class ClassGui : Gui("Choose a Class!", InventoryType.CHEST_1_ROW) {

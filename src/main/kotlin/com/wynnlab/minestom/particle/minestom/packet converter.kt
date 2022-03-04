@@ -5,7 +5,6 @@ import it.unimi.dsi.fastutil.objects.Object2ShortArrayMap
 import it.unimi.dsi.fastutil.objects.Object2ShortMap
 import net.kyori.adventure.key.Key
 import net.minestom.server.coordinate.Point
-import net.minestom.server.coordinate.Pos
 import net.minestom.server.network.packet.server.play.ParticlePacket
 import net.minestom.server.utils.binary.BinaryWriter
 
@@ -14,32 +13,27 @@ fun <D : Particle.Data, E : Particle.ExtraData?> createParticlePacket(particle: 
 }
 
 fun <D : Particle.Data, E : Particle.ExtraData?> createParticlePacket(particle: Particle<D, E>, emitter: Point): ParticlePacket {
-    val packet = ParticlePacket()
-    packet.particleId = ids.getShort(particle.name).toInt()
-    packet.longDistance = particle.longDistance
-
-    packet.x = emitter.x()
-    packet.y = emitter.y()
-    packet.z = emitter.z()
-
-    val (offX, offY, offZ, extra) = particle.particleData
-    packet.offsetX = offX
-    packet.offsetY = offY
-    packet.offsetZ = offZ
-
-    packet.particleData = extra
-    packet.particleCount = particle.count
-
-    packet.data = when (val e = particle.extraData) {
-        is ParticleTypes.BinaryData -> {
-            val writer = BinaryWriter()
-            e.accept(writer)
-            writer.toByteArray()
+    val (offX, offY, offZ, extra) = particle.particleData()
+    return ParticlePacket(
+        ids.getShort(particle.name()).toInt(),
+        particle.longDistance(),
+        emitter.x(),
+        emitter.y(),
+        emitter.z(),
+        offX,
+        offY,
+        offZ,
+        extra,
+        particle.count(),
+        when (val e = particle.extraData()) {
+            is ParticleTypes.BinaryData -> {
+                val writer = BinaryWriter()
+                e.accept(writer)
+                writer.toByteArray()
+            }
+            else -> ByteArray(0)
         }
-        else -> ByteArray(0)
-    }
-
-    return packet
+    )
 }
 
 

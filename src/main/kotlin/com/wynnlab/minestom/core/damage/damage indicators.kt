@@ -38,7 +38,7 @@ private fun damageIndicatorHologram(target: DamageTarget, finalDamage: Damage) {
     val hologram = Hologram(text.build())
     hologram.setInstance(target.instance!!, l)
 
-    MinecraftServer.getSchedulerManager().buildTask(hologram::remove).makeTransient().delay(1L, TimeUnit.SECOND)
+    MinecraftServer.getSchedulerManager().buildTask(hologram::remove).delay(1L, TimeUnit.SECOND)
         .schedule()
 }
 

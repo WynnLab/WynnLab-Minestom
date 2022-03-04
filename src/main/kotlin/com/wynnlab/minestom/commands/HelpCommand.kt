@@ -13,9 +13,9 @@ import net.minestom.server.command.builder.arguments.ArgumentType
 object HelpCommand : Command("help", "?") {
     private val help = Book.book(Component.text("Help"), Component.text("WynnLab"),
         Component.text()
-            .append(Component.text("play.", COLOR_DARKER_GRAY.textColor))
-            .append(Component.text("WYNNLAB", COLOR_WYNN.textColor, TextDecoration.BOLD))
-            .append(Component.text(".tk", COLOR_DARKER_GRAY.textColor))
+            .append(Component.text("play.", COLOR_DARKER_GRAY))
+            .append(Component.text("WYNNLAB", COLOR_WYNN, TextDecoration.BOLD))
+            .append(Component.text(".tk", COLOR_DARKER_GRAY))
             .append(Component.newline())
             .append(Component.text("help.title"))
             .append(Component.newline())

@@ -7,7 +7,6 @@ import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
 import net.minestom.server.adventure.audience.PacketGroupingAudience
 import net.minestom.server.coordinate.Point
-import net.minestom.server.coordinate.Pos
 import net.minestom.server.entity.Player
 
 fun <D : Particle.Data, E : Particle.ExtraData?> Audience.showParticle(particle: Particle<D, E>, emitter: Particle.Emitter) {

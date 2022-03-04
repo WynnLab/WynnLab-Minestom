@@ -29,17 +29,17 @@ fun prepareInventory(player: Player) {
 }
 
 private val compassItem = ItemStack.builder(Material.COMPASS)
-    .displayNameNonItalic(Component.translatable("inventory.compass", COLOR_LIGHT_BLUE.textColor))
-    .loreNonItalic(Component.translatable("inventory.compass.lore", COLOR_PALE_BLUE.textColor))
+    .displayNameNonItalic(Component.translatable("inventory.compass", COLOR_LIGHT_BLUE))
+    .loreNonItalic(Component.translatable("inventory.compass.lore", COLOR_PALE_BLUE))
     .build()
 
 private val questBookItem = ItemStack.builder(Material.WRITTEN_BOOK)
     .displayNameNonItalic(Component.translatable("inventory.quest_book", NamedTextColor.LIGHT_PURPLE))
-    .loreNonItalic(Component.translatable("inventory.quest_book.quests", COLOR_PURPLE.textColor, Component.text()
-        .append(Component.text("0/0", COLOR_PINK.textColor))
-        .append(Component.text( " [", COLOR_PURPLE.textColor))
-        .append(Component.text("100%", COLOR_PINK.textColor))
-        .append(Component.text("]", COLOR_PURPLE.textColor))
+    .loreNonItalic(Component.translatable("inventory.quest_book.quests", COLOR_PURPLE, Component.text()
+        .append(Component.text("0/0", COLOR_PINK))
+        .append(Component.text( " [", COLOR_PURPLE))
+        .append(Component.text("100%", COLOR_PINK))
+        .append(Component.text("]", COLOR_PURPLE))
         .build()))
     .meta(WrittenBookMeta::class.java) { it
         .author("WynnLab")
@@ -48,7 +48,7 @@ private val questBookItem = ItemStack.builder(Material.WRITTEN_BOOK)
     .build()
 
 private val soulPointsItem = ItemStack.builder(Material.NETHER_STAR)
-    .displayName(Component.translatable("inventory.soul_points", Style.style(COLOR_PALE_AQUA_BLUE.textColor, TextDecoration.BOLD), Component.text("15", NamedTextColor.YELLOW)))
+    .displayName(Component.translatable("inventory.soul_points", Style.style(COLOR_PALE_AQUA_BLUE, TextDecoration.BOLD), Component.text("15", NamedTextColor.YELLOW)))
     .loreNonItalic(
         Component.translatable("inventory.soul_points.lore.1", NamedTextColor.GRAY),
         Component.translatable("inventory.soul_points.lore.2", NamedTextColor.GRAY),
@@ -58,7 +58,7 @@ private val soulPointsItem = ItemStack.builder(Material.NETHER_STAR)
 
 
 val emptyPouch = ItemStack.builder(Material.BUNDLE)
-    .displayNameNonItalic(Component.translatable("inventory.pouch", COLOR_GOLD.textColor))
+    .displayNameNonItalic(Component.translatable("inventory.pouch", COLOR_GOLD))
     .loreNonItalic(
         Component.translatable("inventory.pouch.view", NamedTextColor.GRAY, Component.keybind("key.attack")),
         Component.translatable("inventory.pouch.clear", NamedTextColor.GRAY, Component.keybind("key.use")),
