@@ -13,5 +13,6 @@ operator fun Pos.minus(p: Point) = sub(p)
 operator fun Vec.minus(p: Point) = sub(p)
 
 operator fun Vec.times(s: Double) = mul(s)
+operator fun Pos.times(s: Double) = mul(s)
 
 operator fun Vec.rangeTo(v: Vec) = VectorsBuilder(this, v)

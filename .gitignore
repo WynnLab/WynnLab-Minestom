@@ -3,4 +3,5 @@
 build/
 
 extensions/
-minecraft_data/
+
+server.properties

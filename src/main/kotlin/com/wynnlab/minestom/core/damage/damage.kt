@@ -14,7 +14,9 @@ fun Player.attack(target: Player, modifiers: DamageModifiers) = DamageSource.Pla
 
 fun DamageSource.attack(target: DamageTarget, modifiers: DamageModifiers) {
     val finalDamage = calculateDamage(this, target, modifiers)
-    if (!finalDamage.zero) {
+    val rawDamage = finalDamage.sum
+    if (rawDamage > 0) {
+        damageRaw(target, rawDamage)
         damageIndicators(this, target, finalDamage)
         if (!modifiers.spell) {
             poison(this, target)
@@ -24,7 +26,6 @@ fun DamageSource.attack(target: DamageTarget, modifiers: DamageModifiers) {
         }
         // TODO: poison, exploding, ls, ms, thorns, reflection
     }
-    damageRaw(target, finalDamage.sum)
     target.takeKnockback(.4f, sin(position.yaw() * (PI / 180f)), -cos(position.yaw() * (PI / 180f)))
 }
 

@@ -20,7 +20,7 @@ import kotlin.collections.HashMap
 
 class Lab(owner: Player) : InstanceContainer(owner.uuid, DimensionType.OVERWORLD) {
     init {
-        this.saveChunksToStorage()
+        //this.saveChunksToStorage()
         MinecraftServer.LOGGER.info("Starting lab...")
         MinecraftServer.getInstanceManager().registerInstance(this)
 

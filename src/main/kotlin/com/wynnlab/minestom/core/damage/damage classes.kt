@@ -6,6 +6,7 @@ import com.wynnlab.minestom.items.Defense
 import com.wynnlab.minestom.items.Identification
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
+import net.minestom.server.collision.BoundingBox
 import net.minestom.server.coordinate.Pos
 import net.minestom.server.instance.Instance
 import net.minestom.server.item.ItemStack
@@ -45,11 +46,15 @@ interface DamageTarget : TagHandler {
     val uuid: UUID
     val isDead: Boolean
     val customName: Component?
+    val boundingBox: BoundingBox
+
     val baseDefense: Float
     val defense: Defense
     fun getEleDefPercent(index: Int): Float
     fun takeKnockback(a: Float, b: Double, c: Double)
     val viewersAsAudience: Audience
+
+    val center get() = position.add(0.0, eyeHeight / 2, 0.0)
 
     @JvmInline
     value class Player(val player: net.minestom.server.entity.Player) : DamageTarget {
@@ -64,6 +69,8 @@ interface DamageTarget : TagHandler {
         override val uuid get() = player.uuid
         override val isDead get() = player.isDead
         override val customName get() = player.name
+        override val boundingBox get() = player.boundingBox
+
         override val health get() = player.health * maxHealth / 20f
         override val maxHealth get() = player.getTag(playerMaxHealthTag)!!.toFloat()
 

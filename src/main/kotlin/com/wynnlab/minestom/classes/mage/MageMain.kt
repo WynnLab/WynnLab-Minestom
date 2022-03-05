@@ -32,9 +32,10 @@ class MageMain(player: Player) : BasePlayerSpell(player, 0) {
             particle(v, if (isCloneSpell) witchParticle else critParticle)
             particle(v, enchantedHitParticle)
 
-            for (t in targets(v, 0.5)) {
-                if (!hit.add(t)) continue
-                damageSource.attack(t, damageModifiers)
+            bbTargets(v, 0.5) { t ->
+                if (hit.add(t)) {
+                    damageSource.attack(t, damageModifiers)
+                }
             }
         }
     }

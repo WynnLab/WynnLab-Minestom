@@ -174,6 +174,7 @@ abstract class CustomEntity(entityType: EntityType) : Entity(entityType) {
         override val uuid get() = ce.getUuid()
         override val isDead get() = ce.isDead
         override val customName get() = ce.customName
+        override val boundingBox get() = ce.boundingBox
 
         override val baseDefense get() = ce.baseDefense
         override val defense get() = ce.defense
