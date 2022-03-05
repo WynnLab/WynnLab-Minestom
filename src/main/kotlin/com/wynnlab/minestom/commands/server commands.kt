@@ -148,7 +148,7 @@ object GamemodeCommand : Command("gamemode", "gm") {
 
         addSyntax({ sender, ctx ->
             val targets = ctx[targetsArg].find(sender)
-            val gameMode = GameMode.fromId(ctx[gamemodeIndexArg].toByte())!!
+            val gameMode = GameMode.fromId(ctx[gamemodeIndexArg])!!
             setGameMode(sender, targets, gameMode)
         }, gamemodeIndexArg, targetsArg)
     }
