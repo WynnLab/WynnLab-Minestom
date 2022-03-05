@@ -28,11 +28,10 @@ jobs:
         server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
         settings-path: ${{ github.workspace }} # location for the settings.xml file
 
-    - name: Setup Gradle
+    - name: Gradle Build
       uses: gradle/gradle-build-action@v2
-    
-    - name: Execute Gradle build
-      run: ./gradlew shadowJar
+      with:
+        arguments: shadowJar
         
     - name: Upload binary
       uses: actions/upload-artifact@v2
