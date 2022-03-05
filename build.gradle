@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'org.jetbrains.kotlin.jvm' version '1.6.10'
-    //id 'com.github.johnrengelman.shadow' version '5.2.0'
+    id "com.github.johnrengelman.shadow" version "7.1.2"
     id 'org.jetbrains.kotlin.plugin.serialization' version '1.6.10'
 }
 
@@ -12,7 +12,6 @@ repositories {
     mavenCentral()
     maven { url 'https://repo.spongepowered.org/maven' }
     maven { url 'https://jitpack.io' }
-    //maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
 }
 
 dependencies {
@@ -56,6 +55,6 @@ java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(17))
 }
 
-/*shadowJar {
+shadowJar {
     archiveName "server.jar"
-}*/
+}
