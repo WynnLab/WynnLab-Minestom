@@ -28,6 +28,9 @@ jobs:
         server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
         settings-path: ${{ github.workspace }} # location for the settings.xml file
 
+    - name: Chmod
+      run: chmod +x ./gradlew
+
     - name: Gradle Build
       uses: gradle/gradle-build-action@v2
       with:
