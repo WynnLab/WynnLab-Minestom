@@ -8,12 +8,14 @@
     "inventory.quest_book.quests": "Quests: %s",
     "inventory.soul_points": "%s Seelenpunkts",
     "inventory.soul_points.lore.1": "Weniger Seelenpunkte zu haben",
-    "inventory.soul_points.lore.2": "vergrößert die Chance, beim Tod",
+    "inventory.soul_points.lore.2": "steigert die Chance, beim Tod",
     "inventory.soul_points.lore.3": "Items zu verlieren",
     "inventory.pouch": "Magisches Bündel",
     "inventory.pouch.view": "%s um den Inhalt zu sehen",
     "inventory.pouch.clear": "%s um zu entleeren",
     "inventory.slot.ring": "Ring-Slot",
     "inventory.slot.bracelet": "Armreif-Slot",
-    "inventory.slot.necklace": "Halsketten-Slot"
+    "inventory.slot.necklace": "Halsketten-Slot",
+    
+    "gui.menu.skill_points_remaining": "%s Fähigkeiten-Punkte übrig"
 }
