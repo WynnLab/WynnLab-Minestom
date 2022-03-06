@@ -97,6 +97,7 @@ object MenuGui : Gui("§c200 §4Skill Points Remaining", InventoryType.CHEST_3_R
         val cs = currentSkills[player.uuid] ?: return@apply
         val rem = player.remainingSkillAssigns
         val to100 = 100 - player.assignedSkill(skillIndex)
+        player.sendMessage(to100.toString())
         val actualAdd = if (rem > 0 && to100 > 0) {
             player.playSound(successAddSound)
             add.coerceAtMost(rem).coerceAtMost(to100)
@@ -106,6 +107,7 @@ object MenuGui : Gui("§c200 §4Skill Points Remaining", InventoryType.CHEST_3_R
         }
         cs[skillIndex] = (cs[skillIndex] + actualAdd).also { this.skillBookAmount(currentSkillsModified[player.uuid]!! and (1 shl skillIndex) > 0, it) }
         player.upgradeSkill(skillIndex, actualAdd)
+        player.sendMessage(String.format("%x", player.assignedSkills))
     }
 
     // TODO: localized skill book items

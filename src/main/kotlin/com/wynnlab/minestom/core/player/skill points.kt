@@ -16,15 +16,15 @@ private val assignedSkillPointsTag = Tag.Long("assigned-skill-points").defaultVa
 
 val Player.assignedSkills get() = getTag(assignedSkillPointsTag)!!
 
-fun Player.assignedSkill(index: Int, skills: Long = assignedSkills) = ((skills and (0xff shl (8 * index)).toLong()) shr (8 * index)).toByte()
+fun Player.assignedSkill(index: Int, skills: Long = assignedSkills) = ((skills and (0xffL shl (8 * index))) shr (8 * index)).toByte()
 
 val Player.remainingSkillAssigns: Int get() {//get() = 200 - getTag(assignedSkillPointsTag)!!.sum()
     val asp = assignedSkills
-    return ((asp and 0xff) +
-            ((asp and (0xff shl 4)) shr 8) +
-            ((asp and (0xff shl 8)) shr 16) +
-            ((asp and (0xff shl 16)) shr 24) +
-            ((asp and (0xff shl 24)) shr 32)).toInt()
+    return 200 - ((asp and 0xffL) +
+            ((asp and (0xffL shl 8)) shr 8) +
+            ((asp and (0xffL shl 16)) shr 16) +
+            ((asp and (0xffL shl 24)) shr 24) +
+            ((asp and (0xffL shl 32)) shr 32)).toInt()
 }
 
 val Player.modifiedSkills: IntArray get() {
@@ -75,9 +75,9 @@ fun Player.getEffectiveSkill(index: Int): Int {
     return r
 }
 
-fun Player.upgradeSkill(index: Int, add: Int) = setTag(assignedSkillPointsTag, assignedSkills.also {
+fun Player.upgradeSkill(index: Int, add: Int) = setTag(assignedSkillPointsTag, assignedSkills.let {
     //it[index] = (it[index] + add).toByte()
-    it + (add shl (index * 8))
+    it + (add.toLong() shl (index * 8))
 })
 
 fun Player.resetSkillAssigns() = setTag(assignedSkillPointsTag, 0L)
