@@ -17,6 +17,7 @@ import net.minestom.server.item.ItemMetaBuilder
 import net.minestom.server.item.ItemStack
 import net.minestom.server.item.Material
 import net.minestom.server.tag.Tag
+import org.jglrxavpok.hephaistos.nbt.NBT
 
 sealed class ItemBuilder(
     private val id: String?,
@@ -143,7 +144,13 @@ sealed class ItemBuilder(
             Component.translatable("item.skill_requirement", NamedTextColor.GRAY, Component.text("?", NamedTextColor.GRAY), Component.translatable(skillKey), Component.text(it))
         }
 
-    private fun refreshDisplayName() = item.displayNameNonItalic(Component.text(name, rarity.nameColor))
+    private fun refreshDisplayName() {
+        item.displayNameNonItalic(Component.text(name, rarity.nameColor))
+        item.meta<ItemMetaBuilder> {
+            it.set(displayNameTag, name)
+            it.set(nameColorTag, rarity.nameColor.value())
+        }
+    }
 
     private var item = ItemStack.builder(type.designs["Basic"]!!.material)
         .meta<ItemMetaBuilder> {
@@ -291,5 +298,8 @@ sealed class ItemBuilder(
 
         val nameTag = Tag.String("item-builder-name")
         val typeTag = Tag.String("item-builder-type")
+
+        val displayNameTag = Tag.String("item-display-name")
+        val nameColorTag = Tag.Integer("item-name-color")
     }
 }

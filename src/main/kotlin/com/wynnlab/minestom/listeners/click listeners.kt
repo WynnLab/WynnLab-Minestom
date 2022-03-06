@@ -1,15 +1,18 @@
 package com.wynnlab.minestom.listeners
 
+import com.wynnlab.minestom.base.BaseClass
 import com.wynnlab.minestom.base.playerClassTag
+import com.wynnlab.minestom.base.playerCloneClassTag
 import com.wynnlab.minestom.classes.getClassById
-import com.wynnlab.minestom.core.player.itemWeapon
-import com.wynnlab.minestom.core.player.refreshClickSequenceBar
-import com.wynnlab.minestom.core.player.resetClickSequenceBar
+import com.wynnlab.minestom.core.player.*
 import com.wynnlab.minestom.gui.MenuGui
+import com.wynnlab.minestom.items.Identification
 import com.wynnlab.minestom.mob.MobCommand
 import com.wynnlab.minestom.mob.getCustomMob
 import com.wynnlab.minestom.mob.mobTypeIdTag
 import com.wynnlab.minestom.tasks.RefreshDelayTask
+import com.wynnlab.minestom.textColor
+import com.wynnlab.minestom.util.displayNameNonItalic
 import com.wynnlab.minestom.util.listen
 import net.kyori.adventure.sound.Sound
 import net.kyori.adventure.text.Component
@@ -22,9 +25,12 @@ import net.minestom.server.event.EventNode
 import net.minestom.server.event.player.PlayerBlockInteractEvent
 import net.minestom.server.event.player.PlayerHandAnimationEvent
 import net.minestom.server.event.player.PlayerUseItemEvent
+import net.minestom.server.item.builder
 import net.minestom.server.sound.SoundEvent
 import net.minestom.server.tag.Tag
 import net.minestom.server.utils.time.TimeUnit
+import kotlin.math.ceil
+import kotlin.math.floor
 
 val playerSpellClickListenersNode = EventNode.type("player-spell-click-listeners", EventFilter.PLAYER) { e, player ->
     e is PlayerBlockInteractEvent && e.hand == Player.Hand.MAIN
@@ -88,9 +94,9 @@ private fun addToClickSequence(player: Player, rightClick: Boolean): Byte {
     return new
 }
 
-fun clickSeqAbComponent(player: Player): TextComponent {
+fun clickSeqAbComponent(player: Player): TextComponent? {
     return when (val sequence = player.getTag(clickSequenceTag)!!) {
-        in clickSequenceSpellMap -> spellCastAbComponent(clickSequenceSpellMap.indexOf(sequence))
+        in clickSequenceSpellMap -> null//spellCastAbComponent(clickSequenceSpellMap.indexOf(sequence))
         else -> {
             val c1 = sequence % 3
             val c2 = (sequence / 3) % 3
@@ -106,7 +112,16 @@ fun clickSeqAbComponent(player: Player): TextComponent {
     }
 }
 
-private fun spellCastAbComponent(index: Int) = Component.text("Spell $index", NamedTextColor.AQUA)
+private fun spellCastAbComponent(clazz: BaseClass, clone: Boolean, index: Int, cost: Int) = Component.text()
+    .append(Component.translatable("class.${clazz.id}.spell.$index${if (clone) ".clone" else ""}", 0x75ebf0.textColor))
+    .append(Component.space())
+    .append(Component.translatable("spell.message.success.case", 0x9feaed.textColor))
+    .append(Component.text(" [", 0x23abb0.textColor))
+    .append(Component.text(-cost, 0x23e1e8.textColor))
+    .append(Component.text("✺ ", 0x2bd3d9.textColor))
+    .append(Component.text("]", 0x23abb0.textColor))
+    .build()
+private val notEnoughManaComponent = Component.translatable("spell.message.not_enough_mana", NamedTextColor.DARK_RED)
 
 private val hyphenComponent = Component.text("-", NamedTextColor.GRAY)
 
@@ -135,21 +150,59 @@ private fun Player.clickSeqAb() {
 
 //val clickSeqAbTag = Tag.Byte("click-seq-ab")
 
-private fun castSpellAndResetClickSequence(player: Player, spell: Int) {
+private fun castSpellAndResetClickSequence(player: Player, index: Int) {
     /*if (spell == 0) player.rayCastEntity(maxDistance = 4.0) { it is CustomEntity || it is Player }?.let {
         if (it is CustomEntity) player.attack(it, NeutralDamageModifiers)
         else player.attack(it as Player, NeutralDamageModifiers)
     }
     if (spell == 1) Mage.spells[0](player).schedule()*/
-    getClassById(player.getTag(playerClassTag) ?: "null")?.spells?.getOrNull(spell)?.invoke(player)?.schedule()
+    resetClickSequence(player)
+
+    val playerClass = getClassById(player.getTag(playerClassTag) ?: "null") ?: return
+    val spell = playerClass.spells.getOrNull(index)?.invoke(player) ?: return
     //player.setGravity(player.gravityDragPerTick / 2f, player.gravityAcceleration / 2f)
     //val p = Particle.particle(HAPPY_VILLAGER, 10, ParticleType.OffsetAndSpeed(0f, 0f, 0f, 0f))
     //val p = Particle.particle(ITEM, 10, ParticleType.OffsetAndSpeed(0f, 0f, 0f, 0f), Item(player.itemInMainHand))
     //player.showParticle(p, player.position)
     //player.sendMessage("spell $spell")
-    if (spell > 0) player.playSound(Sound.sound(SoundEvent.ENTITY_EXPERIENCE_ORB_PICKUP, Sound.Source.MASTER, 1f, .5f))
-    resetClickSequence(player)
+    if (index > 0) {
+        val cost = spellCost(player, spell.cost, index)
+
+        player.setTag(extraSpellCostTag, (if (player.getTag(lastCastSpellTag)!!.toInt() == index) player.getTag(extraSpellCostTag)!! + 1 else 0).toByte())
+        player.setTag(lastCastSpellTag, index.toByte())
+
+        RefreshDelayTask(player, "spell-cost-extra") {
+            player.setTag(extraSpellCostTag, null)
+            player.setTag(lastCastSpellTag, null)
+        }.schedule(5L, TimeUnit.SECOND)
+
+        val currentMana = player.food
+
+        player.playSound(Sound.sound(
+            if (currentMana >= cost) SoundEvent.ENTITY_EXPERIENCE_ORB_PICKUP else SoundEvent.BLOCK_ANVIL_PLACE, Sound.Source.MASTER,
+            1f,
+            if (currentMana >= cost) .5f else 1f
+        ))
+        player.itemInMainHand = player.itemInMainHand.builder()
+            .displayNameNonItalic(if (currentMana >= cost) spellCastAbComponent(playerClass, player.getTag(playerCloneClassTag)!!, index, cost) else notEnoughManaComponent)
+            .build()
+
+        if (currentMana < cost) return
+        player.food = currentMana - cost
+    }
+
+    spell.schedule()
 }
+
+fun spellCost(player: Player, rawCost: Int, index: Int) =
+    floor(
+        ceil(rawCost * (1.0 - skillPercentage(player.getEffectiveSkill(2))/*.let { if (player.hasScoreboardTag("pvp")) it.coerceAtMost(0.55) else it }*/)
+            + getId(player, Identification.valueOf("SpellCost${index}Raw"))) * (1.0 + getId(player, Identification.valueOf("SpellCost${index}Pct")) / 100.0)
+            + player.getTag(extraSpellCostTag)!!
+    ).coerceAtLeast(1.0).toInt()
+
+private val extraSpellCostTag = Tag.Byte("player-extra-spell-cost").defaultValue(0)
+private val lastCastSpellTag = Tag.Byte("player-last-cast-spell").defaultValue(0)
 
 private fun resetClickSequence(player: Player) {
     player.setTag(clickSequenceTag, 0)

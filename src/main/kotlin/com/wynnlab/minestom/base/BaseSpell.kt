@@ -38,7 +38,7 @@ abstract class BaseSpell(private val duration: Int) : Runnable {
         task.cancel()
     }
 
-    fun schedule(delay: Duration = Duration.ZERO, period: Duration = Duration.of(1L, TimeUnit.SERVER_TICK)) {
+    open fun schedule(delay: Duration = Duration.ZERO, period: Duration = Duration.of(1L, TimeUnit.SERVER_TICK)) {
         //println("Scheduled spell ${this::class.simpleName}")
         task = MinecraftServer.getSchedulerManager().buildTask(this).delay(delay).repeat(period).schedule()
         onCast()

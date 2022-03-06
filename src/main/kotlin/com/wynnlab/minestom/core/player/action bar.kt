@@ -1,6 +1,7 @@
 package com.wynnlab.minestom.core.player
 
 import com.wynnlab.minestom.core.damage.playerMaxHealthTag
+import com.wynnlab.minestom.items.ItemBuilder
 import com.wynnlab.minestom.listeners.clickSeqAbComponent
 import com.wynnlab.minestom.textColor
 import com.wynnlab.minestom.util.displayNameNonItalic
@@ -47,11 +48,22 @@ fun refreshActionBar(player: Player) {
 fun refreshClickSequenceBar(player: Player) {
     val clickSeqAbComponent = clickSeqAbComponent(player)
 
-    val oldItem = player.itemInMainHand
-    player.itemInMainHand = player.itemInMainHand.builder()
-        .displayNameNonItalic(clickSeqAbComponent)
-        .build()
-    player.scheduleNextTick { (it as Player).inventory.itemStacksRaw[it.heldSlot.toInt()] = oldItem }
+    //val oldItem = player.itemInMainHand
+    if (clickSeqAbComponent != null) {
+        player.itemInMainHand = player.itemInMainHand.builder()
+            .displayNameNonItalic(clickSeqAbComponent)
+            .build()
+    }
+    val slot = player.heldSlot.toInt()
+    player.scheduleNextTick {
+        //(it as Player).inventory.itemStacksRaw[it.heldSlot.toInt()] = oldItem
+        val isr = (it as Player).inventory.itemStacksRaw
+        val oldItem = isr[slot]
+        isr[slot] = oldItem.builder().displayNameNonItalic(Component.text(
+            oldItem.meta.getTag(ItemBuilder.displayNameTag) ?: "???",
+            oldItem.meta.getTag(ItemBuilder.nameColorTag)?.textColor
+        )).build()
+    }
 }
 
 fun resetClickSequenceBar(player: Player) {

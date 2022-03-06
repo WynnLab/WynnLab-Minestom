@@ -2,6 +2,20 @@
     "notification.welcome.welcome": "Welcome to WynnLab!",
     "notification.welcome.help": "Type /help for help.",
 
+    "class.mage.name": "Mage",
+    "class.mage.name.clone": "Dark Wizard",
+    "class.mage.spell.1": "Heal",
+    "class.mage.spell.2": "Teleport",
+    "class.mage.spell.3": "Meteor",
+    "class.mage.spell.4": "Ice Snake",
+    "class.mage.spell.1.clone": "Remedy",
+    "class.mage.spell.2.clone": "Blink",
+    "class.mage.spell.3.clone": "Death Star",
+    "class.mage.spell.4.clone": "Crystal Reptile",
+
+    "spell.message.success.case": "Cast",
+    "spell.message.not_enough_mana": "Not enough mana!",
+
     "inventory.compass": "Character Info",
     "inventory.compass.lore": "View and manage your skills",
     "inventory.quest_book": "Quest Book",
@@ -34,6 +48,7 @@
     "gui.menu.skill_book.next.points": "%s points",
     "gui.menu.skill_book.modified": "This skill was modified by your equipment",
 
+    "element.neutral": "Neutral",
     "element.earth": "Earth",
     "element.thunder": "Thunder",
     "element.water": "Water",
@@ -174,7 +189,5 @@
     "commands.gamemode.success.multiple": "Set %s players' gamemode to %s",
     "commands.op.success.level": "Set op level of %s from %s to %s",
 
-    "server.saving": "[Server] saving...",
-
-    "class.mage.name": "Mage"
+    "server.saving": "[Server] saving..."
 }
