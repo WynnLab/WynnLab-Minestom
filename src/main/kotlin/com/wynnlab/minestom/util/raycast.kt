@@ -1,4 +1,4 @@
-package com.wynnlab.minestom.util
+/*package com.wynnlab.minestom.util
 
 import net.minestom.server.coordinate.Point
 import net.minestom.server.coordinate.Pos
@@ -48,4 +48,4 @@ fun <T> Entity.rayCast(direction: Vec, maxDistance: Double, condition: (Pos) -> 
     }
 
     return null
-}
+}*/

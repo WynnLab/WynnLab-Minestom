@@ -5,7 +5,7 @@ import net.minestom.server.timer.Task
 import net.minestom.server.utils.time.TimeUnit
 import java.time.Duration
 
-abstract class BaseSpell(private val duration: Int) : Runnable {
+abstract class BaseSpell(private val duration: Int, private val period: Long = 1) : Runnable {
     var t = -1
 
     private lateinit var task: Task
@@ -40,7 +40,7 @@ abstract class BaseSpell(private val duration: Int) : Runnable {
 
     open fun schedule(delay: Duration = Duration.ZERO, period: Duration = Duration.of(1L, TimeUnit.SERVER_TICK)) {
         //println("Scheduled spell ${this::class.simpleName}")
-        task = MinecraftServer.getSchedulerManager().buildTask(this).delay(delay).repeat(period).schedule()
+        task = MinecraftServer.getSchedulerManager().buildTask(this).delay(delay).repeat(period.multipliedBy(this.period)).schedule()
         onCast()
     }
 }

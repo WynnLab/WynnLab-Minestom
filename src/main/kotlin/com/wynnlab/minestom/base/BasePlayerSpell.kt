@@ -16,8 +16,9 @@ import net.minestom.server.entity.Player
 abstract class BasePlayerSpell(
     val player: Player,
     duration: Int,
-    val cost: Int = 0
-) : BaseSpell(duration) {
+    val cost: Int = 0,
+    val period: Long = 1
+) : BaseSpell(duration, period) {
     val isCloneSpell = player.getTag(playerCloneClassTag)!!
     val damageSource: DamageSource = DamageSource.Player(player)
 
@@ -31,6 +32,13 @@ abstract class BasePlayerSpell(
         PacketGroupingAudience.of(player.viewers.filter { it.getDistanceSquared(player) <= 400 }).showParticle(particle, at)
     }
 
+    fun nearbyPlayers(center: Point, radius: Double, action: (Player) -> Unit) {
+        player.instance!!.forNearbyEntities(center, radius, {
+            if (it.uuid == player.uuid) null
+            else if (it is Player) it else null
+        }, action)
+    }
+
     fun nearbyTargets(center: Point, radius: Double, action: (DamageTarget) -> Unit) {
         player.instance!!.forNearbyEntities(center, radius, {
             if (it.uuid == player.uuid) null
@@ -41,14 +49,16 @@ abstract class BasePlayerSpell(
     }
 
     fun bbTargets(center: Point, approxRadius: Double, action: (DamageTarget) -> Unit) {
+        val bb = net.minestom.server.collision.BoundingBox(approxRadius * 2, approxRadius * 2, approxRadius * 2)
         nearbyTargets(center, approxRadius + 8) {
-            val c = it.center
+            /*val c = it.center
             val d = c.distanceSquared(center)
             if (d < approxRadius * approxRadius) action(it)
             else if (d < (approxRadius + 4) * (approxRadius + 4)) {
                 if (it.boundingBox.intersect(center.add((c - center) * approxRadius))
                     || it.boundingBox.intersect(center)) action(it)
-            }
+            }*/
+            if (bb.intersectEntity(center, if (it is com.wynnlab.minestom.core.damage.DamageTarget.Player) it.player else (it as com.wynnlab.minestom.entities.CustomEntity.DamageTarget).ce)) action(it)
         }
     }
 

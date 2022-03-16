@@ -11,7 +11,7 @@ import net.minestom.server.coordinate.Vec
 import net.minestom.server.entity.Player
 import net.minestom.server.sound.SoundEvent
 
-class MageMain(player: Player) : BasePlayerSpell(player, 0) {
+class MageMain(player: Player) : BasePlayerSpell(player, duration = 0) {
     private val hit = mutableSetOf<DamageTarget>()
 
     override fun onCast() {
